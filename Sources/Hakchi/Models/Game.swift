@@ -14,6 +14,11 @@ struct Game: Identifiable, Codable, Hashable {
     var consoleType: ConsoleType
     var isSelected: Bool
     var folder: String
+    var genre: String
+    var commandLine: String
+    var saveCount: Int
+    var simultaneous: Bool
+    var clvCode: String
 
     init(
         id: UUID = UUID(),
@@ -28,12 +33,16 @@ struct Game: Identifiable, Codable, Hashable {
         coverArtPath: String? = nil,
         consoleType: ConsoleType = .unknown,
         isSelected: Bool = true,
-        folder: String = "/"
+        folder: String = "/",
+        genre: String = "",
+        commandLine: String = "",
+        saveCount: Int = 0,
+        simultaneous: Bool = false,
+        clvCode: String = ""
     ) {
         self.id = id
         self.name = name
-        let resolvedSortName = sortName.isEmpty ? name : sortName
-        self.sortName = resolvedSortName
+        self.sortName = sortName.isEmpty ? name : sortName
         self.publisher = publisher
         self.releaseDate = releaseDate
         self.players = players
@@ -44,5 +53,27 @@ struct Game: Identifiable, Codable, Hashable {
         self.consoleType = consoleType
         self.isSelected = isSelected
         self.folder = folder
+        self.genre = genre
+        self.saveCount = saveCount
+        self.simultaneous = simultaneous
+
+        if clvCode.isEmpty {
+            self.clvCode = Self.generateCLVCode(consoleType: consoleType)
+        } else {
+            self.clvCode = clvCode
+        }
+
+        if commandLine.isEmpty {
+            let romFilename = URL(fileURLWithPath: romPath).lastPathComponent
+            self.commandLine = "\(consoleType.stockEmulator) /usr/share/games/\(self.clvCode)/\(romFilename)"
+        } else {
+            self.commandLine = commandLine
+        }
+    }
+
+    static func generateCLVCode(consoleType: ConsoleType) -> String {
+        let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        let suffix = String((0..<5).map { _ in chars.randomElement()! })
+        return "\(consoleType.clvPrefix)-\(suffix)"
     }
 }

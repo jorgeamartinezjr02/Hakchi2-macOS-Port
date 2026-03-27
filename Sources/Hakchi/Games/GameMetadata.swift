@@ -10,6 +10,7 @@ struct GameMetadata: Codable {
     let system: String
     let region: String
     let coverUrl: String?
+    let genre: String
 
     init(
         name: String,
@@ -20,7 +21,8 @@ struct GameMetadata: Codable {
         crc32: String = "",
         system: String = "",
         region: String = "",
-        coverUrl: String? = nil
+        coverUrl: String? = nil,
+        genre: String = ""
     ) {
         self.name = name
         self.sortName = sortName.isEmpty ? name : sortName
@@ -31,5 +33,6 @@ struct GameMetadata: Codable {
         self.system = system
         self.region = region
         self.coverUrl = coverUrl
+        self.genre = genre
     }
 }
