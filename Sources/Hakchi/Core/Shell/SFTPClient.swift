@@ -48,16 +48,19 @@ final class SFTPClient {
         let fileData = try Data(contentsOf: URL(fileURLWithPath: localPath))
         let totalSize = Double(fileData.count)
 
-        guard let handle = libssh2_sftp_open(
+        // Use _ex variant since libssh2_sftp_open() is a macro
+        guard let handle = libssh2_sftp_open_ex(
             sftp,
             remotePath,
+            UInt32(remotePath.count),
             UInt(LIBSSH2_FXF_WRITE | LIBSSH2_FXF_CREAT | LIBSSH2_FXF_TRUNC),
-            Int(LIBSSH2_SFTP_S_IRUSR | LIBSSH2_SFTP_S_IWUSR | LIBSSH2_SFTP_S_IRGRP | LIBSSH2_SFTP_S_IROTH)
+            Int(LIBSSH2_SFTP_S_IRUSR | LIBSSH2_SFTP_S_IWUSR | LIBSSH2_SFTP_S_IRGRP | LIBSSH2_SFTP_S_IROTH),
+            LIBSSH2_SFTP_OPENFILE
         ) else {
             throw HakchiError.sftpTransferFailed("Failed to open remote file: \(remotePath)")
         }
 
-        defer { libssh2_sftp_close(handle) }
+        defer { libssh2_sftp_close_handle(handle) }
 
         var offset = 0
         let chunkSize = 32768 // 32KB chunks
@@ -95,21 +98,24 @@ final class SFTPClient {
     private func downloadSync(remotePath: String, localPath: String, progress: ((Double) -> Void)? = nil) throws {
         let sftp = try openSFTP()
 
-        // Get file size
+        // Get file size — use _ex variant since libssh2_sftp_stat() is a macro
         var attrs = LIBSSH2_SFTP_ATTRIBUTES()
-        libssh2_sftp_stat(sftp, remotePath, &attrs)
+        libssh2_sftp_stat_ex(sftp, remotePath, UInt32(remotePath.count), LIBSSH2_SFTP_STAT, &attrs)
         let totalSize = Double(attrs.filesize)
 
-        guard let handle = libssh2_sftp_open(
+        // Use _ex variant since libssh2_sftp_open() is a macro
+        guard let handle = libssh2_sftp_open_ex(
             sftp,
             remotePath,
+            UInt32(remotePath.count),
             UInt(LIBSSH2_FXF_READ),
-            0
+            0,
+            LIBSSH2_SFTP_OPENFILE
         ) else {
             throw HakchiError.sftpTransferFailed("Failed to open remote file: \(remotePath)")
         }
 
-        defer { libssh2_sftp_close(handle) }
+        defer { libssh2_sftp_close_handle(handle) }
 
         var data = Data()
         var buffer = [UInt8](repeating: 0, count: 32768)
@@ -132,28 +138,38 @@ final class SFTPClient {
 
     func mkdir(path: String) throws {
         let sftp = try openSFTP()
-        libssh2_sftp_mkdir(sftp, path, Int(LIBSSH2_SFTP_S_IRWXU | LIBSSH2_SFTP_S_IRGRP | LIBSSH2_SFTP_S_IXGRP))
+        // Use _ex variant since libssh2_sftp_mkdir() is a macro
+        libssh2_sftp_mkdir_ex(sftp, path, UInt32(path.count), Int(LIBSSH2_SFTP_S_IRWXU | LIBSSH2_SFTP_S_IRGRP | LIBSSH2_SFTP_S_IXGRP))
     }
 
     func remove(path: String) throws {
         let sftp = try openSFTP()
-        libssh2_sftp_unlink(sftp, path)
+        // Use _ex variant since libssh2_sftp_unlink() is a macro
+        libssh2_sftp_unlink_ex(sftp, path, UInt32(path.count))
     }
 
     func listDirectory(path: String) throws -> [String] {
         let sftp = try openSFTP()
 
-        guard let handle = libssh2_sftp_opendir(sftp, path) else {
+        // Use _ex variant since libssh2_sftp_opendir() is a macro
+        guard let handle = libssh2_sftp_open_ex(
+            sftp,
+            path,
+            UInt32(path.count),
+            0, 0,
+            LIBSSH2_SFTP_OPENDIR
+        ) else {
             throw HakchiError.sftpTransferFailed("Failed to open directory: \(path)")
         }
 
-        defer { libssh2_sftp_closedir(handle) }
+        defer { libssh2_sftp_close_handle(handle) }
 
         var entries: [String] = []
         var buffer = [CChar](repeating: 0, count: 512)
         var attrs = LIBSSH2_SFTP_ATTRIBUTES()
 
-        while libssh2_sftp_readdir(handle, &buffer, buffer.count, &attrs) > 0 {
+        // Use _ex variant since libssh2_sftp_readdir() is a macro
+        while libssh2_sftp_readdir_ex(handle, &buffer, buffer.count, nil, 0, &attrs) > 0 {
             let name = String(cString: buffer)
             if name != "." && name != ".." {
                 entries.append(name)

@@ -11,6 +11,7 @@ struct KernelDialog: View {
     @State private var errorMessage: String?
     @State private var isComplete = false
     @State private var selectedBackup: URL?
+    @State private var backups: [URL] = []
 
     var body: some View {
         VStack(spacing: 20) {
@@ -32,7 +33,6 @@ struct KernelDialog: View {
 
             if action == .restore {
                 // Backup selection
-                let backups = KernelManager(felDevice: FELDevice()).listBackups()
                 if backups.isEmpty {
                     Text("No kernel backups found")
                         .foregroundColor(.secondary)
@@ -125,6 +125,12 @@ struct KernelDialog: View {
         }
         .padding(24)
         .frame(width: 480)
+        .task {
+            if action == .restore {
+                let mgr = KernelManager(felDevice: FELDevice())
+                backups = await mgr.listBackups()
+            }
+        }
     }
 
     private var actionTitle: String {

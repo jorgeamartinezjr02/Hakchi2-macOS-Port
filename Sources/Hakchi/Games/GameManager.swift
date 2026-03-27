@@ -89,6 +89,7 @@ final class GameManager {
         } catch {
             existingGames = []
         }
+        _ = existingGames
 
         let totalOps = Double(games.count)
 

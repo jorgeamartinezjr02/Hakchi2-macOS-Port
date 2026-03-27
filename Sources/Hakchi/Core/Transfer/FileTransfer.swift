@@ -77,7 +77,7 @@ actor FileTransfer {
             switch op.type {
             case .upload:
                 progress?(Double(index) / total, "Uploading \(op.game.name)...")
-                try await executeCommand("mkdir -p \(gameDir)")
+                _ = try await executeCommand("mkdir -p \(gameDir)")
                 try await uploadFile(
                     localPath: op.game.romPath,
                     remotePath: "\(gameDir)/\(URL(fileURLWithPath: op.game.romPath).lastPathComponent)"
@@ -85,12 +85,12 @@ actor FileTransfer {
 
             case .delete:
                 progress?(Double(index) / total, "Removing \(op.game.name)...")
-                try await executeCommand("rm -rf \(gameDir)")
+                _ = try await executeCommand("rm -rf \(gameDir)")
 
             case .update:
                 progress?(Double(index) / total, "Updating \(op.game.name)...")
-                try await executeCommand("rm -rf \(gameDir)")
-                try await executeCommand("mkdir -p \(gameDir)")
+                _ = try await executeCommand("rm -rf \(gameDir)")
+                _ = try await executeCommand("mkdir -p \(gameDir)")
                 try await uploadFile(
                     localPath: op.game.romPath,
                     remotePath: "\(gameDir)/\(URL(fileURLWithPath: op.game.romPath).lastPathComponent)"
