@@ -1,0 +1,222 @@
+{
+  "3FE272FB": {
+    "name": "Super Mario Bros.",
+    "sortName": "Super Mario Bros.",
+    "publisher": "Nintendo",
+    "releaseDate": "1985",
+    "players": 2,
+    "crc32": "3FE272FB",
+    "system": "NES",
+    "region": "USA"
+  },
+  "0B742B3A": {
+    "name": "The Legend of Zelda",
+    "sortName": "Legend of Zelda, The",
+    "publisher": "Nintendo",
+    "releaseDate": "1986",
+    "players": 1,
+    "crc32": "0B742B3A",
+    "system": "NES",
+    "region": "USA"
+  },
+  "A2F461F1": {
+    "name": "Super Mario Bros. 3",
+    "sortName": "Super Mario Bros. 3",
+    "publisher": "Nintendo",
+    "releaseDate": "1988",
+    "players": 2,
+    "crc32": "A2F461F1",
+    "system": "NES",
+    "region": "USA"
+  },
+  "1D03A5DE": {
+    "name": "Mega Man 2",
+    "sortName": "Mega Man 2",
+    "publisher": "Capcom",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "1D03A5DE",
+    "system": "NES",
+    "region": "USA"
+  },
+  "0CCBF23C": {
+    "name": "Castlevania",
+    "sortName": "Castlevania",
+    "publisher": "Konami",
+    "releaseDate": "1986",
+    "players": 1,
+    "crc32": "0CCBF23C",
+    "system": "NES",
+    "region": "USA"
+  },
+  "3A3C9B28": {
+    "name": "Contra",
+    "sortName": "Contra",
+    "publisher": "Konami",
+    "releaseDate": "1987",
+    "players": 2,
+    "crc32": "3A3C9B28",
+    "system": "NES",
+    "region": "USA"
+  },
+  "3F200263": {
+    "name": "Metroid",
+    "sortName": "Metroid",
+    "publisher": "Nintendo",
+    "releaseDate": "1986",
+    "players": 1,
+    "crc32": "3F200263",
+    "system": "NES",
+    "region": "USA"
+  },
+  "E9F6DC0F": {
+    "name": "Kirby's Adventure",
+    "sortName": "Kirby's Adventure",
+    "publisher": "Nintendo",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "E9F6DC0F",
+    "system": "NES",
+    "region": "USA"
+  },
+  "B2103D04": {
+    "name": "Super Mario World",
+    "sortName": "Super Mario World",
+    "publisher": "Nintendo",
+    "releaseDate": "1990",
+    "players": 2,
+    "crc32": "B2103D04",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "3421B9FF": {
+    "name": "The Legend of Zelda: A Link to the Past",
+    "sortName": "Legend of Zelda: A Link to the Past, The",
+    "publisher": "Nintendo",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "3421B9FF",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "1B4B4F6E": {
+    "name": "Super Metroid",
+    "sortName": "Super Metroid",
+    "publisher": "Nintendo",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "1B4B4F6E",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "CFB0B22A": {
+    "name": "Super Mario Kart",
+    "sortName": "Super Mario Kart",
+    "publisher": "Nintendo",
+    "releaseDate": "1992",
+    "players": 2,
+    "crc32": "CFB0B22A",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "A3C1C7CC": {
+    "name": "Donkey Kong Country",
+    "sortName": "Donkey Kong Country",
+    "publisher": "Rare",
+    "releaseDate": "1994",
+    "players": 2,
+    "crc32": "A3C1C7CC",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "B19ED489": {
+    "name": "Chrono Trigger",
+    "sortName": "Chrono Trigger",
+    "publisher": "Square",
+    "releaseDate": "1995",
+    "players": 1,
+    "crc32": "B19ED489",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "D0B68B1D": {
+    "name": "Final Fantasy VI",
+    "sortName": "Final Fantasy VI",
+    "publisher": "Square",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "D0B68B1D",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "42F14E99": {
+    "name": "Street Fighter II Turbo",
+    "sortName": "Street Fighter II Turbo",
+    "publisher": "Capcom",
+    "releaseDate": "1993",
+    "players": 2,
+    "crc32": "42F14E99",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "DDBEC727": {
+    "name": "Mega Man X",
+    "sortName": "Mega Man X",
+    "publisher": "Capcom",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "DDBEC727",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "C4E15210": {
+    "name": "EarthBound",
+    "sortName": "EarthBound",
+    "publisher": "Nintendo",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "C4E15210",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "87F37E80": {
+    "name": "Secret of Mana",
+    "sortName": "Secret of Mana",
+    "publisher": "Square",
+    "releaseDate": "1993",
+    "players": 3,
+    "crc32": "87F37E80",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "52449508": {
+    "name": "Sonic the Hedgehog",
+    "sortName": "Sonic the Hedgehog",
+    "publisher": "Sega",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "52449508",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "6985B183": {
+    "name": "Streets of Rage 2",
+    "sortName": "Streets of Rage 2",
+    "publisher": "Sega",
+    "releaseDate": "1992",
+    "players": 2,
+    "crc32": "6985B183",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "B4E76068": {
+    "name": "Gunstar Heroes",
+    "sortName": "Gunstar Heroes",
+    "publisher": "Treasure",
+    "releaseDate": "1993",
+    "players": 2,
+    "crc32": "B4E76068",
+    "system": "Genesis",
+    "region": "USA"
+  }
+}
