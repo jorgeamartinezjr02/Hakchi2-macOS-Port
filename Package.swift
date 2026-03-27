@@ -1,6 +1,10 @@
 // swift-tools-version:5.9
 import PackageDescription
 
+// Homebrew paths for Apple Silicon and Intel Macs
+let brewPrefix = "/opt/homebrew"    // Apple Silicon
+let brewPrefixIntel = "/usr/local"  // Intel
+
 let package = Package(
     name: "Hakchi",
     platforms: [
@@ -31,6 +35,18 @@ let package = Package(
             path: "Sources/Hakchi",
             resources: [
                 .copy("../../Resources/game_db.json")
+            ],
+            cSettings: [
+                .unsafeFlags([
+                    "-I\(brewPrefix)/include",
+                    "-I\(brewPrefixIntel)/include",
+                ]),
+            ],
+            linkerSettings: [
+                .unsafeFlags([
+                    "-L\(brewPrefix)/lib",
+                    "-L\(brewPrefixIntel)/lib",
+                ]),
             ]
         ),
         .testTarget(
