@@ -33,8 +33,8 @@ Native macOS application for managing NES/SNES Classic Mini consoles. A complete
 
 ```bash
 brew install libusb libssh2
-git clone https://github.com/jorgeamartinezjr02/test.git
-cd test
+git clone https://github.com/jorgeamartinezjr02/Hakchi2-macOS-Port.git
+cd Hakchi2-macOS-Port
 make app
 ```
 
@@ -50,8 +50,8 @@ make dmg
 
 ```bash
 brew install libusb libssh2
-git clone https://github.com/jorgeamartinezjr02/test.git
-cd test
+git clone https://github.com/jorgeamartinezjr02/Hakchi2-macOS-Port.git
+cd Hakchi2-macOS-Port
 swift run Hakchi
 ```
 
