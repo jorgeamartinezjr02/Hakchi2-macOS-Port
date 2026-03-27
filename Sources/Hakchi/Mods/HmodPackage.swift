@@ -81,7 +81,10 @@ struct HmodPackage {
         self.hasInstallScript = FileManager.default.fileExists(atPath: installPath.path)
         self.hasUninstallScript = FileManager.default.fileExists(atPath: uninstallPath.path)
 
-        HakchiLogger.mods.info("Parsed hmod: \(self.name) v\(self.version) by \(self.author)")
+        let logName = self.name
+        let logVersion = self.version
+        let logAuthor = self.author
+        HakchiLogger.mods.info("Parsed hmod: \(logName) v\(logVersion) by \(logAuthor)")
     }
 
     func toMod() -> Mod {
