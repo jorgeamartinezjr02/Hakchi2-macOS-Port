@@ -54,6 +54,25 @@ final class HmodTests: XCTestCase {
         let emulators = repo.getModsByCategory("Emulator")
         XCTAssertFalse(emulators.isEmpty)
         XCTAssertTrue(emulators.allSatisfy { $0.category == "Emulator" })
+
+        let controllers = repo.getModsByCategory("Controller")
+        XCTAssertFalse(controllers.isEmpty)
+
+        let system = repo.getModsByCategory("System")
+        XCTAssertFalse(system.isEmpty)
+    }
+
+    func testModRepositoryConsoleFiltering() {
+        let repo = ModRepository.shared
+
+        let nesMods = repo.getModsForConsole(.nes)
+        XCTAssertFalse(nesMods.isEmpty)
+
+        let snesMods = repo.getModsForConsole(.snes)
+        XCTAssertFalse(snesMods.isEmpty)
+
+        // All mods are marked as "all" console family, so counts should be equal
+        XCTAssertEqual(nesMods.count, snesMods.count)
     }
 
     func testConsoleState() {
