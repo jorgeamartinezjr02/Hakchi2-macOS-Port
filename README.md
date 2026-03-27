@@ -29,23 +29,29 @@ Native macOS application for managing NES/SNES Classic Mini consoles. A complete
 
 ## Installation
 
-### 1. Install Dependencies
+### Option A: Build the .app (Drag & Drop Install)
 
 ```bash
 brew install libusb libssh2
-```
-
-### 2. Build from Source
-
-```bash
 git clone https://github.com/jorgeamartinezjr02/test.git
 cd test
-swift build
+make app
 ```
 
-### 3. Run
+This creates `Hakchi.app` in `.build/`. Drag it to `/Applications` — or run `make install` to do it automatically.
+
+You can also create a DMG installer:
 
 ```bash
+make dmg
+```
+
+### Option B: Run from Source
+
+```bash
+brew install libusb libssh2
+git clone https://github.com/jorgeamartinezjr02/test.git
+cd test
 swift run Hakchi
 ```
 
