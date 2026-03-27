@@ -32,7 +32,8 @@ struct Game: Identifiable, Codable, Hashable {
     ) {
         self.id = id
         self.name = name
-        self.sortName = sortName.isEmpty ? name : sortName
+        let resolvedSortName = sortName.isEmpty ? name : sortName
+        self.sortName = resolvedSortName
         self.publisher = publisher
         self.releaseDate = releaseDate
         self.players = players
