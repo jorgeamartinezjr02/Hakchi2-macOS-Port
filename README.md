@@ -1,5 +1,7 @@
 # Hakchi for macOS
 
+> **Status: Active Development** — Core FEL protocol, memboot, Clovershell, and kernel operations verified on real hardware. Game sync pipeline under active development. See [Known Issues](#known-issues) below.
+
 Native macOS port of [Hakchi2 CE](https://github.com/TeamShinkansen/Hakchi2-CE) — the complete tool for managing NES/SNES/Famicom Classic Mini consoles. Reimplemented in Swift with SwiftUI for a native macOS experience.
 
 ## Features
@@ -161,26 +163,66 @@ Sources/Hakchi/
 - **Delta Sync**: Compares local game list against console contents; only transfers what changed.
 - **CLV Codes**: Generates region-correct CLV codes matching Hakchi2 CE format.
 
+## Hardware Verified (March 2026)
+
+The following subsystems have been verified on a real **Super Famicom Classic Mini** (JPN, dp-shvc, v2.0.14):
+
+| Subsystem | Status | Details |
+|-----------|--------|---------|
+| FEL Protocol | Verified | VERIFY_DEVICE, memory read/write, execute |
+| FES1 DRAM Init | Verified | 128MB DDR3, 12/12 regions pass |
+| Full Memboot | Verified | FES1 → U-Boot → boot.img → kernel boot |
+| Clovershell USB | Verified | Ping/pong, shell exec, file transfer |
+| Kernel Dump | Verified | sunxi-flash read_boot2 |
+| Kernel Flash | Verified | sunxi-flash burn_boot2 with dd bs=128K pipe |
+| Game Upload | Verified | ROM + .desktop upload via Clovershell stdin |
+| Boot Transition | Verified | hakchi `boot` command transitions to game UI |
+| overmount_games | Verified | Stock + custom games visible after overlay |
+
+## Known Issues
+
+### Active — Game Sync
+
+- **SFROM conversion needed**: The Canoe emulator (stock SNES) requires `.sfrom` format, not raw `.sfc`/`.smc`. The SFROM wraps the ROM with a 48-byte header (SfromHeader1) + ROM data + 48-byte footer (SfromHeader2) containing a game-specific PresetID. Raw ROMs cause **error C7**. The built-in sfrom generator is under development — the stock Nintendo sfrom format has additional compressed data sections not yet reverse-engineered.
+
+- **Game directory structure**: Games must be organized in numbered subdirectories (`000/`, `001/`, etc.) per hakchi2-CE sync format. The `000/` directory is the root menu page. Max 30 games per folder.
+
+- **Stale U-Boot NAND environment**: Consoles previously modded with hakchi2-CE on Windows may have stale `bootargs` saved in the U-Boot NAND environment (`hakchi-clovershell hakchi-memboot`). This causes the console to boot into Clovershell memboot mode instead of the game UI. The `saveenv` command from FEL mode does not work (NAND not initialized). Workaround: use hakchi `boot` shell command to manually transition from Clovershell to game UI after setting up game overlays.
+
+- **Game overlay persistence**: The `overmount_games` function runs during preinit, but with stale `cf_memboot=y` from U-Boot env, the full preinit sequence may be skipped. Games must be overlaid manually before calling `boot`.
+
+### Resolved
+
+- **AWUSBRequest format**: Fixed USB READ direction (0x11, not 0x03) and added missing `length2` field at offset 18
+- **AWFELRequest format**: Fixed to use UInt16 cmd + UInt16 tag (was UInt32 cmd)
+- **AWUSBResponse**: Fixed csw_status at byte 12 (was byte 10)
+- **bootcmdRAM**: Restored full `setenv bootargs ... hakchi-clovershell; boota 47400000`
+- **Boot.img cmdline**: Must preserve `hakchi-key-file=base64:...` NAND decryption key. Must NOT include `hakchi-memboot` in permanently flashed images.
+- **Squashfs path**: `b0000_defines` squashfs path must point to writable `/var/lib/squashfs`
+- **ROM extensions**: Added `sfrom`, `qd` to supported extensions and console detection
+- **All 32 unit tests pass**
+
 ## Hakchi2 CE Feature Parity
 
 This port aims for 1:1 feature parity with [Hakchi2 CE v3.9.3](https://github.com/TeamShinkansen/Hakchi2-CE/releases):
 
 - [x] All console variants (NES/SNES/Famicom/SFC/Genesis/MD, all regions)
-- [x] Kernel dump/flash/restore
-- [x] Game management with drag & drop
+- [x] FEL protocol (VERIFY, DOWNLOAD, UPLOAD, EXEC)
+- [x] FES1 DRAM initialization
+- [x] Full memboot chain (FES1 → U-Boot → boot.img)
+- [x] Clovershell USB protocol (ping, exec, stdin/stdout, file transfer)
+- [x] Kernel dump/flash/restore via sunxi-flash
 - [x] CRC32 game database with auto-metadata
-- [x] .desktop file generation with correct CLV codes
+- [x] Deterministic CLV code generation (CRC32-based, matches C#)
+- [x] .desktop file generation with correct format
 - [x] Mod manager with hmod install/uninstall
 - [x] RetroArch + emulator cores
-- [x] Import games from console (v3.9.0 feature)
-- [x] Folder organization by genre/alpha/system/pages (v3.9.0 feature)
-- [x] Delta sync (smart upload)
-- [x] Game metadata editing with persistence
-- [x] DualShock/8BitDo controller mod packages
-- [x] USB storage support
 - [x] SSH/SFTP and Clovershell communication
+- [ ] **SFROM conversion** (Canoe emulator requires sfrom format — in progress)
+- [ ] **Full game sync pipeline** (upload + overlay + boot transition — in progress)
 - [ ] Game artwork scraper (TheGamesDB integration)
-- [ ] Screenshot capture (F8)
+- [ ] Folder organization with page navigation (chmenu)
+- [ ] hakchi.hmod package transfer (Install/Repair flow)
 - [ ] Multi-boot profiles
 
 ## License
