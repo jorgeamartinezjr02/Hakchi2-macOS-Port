@@ -21,7 +21,7 @@ final class GameExporter {
         let total = Double(games.count)
 
         for (index, game) in games.enumerated() {
-            let gameCode = "CLV-Z-\(game.id.uuidString.prefix(5).uppercased())"
+            let gameCode = game.clvCode
             let gameDir = gamesDir.appendingPathComponent(gameCode, isDirectory: true)
             try fm.createDirectory(at: gameDir, withIntermediateDirectories: true)
 
@@ -90,19 +90,44 @@ final class GameExporter {
     private func generateDesktopFile(for game: Game, code: String) -> String {
         let romFilename = URL(fileURLWithPath: game.romPath).lastPathComponent
         let exec = CoreManager.shared.execLine(coreID: game.assignedCore, game: game, gameCode: code)
+        let isSNES = game.consoleType.family == .snes
 
-        return """
-        [Desktop Entry]
-        Type=Application
-        Exec=\(exec)
-        Path=/var/lib/clover/profiles/0/\(code)
-        Name=\(game.name)
-        Icon=/usr/share/games/\(code)/\(code).png
-        SortPriority=\(game.sortName)
-        Publisher=\(game.publisher)
-        ReleaseDate=\(game.releaseDate)
-        Players=\(game.players)
-        SaveCount=0
-        """
+        var lines: [String] = []
+
+        lines.append("[Desktop Entry]")
+        lines.append("Type=Application")
+        lines.append("Exec=\(exec)")
+        lines.append("Path=/var/lib/clover/profiles/0/\(code)")
+        lines.append("Name=\(game.name)")
+        lines.append("CePrefix=\(game.consoleType.clvPrefix)")
+        lines.append("Icon=/usr/share/games/\(code)/\(code).png")
+        lines.append("")
+
+        lines.append("[X-CLOVER Game]")
+        lines.append("Code=\(code)")
+        lines.append("TestID=777")
+        lines.append("ID=0")
+        lines.append("Players=\(game.players)")
+        lines.append("Simultaneous=\(game.simultaneous ? "1" : "0")")
+        lines.append("ReleaseDate=\(game.releaseDate)")
+        lines.append("SaveCount=\(game.saveCount)")
+        lines.append("SortRawTitle=\(game.sortName.uppercased())")
+        lines.append("SortRawPublisher=\(game.publisher.uppercased())")
+        lines.append("Copyright=\(game.publisher) \(String(game.releaseDate.prefix(4)))")
+        if isSNES { lines.append("MyPlayDemoTime=45") }
+        lines.append("")
+
+        lines.append("[m2engage]")
+        lines.append("regionTag=\(game.region)")
+        lines.append("sortRawGenre=\(game.genre.uppercased())")
+        lines.append("index=0")
+        lines.append("demo_time=45")
+        lines.append("country=us")
+        lines.append("")
+
+        lines.append("[Description]")
+        lines.append("\(game.name) by \(game.publisher)")
+
+        return lines.joined(separator: "\n")
     }
 }

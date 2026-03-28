@@ -67,7 +67,12 @@ struct Game: Identifiable, Codable, Hashable {
         self.region = region
 
         if clvCode.isEmpty {
-            self.clvCode = Self.generateCLVCode(consoleType: consoleType)
+            // Use CRC32-based deterministic code when CRC is available
+            if !romCRC32.isEmpty, let crcValue = UInt32(romCRC32, radix: 16) {
+                self.clvCode = Self.generateCLVCode(consoleType: consoleType, crc32: crcValue)
+            } else {
+                self.clvCode = Self.generateCLVCode(consoleType: consoleType)
+            }
         } else {
             self.clvCode = clvCode
         }
@@ -80,6 +85,19 @@ struct Game: Identifiable, Codable, Hashable {
         }
     }
 
+    /// Generate a deterministic CLV code from CRC32 hash (matching C# hakchi2-CE).
+    /// Same ROM always produces the same code, preserving save states across re-syncs.
+    static func generateCLVCode(consoleType: ConsoleType, crc32: UInt32) -> String {
+        var crc = crc32
+        let c0 = Character(UnicodeScalar(UInt8(65 + crc % 26))); crc >>= 5  // A-Z
+        let c1 = Character(UnicodeScalar(UInt8(65 + crc % 26))); crc >>= 5
+        let c2 = Character(UnicodeScalar(UInt8(65 + crc % 26))); crc >>= 5
+        let c3 = Character(UnicodeScalar(UInt8(65 + crc % 26))); crc >>= 5
+        let c4 = Character(UnicodeScalar(UInt8(65 + crc % 26)))
+        return "\(consoleType.clvPrefix)-\(c0)\(c1)\(c2)\(c3)\(c4)"
+    }
+
+    /// Fallback for when CRC32 is not available.
     static func generateCLVCode(consoleType: ConsoleType) -> String {
         let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         let suffix = String((0..<5).map { _ in chars.randomElement() ?? Character("A") })

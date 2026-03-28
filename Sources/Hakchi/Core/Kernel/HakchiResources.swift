@@ -166,30 +166,19 @@ final class HakchiResources {
             throw HakchiError.invalidData("Invalid download URL")
         }
 
-        let (asyncBytes, response) = try await session.bytes(from: url)
+        // Use data(for:) for bulk download (much faster than byte-by-byte async iterator)
+        let (data, response) = try await session.data(from: url)
 
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw HakchiError.invalidData("Download failed with status: \((response as? HTTPURLResponse)?.statusCode ?? 0)")
         }
 
-        let rawContentLength = httpResponse.expectedContentLength
-        let totalBytes = rawContentLength > 0 ? Int(rawContentLength) : 0
-        var receivedBytes = 0
-        var buffer = Data()
-        buffer.reserveCapacity(totalBytes > 0 ? min(totalBytes, 80 * 1024 * 1024) : 1024 * 1024)
-
-        for try await byte in asyncBytes {
-            buffer.append(byte)
-            receivedBytes += 1
-            if totalBytes > 0 && receivedBytes % 65536 == 0 {
-                progress(Double(receivedBytes) / Double(totalBytes))
-            }
-        }
+        progress(0.9)
 
         if FileManager.default.fileExists(atPath: localURL.path) {
             try FileManager.default.removeItem(at: localURL)
         }
-        try buffer.write(to: localURL)
+        try data.write(to: localURL)
         progress(1.0)
     }
 
@@ -232,21 +221,29 @@ final class HakchiResources {
         // hakchi.hmod is a tar.gz archive
         try FileUtils.extractTarGz(at: hmodPath, to: extractDir)
 
-        // Look for boot.img and uboot.bin inside extracted contents
+        // Look for boot.img, uboot.bin, and fes1.bin inside extracted contents
         let fm = FileManager.default
         if let enumerator = fm.enumerator(at: extractDir, includingPropertiesForKeys: nil) {
             while let fileURL = enumerator.nextObject() as? URL {
                 let name = fileURL.lastPathComponent
                 if name == "boot.img" && !fm.fileExists(atPath: Self.bootImgPath.path) {
                     try fm.copyItem(at: fileURL, to: Self.bootImgPath)
+                    HakchiLogger.kernel.info("Extracted boot.img from hakchi.hmod")
                 } else if name == "uboot.bin" && !fm.fileExists(atPath: Self.ubootPath.path) {
                     try fm.copyItem(at: fileURL, to: Self.ubootPath)
+                    HakchiLogger.kernel.info("Extracted uboot.bin from hakchi.hmod")
+                } else if name == "fes1.bin" && !fm.fileExists(atPath: Self.fes1Path.path) {
+                    try fm.copyItem(at: fileURL, to: Self.fes1Path)
+                    HakchiLogger.kernel.info("Extracted fes1.bin from hakchi.hmod")
                 }
             }
         }
 
         if !fm.fileExists(atPath: Self.bootImgPath.path) {
             HakchiLogger.kernel.warning("boot.img not found in hakchi.hmod archive")
+        }
+        if !fm.fileExists(atPath: Self.fes1Path.path) {
+            HakchiLogger.kernel.warning("fes1.bin not found in hakchi.hmod archive")
         }
     }
 

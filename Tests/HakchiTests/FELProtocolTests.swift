@@ -6,19 +6,22 @@ final class FELProtocolTests: XCTestCase {
         let request = AWUSBRequest(requestType: FELConstants.usbWrite, length: 16)
         let data = request.data
 
-        // Should be 16 bytes (4 sig + 2 type + 4 len + 4 unknown + 2 pad)
-        XCTAssertEqual(data.count, 16)
+        // Should be 32 bytes
+        XCTAssertEqual(data.count, 32)
 
         // Check signature "AWUC"
         XCTAssertEqual(Array(data[0..<4]), [0x41, 0x57, 0x55, 0x43])
 
-        // Check request type (little-endian) - safe byte reading
-        let reqType = UInt16(data[4]) | (UInt16(data[5]) << 8)
-        XCTAssertEqual(reqType, FELConstants.usbWrite)
-
-        // Check length - safe byte reading
-        let length = UInt32(data[6]) | (UInt32(data[7]) << 8) | (UInt32(data[8]) << 16) | (UInt32(data[9]) << 24)
+        // Check length at offset 8 (little-endian UInt32)
+        let length = UInt32(data[8]) | (UInt32(data[9]) << 8) | (UInt32(data[10]) << 16) | (UInt32(data[11]) << 24)
         XCTAssertEqual(length, 16)
+
+        // Check cmd_len byte at offset 15
+        XCTAssertEqual(data[15], 0x0C)
+
+        // Check request type at offset 16 (little-endian UInt16)
+        let reqType = UInt16(data[16]) | (UInt16(data[17]) << 8)
+        XCTAssertEqual(reqType, FELConstants.usbWrite)
     }
 
     func testAWFELRequestSerialization() {
@@ -31,28 +34,41 @@ final class FELProtocolTests: XCTestCase {
 
         XCTAssertEqual(data.count, 16)
 
-        // Safe byte reading for little-endian values
-        let cmd = UInt32(data[0]) | (UInt32(data[1]) << 8) | (UInt32(data[2]) << 16) | (UInt32(data[3]) << 24)
-        XCTAssertEqual(cmd, FELConstants.felVerifyDevice)
+        // Command is UInt16 LE at offset 0-1
+        let cmd = UInt16(data[0]) | (UInt16(data[1]) << 8)
+        XCTAssertEqual(UInt32(cmd), FELConstants.felVerifyDevice)
 
+        // Tag is UInt16 LE at offset 2-3 (default 0)
+        let tag = UInt16(data[2]) | (UInt16(data[3]) << 8)
+        XCTAssertEqual(tag, 0)
+
+        // Address is UInt32 LE at offset 4-7
         let addr = UInt32(data[4]) | (UInt32(data[5]) << 8) | (UInt32(data[6]) << 16) | (UInt32(data[7]) << 24)
         XCTAssertEqual(addr, 0x40000000)
 
+        // Length is UInt32 LE at offset 8-11
         let len = UInt32(data[8]) | (UInt32(data[9]) << 8) | (UInt32(data[10]) << 16) | (UInt32(data[11]) << 24)
         XCTAssertEqual(len, 0x10000)
     }
 
     func testAWUSBResponseParsing() {
         var data = Data()
-        data.append(contentsOf: [0x41, 0x57, 0x55, 0x53]) // "AWUS"
-        data.append(contentsOf: [0x00, 0x00]) // tag
-        data.append(contentsOf: [0x00, 0x00, 0x00, 0x00]) // residue
-        data.append(0x00) // csw_status
-        data.append(contentsOf: [0x00, 0x00]) // padding
+        data.append(contentsOf: [0x41, 0x57, 0x55, 0x53]) // "AWUS" signature (bytes 0-3)
+        data.append(contentsOf: [0x00, 0x00, 0x00, 0x00]) // tag UInt32 LE (bytes 4-7)
+        data.append(contentsOf: [0x00, 0x00, 0x00, 0x00]) // residue UInt32 LE (bytes 8-11)
+        data.append(0x00) // csw_status (byte 12)
 
         let response = AWUSBResponse(data: data)
         XCTAssertNotNil(response)
         XCTAssertTrue(response!.isValid)
+        XCTAssertEqual(response!.csw_status, 0)
+
+        // Test error status detection
+        var errorData = data
+        errorData[12] = 0x01 // non-zero csw_status
+        let errorResponse = AWUSBResponse(data: errorData)
+        XCTAssertNotNil(errorResponse)
+        XCTAssertFalse(errorResponse!.isValid)
     }
 
     func testInvalidResponseRejected() {

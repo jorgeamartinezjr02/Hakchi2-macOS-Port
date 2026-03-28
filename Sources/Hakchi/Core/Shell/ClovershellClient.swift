@@ -30,21 +30,38 @@ final class ClovershellClient {
     private var recvPos = 0
     private var recvCount = 0
 
+    // Thread safety: serialize all USB writes
+    private let writeLock = NSLock()
+
     // MARK: - Clovershell Command Types (from ClovershellConnection.cs)
 
     enum Command: UInt8 {
-        case ping           = 0
-        case pong           = 1
-        case shellKillAll   = 8
-        case execNewReq     = 9
-        case execNewResp    = 10
-        case execPID        = 11
-        case execStdin      = 12
-        case execStdout     = 13
-        case execStderr     = 14
-        case execResult     = 15
-        case execKillAll    = 17
+        case ping                  = 0
+        case pong                  = 1
+        case shellNewReq           = 2
+        case shellNewResp          = 3
+        case shellIn               = 4
+        case shellOut              = 5
+        case shellClosed           = 6
+        case shellKill             = 7
+        case shellKillAll          = 8
+        case execNewReq            = 9
+        case execNewResp           = 10
+        case execPID               = 11
+        case execStdin             = 12
+        case execStdout            = 13
+        case execStderr            = 14
+        case execResult            = 15
+        case execKill              = 16
+        case execKillAll           = 17
+        case execStdinFlowStat     = 18
+        case execStdinFlowStatReq  = 19
     }
+
+    // Stdin flow control constants (matching C# ExecConnection)
+    private static let stdinChunkSize = 8192          // 8KB chunks
+    private static let stdinHighWatermark = 32768     // Pause when queue > 32KB
+    private static let stdinLowWatermark = 16384      // Resume when queue < 16KB
 
     deinit {
         disconnect()
@@ -131,12 +148,12 @@ final class ClovershellClient {
     }
 
     func disconnect() {
+        isConnected = false
         if let h = handle {
             guard let dev = libusb_get_device(h) else {
                 libusb_close(h)
                 handle = nil
                 if let ctx = context { libusb_exit(ctx); context = nil }
-                isConnected = false
                 return
             }
             var config: UnsafeMutablePointer<libusb_config_descriptor>?
@@ -153,15 +170,14 @@ final class ClovershellClient {
             libusb_exit(ctx)
             context = nil
         }
-        isConnected = false
     }
 
     // MARK: - Command Execution
 
-    /// Execute a command and return its stdout output as a string.
+    /// Execute a command and return its stdout output as a string (trimmed, matching C# ExecuteSimple).
     func executeCommand(_ command: String) throws -> String {
         let data = try executeRaw(command)
-        return String(data: data, encoding: .utf8) ?? ""
+        return (String(data: data, encoding: .utf8) ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     /// Execute a command and return raw stdout bytes.
@@ -198,7 +214,10 @@ final class ClovershellClient {
                 break // Ignore stderr for executeCommand
 
             case .execResult:
-                exitCode = payload.isEmpty ? 0 : Int(payload[0])
+                guard !payload.isEmpty else {
+                    throw HakchiError.felCommunicationError("Empty execResult payload — protocol error")
+                }
+                exitCode = Int(payload[0])
                 if stdoutDone { return stdoutData }
 
             case .pong, .execPID:
@@ -221,6 +240,7 @@ final class ClovershellClient {
         var stderrData = Data()
         var exitCode: Int = -1
         var stdoutDone = false
+        var stderrDone = false
 
         while true {
             let (cmd, arg, payload) = try recvPacket(timeout: usbTimeout)
@@ -233,17 +253,25 @@ final class ClovershellClient {
             case .execStdout:
                 if payload.isEmpty {
                     stdoutDone = true
-                    if exitCode >= 0 { return (stdoutData, stderrData, exitCode) }
+                    if exitCode >= 0 && stderrDone { return (stdoutData, stderrData, exitCode) }
                 } else {
                     stdoutData.append(payload)
                 }
 
             case .execStderr:
-                if !payload.isEmpty { stderrData.append(payload) }
+                if payload.isEmpty {
+                    stderrDone = true
+                    if exitCode >= 0 && stdoutDone { return (stdoutData, stderrData, exitCode) }
+                } else {
+                    stderrData.append(payload)
+                }
 
             case .execResult:
-                exitCode = payload.isEmpty ? 0 : Int(payload[0])
-                if stdoutDone { return (stdoutData, stderrData, exitCode) }
+                guard !payload.isEmpty else {
+                    throw HakchiError.felCommunicationError("Empty execResult payload — protocol error")
+                }
+                exitCode = Int(payload[0])
+                if stdoutDone && stderrDone { return (stdoutData, stderrData, exitCode) }
 
             case .pong, .execPID:
                 break
@@ -258,16 +286,20 @@ final class ClovershellClient {
 
     func readFile(remotePath: String) throws -> Data {
         let safePath = remotePath.replacingOccurrences(of: "'", with: "'\\''")
-        return try executeRaw("cat '\(safePath)'")
+        let result = try executeWithDetails("cat '\(safePath)'")
+        if result.exitCode != 0 {
+            let errMsg = String(data: result.stderr, encoding: .utf8) ?? "unknown error"
+            throw HakchiError.sftpTransferFailed("Failed to read \(remotePath): \(errMsg)")
+        }
+        return result.stdout
     }
 
     func writeFile(remotePath: String, data: Data) throws {
-        // Stream raw data through stdin using `cat > file`.
-        // This avoids base64 overhead and shell argument limits.
+        // Stream data through stdin using `cat > file` with proper flow control.
         guard isConnected else { throw HakchiError.notConnected }
 
         let safePath = remotePath.replacingOccurrences(of: "'", with: "'\\''")
-        HakchiLogger.fileLog("clovershell", "writeFile: \(data.count) bytes → \(remotePath)")
+        HakchiLogger.fileLog("clovershell", "writeFile: \(data.count) bytes -> \(remotePath)")
         try sendPacket(.execNewReq, arg: 0, payload: Data("cat > '\(safePath)'".utf8))
 
         // Phase 1: Wait for session assignment
@@ -279,8 +311,6 @@ final class ClovershellClient {
         sessionID = arg
 
         // Phase 2: Wait for execPID — confirms the `cat` process is running
-        // and its stdin pipe is connected. Without this, data sent immediately
-        // after execNewResp is lost because `cat` hasn't started reading yet.
         var gotPID = false
         for _ in 0..<10 {
             do {
@@ -294,32 +324,32 @@ final class ClovershellClient {
             }
         }
         if !gotPID {
-            // Fallback: if execPID never arrives (older firmware), use a safety delay
             Thread.sleep(forTimeInterval: 0.1)
             HakchiLogger.fileLog("clovershell", "writeFile: execPID not received, using 100ms delay")
         }
 
-        // Phase 3: Send file data with flow control
-        // Use 3000ms timeout per chunk (larger data = more time needed)
-        let chunkSize = 65000
-        let flowCheckInterval = 4 // pause every 4 chunks (~260KB)
+        // Phase 3: Send file data with stdin flow control (matching C# ExecConnection.stdinLoop)
+        let chunkSize = Self.stdinChunkSize
         var offset = 0
-        var chunksSinceCheck = 0
 
         while offset < data.count {
+            // Query device stdin queue status before sending
+            let queueSize = try queryStdinFlowStatus(sessionID: sessionID)
+            if queueSize > Self.stdinHighWatermark {
+                // Back off until queue drains below low watermark
+                var currentQueue = queueSize
+                while currentQueue > Self.stdinLowWatermark {
+                    Thread.sleep(forTimeInterval: 0.01) // 10ms poll
+                    currentQueue = try queryStdinFlowStatus(sessionID: sessionID)
+                }
+            }
+
             let end = min(offset + chunkSize, data.count)
             try sendPacket(.execStdin, arg: sessionID, payload: Data(data[offset..<end]), timeout: 3000)
             offset = end
-            chunksSinceCheck += 1
-
-            // Flow control: give device time to consume pipe buffer
-            if chunksSinceCheck >= flowCheckInterval && offset < data.count {
-                chunksSinceCheck = 0
-                Thread.sleep(forTimeInterval: 0.002) // 2ms pause
-            }
         }
 
-        HakchiLogger.fileLog("clovershell", "writeFile: sent \(data.count) bytes in \(offset / chunkSize + 1) chunks")
+        HakchiLogger.fileLog("clovershell", "writeFile: sent \(data.count) bytes in \(data.count / chunkSize + 1) chunks")
 
         // Phase 4: Close stdin (empty payload = EOF)
         try sendPacket(.execStdin, arg: sessionID, payload: Data())
@@ -333,6 +363,33 @@ final class ClovershellClient {
         HakchiLogger.fileLog("clovershell", "writeFile: complete")
     }
 
+    /// Query the device's stdin queue size for flow control.
+    /// Sends CMD_EXEC_STDIN_FLOW_STAT_REQ and reads CMD_EXEC_STDIN_FLOW_STAT response.
+    /// Returns the current stdin queue size in bytes.
+    private func queryStdinFlowStatus(sessionID: UInt8) throws -> Int {
+        try sendPacket(.execStdinFlowStatReq, arg: sessionID, payload: Data())
+
+        // Read packets until we get the flow stat response
+        // (other packets like stdout/stderr may arrive first)
+        for _ in 0..<50 {
+            let (cmd, _, payload) = try recvPacket(timeout: 2000)
+            if cmd == .execStdinFlowStat && payload.count >= 4 {
+                // First 4 bytes: stdinQueue (LE UInt32)
+                let queueSize = Int(payload[0]) | (Int(payload[1]) << 8) |
+                               (Int(payload[2]) << 16) | (Int(payload[3]) << 24)
+                return queueSize
+            }
+            // If we get something else, keep looking
+        }
+        // If we can't get flow status, return 0 (allow sending)
+        return 0
+    }
+
+    /// Kill a specific exec session.
+    func killExec(sessionID: UInt8) throws {
+        try sendPacket(.execKill, arg: sessionID, payload: Data())
+    }
+
     /// Send a ping and wait for pong to verify the connection is alive.
     func ping() throws -> Bool {
         guard isConnected else { return false }
@@ -344,12 +401,16 @@ final class ClovershellClient {
     // MARK: - Low-level Protocol
 
     /// Send a Clovershell packet (4-byte header + payload as one USB transfer).
-    /// Payload must not exceed 65535 bytes (UInt16 length field).
+    /// Thread-safe: uses writeLock to serialize USB writes.
     private func sendPacket(_ cmd: Command, arg: UInt8, payload: Data, timeout: UInt32 = 1000) throws {
         guard payload.count <= Int(UInt16.max) else {
             throw HakchiError.felCommunicationError(
                 "Clovershell payload too large (\(payload.count) bytes, max \(UInt16.max))")
         }
+
+        writeLock.lock()
+        defer { writeLock.unlock() }
+
         let len = UInt16(payload.count)
         var pkt = Data(capacity: 4 + Int(len))
         pkt.append(cmd.rawValue)
@@ -372,98 +433,88 @@ final class ClovershellClient {
     }
 
     /// Receive the next packet from the USB stream.
-    /// Handles multi-packet USB transfers (multiple Clovershell packets per bulk read).
+    /// Uses a loop (not recursion) to skip unknown commands safely.
     private func recvPacket(timeout: UInt32) throws -> (cmd: Command, arg: UInt8, payload: Data) {
-        // Fill buffer if needed
-        if recvPos >= recvCount {
-            recvPos = 0
-            recvCount = 0
-            var got: Int32 = 0
-            let rc = recvBuf.withUnsafeMutableBytes { ptr in
-                libusb_bulk_transfer(
-                    handle, endpointIn,
-                    ptr.baseAddress?.assumingMemoryBound(to: UInt8.self),
-                    Int32(bufferSize), &got, timeout
-                )
-            }
-            if rc == LIBUSB_ERROR_TIMEOUT.rawValue {
-                // On timeout, send ping as keep-alive
-                try sendPacket(.ping, arg: 0, payload: Data())
-                // Retry
-                let rc2 = recvBuf.withUnsafeMutableBytes { ptr in
+        while true {
+            // Fill buffer if needed
+            if recvPos >= recvCount {
+                recvPos = 0
+                recvCount = 0
+                var got: Int32 = 0
+                let rc = recvBuf.withUnsafeMutableBytes { ptr in
                     libusb_bulk_transfer(
                         handle, endpointIn,
                         ptr.baseAddress?.assumingMemoryBound(to: UInt8.self),
                         Int32(bufferSize), &got, timeout
                     )
                 }
-                guard rc2 == 0 && got > 0 else {
+                if rc == LIBUSB_ERROR_TIMEOUT.rawValue {
                     throw HakchiError.felCommunicationError("Clovershell receive timeout")
+                } else if rc != 0 {
+                    throw HakchiError.felCommunicationError("Clovershell receive failed: \(rc)")
                 }
-            } else if rc != 0 {
-                throw HakchiError.felCommunicationError("Clovershell receive failed: \(rc)")
+                recvCount = Int(got)
             }
-            recvCount = Int(got)
-        }
 
-        // Parse header
-        let avail = recvCount - recvPos
-        guard avail >= 4 else {
-            throw HakchiError.felCommunicationError("Incomplete Clovershell packet header")
-        }
-
-        let cmdByte = recvBuf[recvPos]
-        let arg = recvBuf[recvPos + 1]
-        let len = Int(recvBuf[recvPos + 2]) | (Int(recvBuf[recvPos + 3]) << 8)
-        recvPos += 4
-
-        guard let cmd = Command(rawValue: cmdByte) else {
-            // Skip unknown commands
-            recvPos += min(len, recvCount - recvPos)
-            return try recvPacket(timeout: timeout)
-        }
-
-        // Read payload
-        var payload = Data()
-        if len > 0 {
-            let available = recvCount - recvPos
-            if available >= len {
-                payload = Data(recvBuf[recvPos..<(recvPos + len)])
-                recvPos += len
-            } else {
-                // Payload split across transfers
-                if available > 0 {
-                    payload.append(recvBuf[recvPos..<recvCount])
-                }
+            // Parse header
+            let avail = recvCount - recvPos
+            guard avail >= 4 else {
+                // Not enough data for a header — force a new read
                 recvPos = recvCount
-                var remaining = len - available
-                while remaining > 0 {
-                    var got: Int32 = 0
-                    let rc = recvBuf.withUnsafeMutableBytes { ptr in
-                        libusb_bulk_transfer(
-                            handle, endpointIn,
-                            ptr.baseAddress?.assumingMemoryBound(to: UInt8.self),
-                            Int32(min(remaining, bufferSize)), &got, timeout
-                        )
+                continue
+            }
+
+            let cmdByte = recvBuf[recvPos]
+            let arg = recvBuf[recvPos + 1]
+            let len = Int(recvBuf[recvPos + 2]) | (Int(recvBuf[recvPos + 3]) << 8)
+            recvPos += 4
+
+            // Read payload
+            var payload = Data()
+            if len > 0 {
+                let available = recvCount - recvPos
+                if available >= len {
+                    payload = Data(recvBuf[recvPos..<(recvPos + len)])
+                    recvPos += len
+                } else {
+                    // Payload split across transfers
+                    if available > 0 {
+                        payload.append(recvBuf[recvPos..<recvCount])
                     }
-                    guard rc == 0 && got > 0 else {
-                        throw HakchiError.felCommunicationError("Clovershell receive failed during payload")
-                    }
-                    let take = min(Int(got), remaining)
-                    payload.append(recvBuf[0..<take])
-                    remaining -= take
-                    // If we got more than needed, keep the rest in the buffer
-                    if Int(got) > take {
-                        recvPos = take
-                        recvCount = Int(got)
-                    } else {
-                        recvPos = 0
-                        recvCount = 0
+                    recvPos = recvCount
+                    var remaining = len - available
+                    while remaining > 0 {
+                        var got: Int32 = 0
+                        let rc = recvBuf.withUnsafeMutableBytes { ptr in
+                            libusb_bulk_transfer(
+                                handle, endpointIn,
+                                ptr.baseAddress?.assumingMemoryBound(to: UInt8.self),
+                                Int32(bufferSize), &got, timeout
+                            )
+                        }
+                        guard rc == 0 && got > 0 else {
+                            throw HakchiError.felCommunicationError("Clovershell receive failed during payload")
+                        }
+                        let take = min(Int(got), remaining)
+                        payload.append(recvBuf[0..<take])
+                        remaining -= take
+                        // If we got more than needed, keep the rest in the buffer
+                        if Int(got) > take {
+                            recvPos = take
+                            recvCount = Int(got)
+                        } else {
+                            recvPos = 0
+                            recvCount = 0
+                        }
                     }
                 }
             }
-        }
 
-        return (cmd, arg, payload)
+            // Try to parse command — skip unknown commands via loop (not recursion)
+            if let cmd = Command(rawValue: cmdByte) {
+                return (cmd, arg, payload)
+            }
+            // Unknown command: loop back and read next packet
+        }
     }
 }

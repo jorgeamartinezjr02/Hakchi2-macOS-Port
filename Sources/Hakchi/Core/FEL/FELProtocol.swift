@@ -6,7 +6,7 @@ enum FELConstants {
     static let vendorID: UInt16 = 0x1F3A
     static let productID: UInt16 = 0xEFE8
 
-    static let usbTimeout: UInt32 = 30000 // 30 seconds
+    static let usbTimeout: UInt32 = 2000 // 2 seconds (C# uses 1s; 2s gives macOS USB stack margin)
     static let bulkChunkSize: Int = 65536  // 64KB
 
     // AWUSBRequest signatures
@@ -19,6 +19,10 @@ enum FELConstants {
 
     // FEL command types
     static let felVerifyDevice: UInt32 = 0x001
+    static let felSwitchRole: UInt32 = 0x002
+    static let felIsReady: UInt32 = 0x003
+    static let felGetCmdSetVer: UInt32 = 0x004
+    static let felDisconnect: UInt32 = 0x010
     static let felDownload: UInt32 = 0x101  // Write to device
     static let felExec: UInt32 = 0x102      // Execute code
     static let felUpload: UInt32 = 0x103    // Read from device
@@ -33,11 +37,17 @@ enum FELConstants {
     static let kernelAddr: UInt32 = 0x40008000
     static let transferMaxSize: UInt32 = 0x10000
 
-    // U-Boot bootcmd patching
-    static let bootcmdOffset: Int = 0x6A543     // Offset of "bootcmd=" in uboot.bin
-    // Full bootcmd that explicitly sets bootargs before booting from RAM.
-    // Without setenv, U-Boot loads bootargs from its NAND env and ignores boot.img cmdline.
-    static let bootcmdRAM: String = "setenv bootargs root=/dev/nandb decrypt ro console=ttyS0,115200 loglevel=4 ion_cma_512m=16m coherent_pool=4m consoleblank=0 hakchi-clovershell hakchi-memboot; boota 47400000"
+    // Size limits (matching C# Fel.cs)
+    static let sectorSize: UInt32 = 0x20000       // 128KB — kernel padding alignment
+    static let kernelMaxSize: UInt32 = 0x400000   // 4MB — max kernel image
+    static let transferMaxTotal: UInt32 = 0x2000000 // 32MB — max boot.img total
+    static let ubootMaxSize: UInt32 = 0x200000    // 2MB — max U-Boot binary
+
+    // U-Boot bootcmd patching — offset is found dynamically by searching for "bootcmd="
+    // The replacement command simply boots the image in RAM; U-Boot's `boota` reads
+    // bootargs from the Android boot image header at 0x47400000, so we do NOT inject
+    // setenv bootargs (that would override the boot.img cmdline and break clovershell).
+    static let bootcmdRAM: String = "boota 47400000"
 
     // DRAM initialization — Allwinner R16/A33 (sun8iw5p1) SoC
     static let socR16: UInt32 = 0x1667
@@ -73,7 +83,7 @@ struct AWUSBRequest {
         d[9]  = UInt8((length >> 8) & 0xFF)
         d[10] = UInt8((length >> 16) & 0xFF)
         d[11] = UInt8((length >> 24) & 0xFF)
-        // unknown1 = 0x0C000000 (little-endian at offset 12)
+        // reserved1[2]=0, reserved2=0, cmd_len=0x0C (12 bytes of FEL payload)
         d[12] = 0x00; d[13] = 0x00; d[14] = 0x00; d[15] = 0x0C
         // request type (little-endian UInt16 at offset 16)
         d[16] = UInt8(requestType & 0xFF)
@@ -91,17 +101,34 @@ struct AWUSBRequest {
 // MARK: - AWFELRequest
 
 struct AWFELRequest {
-    var command: UInt32
-    var address: UInt32
-    var length: UInt32
-    let pad: UInt32 = 0
+    var command: UInt16   // FEL command (UInt16 LE — matches C# AWFELStandardRequest.Cmd)
+    var tag: UInt16 = 0   // Tag field (UInt16 LE — matches C# AWFELStandardRequest.Tag)
+    var address: UInt32 = 0
+    var length: UInt32 = 0
+    var flags: UInt32 = 0
+
+    /// Convenience init from UInt32 command constant (truncates to UInt16).
+    init(command: UInt32, address: UInt32 = 0, length: UInt32 = 0) {
+        self.command = UInt16(command & 0xFFFF)
+        self.address = address
+        self.length = length
+    }
 
     var data: Data {
-        var d = Data()
-        d.append(contentsOf: withUnsafeBytes(of: command.littleEndian) { Array($0) })
-        d.append(contentsOf: withUnsafeBytes(of: address.littleEndian) { Array($0) })
-        d.append(contentsOf: withUnsafeBytes(of: length.littleEndian) { Array($0) })
-        d.append(contentsOf: withUnsafeBytes(of: pad.littleEndian) { Array($0) })
+        var d = Data(count: 16)
+        let cmd = command.littleEndian
+        let t = tag.littleEndian
+        let addr = address.littleEndian
+        let len = length.littleEndian
+        d[0] = UInt8(cmd & 0xFF); d[1] = UInt8(cmd >> 8)
+        d[2] = UInt8(t & 0xFF); d[3] = UInt8(t >> 8)
+        d[4] = UInt8(addr & 0xFF); d[5] = UInt8((addr >> 8) & 0xFF)
+        d[6] = UInt8((addr >> 16) & 0xFF); d[7] = UInt8((addr >> 24) & 0xFF)
+        d[8] = UInt8(len & 0xFF); d[9] = UInt8((len >> 8) & 0xFF)
+        d[10] = UInt8((len >> 16) & 0xFF); d[11] = UInt8((len >> 24) & 0xFF)
+        let f = flags.littleEndian
+        d[12] = UInt8(f & 0xFF); d[13] = UInt8((f >> 8) & 0xFF)
+        d[14] = UInt8((f >> 16) & 0xFF); d[15] = UInt8((f >> 24) & 0xFF)
         return d
     }
 }
@@ -110,20 +137,20 @@ struct AWFELRequest {
 
 struct AWUSBResponse {
     let signature: [UInt8] // "AWUS"
-    let tag: UInt16
-    let residue: UInt32
-    let csw_status: UInt8
+    let tag: UInt32         // bytes 4-7 (UInt32 LE, matches C# AWUSBResponse.Tag)
+    let residue: UInt32     // bytes 8-11 (UInt32 LE)
+    let csw_status: UInt8   // byte 12
 
     init?(data: Data) {
         guard data.count >= 13 else { return nil }
         signature = Array(data[0..<4])
-        tag = UInt16(data[4]) | (UInt16(data[5]) << 8)
-        residue = UInt32(data[6]) | (UInt32(data[7]) << 8) | (UInt32(data[8]) << 16) | (UInt32(data[9]) << 24)
-        csw_status = data[10]
+        tag = UInt32(data[4]) | (UInt32(data[5]) << 8) | (UInt32(data[6]) << 16) | (UInt32(data[7]) << 24)
+        residue = UInt32(data[8]) | (UInt32(data[9]) << 8) | (UInt32(data[10]) << 16) | (UInt32(data[11]) << 24)
+        csw_status = data[12]
     }
 
     var isValid: Bool {
-        signature == FELConstants.responseSignature
+        signature == FELConstants.responseSignature && csw_status == 0
     }
 }
 
@@ -138,6 +165,8 @@ struct FELVersion {
     let dataLength: UInt8
     let board: String
 
+    static let expectedSignature = "AWUSBFEX"
+
     init(data: Data) {
         guard data.count >= 32 else {
             signature = ""
@@ -150,7 +179,8 @@ struct FELVersion {
             return
         }
 
-        signature = String(data: data[0..<8], encoding: .ascii) ?? ""
+        let sig = String(data: data[0..<8], encoding: .ascii) ?? ""
+        signature = sig
         socID = UInt32(data[8]) | (UInt32(data[9]) << 8) | (UInt32(data[10]) << 16) | (UInt32(data[11]) << 24)
         firmwareVersion = UInt32(data[12]) | (UInt32(data[13]) << 8) | (UInt32(data[14]) << 16) | (UInt32(data[15]) << 24)
         protocolVersion = UInt16(data[16]) | (UInt16(data[17]) << 8)
@@ -158,6 +188,10 @@ struct FELVersion {
         dataLength = data[19]
         board = String(data: data[20..<min(32, data.count)], encoding: .ascii)?
             .trimmingCharacters(in: .controlCharacters) ?? ""
+        // Validate the "AWUSBFEX" signature to catch garbage data
+        if sig != FELVersion.expectedSignature {
+            HakchiLogger.fel.warning("FEL version signature mismatch: expected '\(FELVersion.expectedSignature)', got '\(sig)'")
+        }
     }
 
     var description: String {

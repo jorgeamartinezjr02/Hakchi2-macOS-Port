@@ -183,15 +183,45 @@ actor KernelManager {
 
         progress?(0.40, "Writing kernel to NAND...")
 
-        // Determine flash method
+        // Determine flash method — prefer hakchi flashBoot2 (with sntool validation),
+        // then sunxi-flash, then MTD as last resort (matching C# KernelTasks.cs)
+        let hasHakchiFlash = try await shell.executeCommand("which hakchi 2>/dev/null")
+        let useHakchiFlash = !hasHakchiFlash.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         let hasSunxiFlash = try await shell.executeCommand("which sunxi-flash 2>/dev/null")
         let useSunxiFlash = !hasSunxiFlash.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        HakchiLogger.fileLog("kernel", "Flash method: \(useSunxiFlash ? "sunxi-flash" : "MTD fallback")")
 
         var mtdDev = ""
 
-        if useSunxiFlash {
-            HakchiLogger.fileLog("kernel", "Running: sunxi-flash burn_boot2")
+        if useHakchiFlash {
+            // Method 1 (preferred): hakchi flashBoot2 — includes sntool validation
+            HakchiLogger.fileLog("kernel", "Flash method: hakchi flashBoot2 (with sntool)")
+
+            // Step A: Validate with sntool check (if available)
+            let sntoolCheck = try await shell.executeCommand(
+                "sntool check \(remoteTmp) 2>&1; echo EXIT:$?"
+            )
+            HakchiLogger.fileLog("kernel", "sntool check: \(sntoolCheck)")
+            if !sntoolCheck.contains("EXIT:0") {
+                HakchiLogger.kernel.warning("sntool check failed — image may not be valid for this console")
+            }
+
+            // Step B: Process with sntool kernel (adds Allwinner NAND checksums/headers)
+            let sntoolKernel = try await shell.executeCommand(
+                "sntool kernel \(remoteTmp) 2>&1; echo EXIT:$?"
+            )
+            HakchiLogger.fileLog("kernel", "sntool kernel: \(sntoolKernel)")
+
+            // Step C: Flash via hakchi flashBoot2
+            let flashResult = try await shell.executeCommand(
+                "hakchi flashBoot2 \(remoteTmp) 2>&1; echo EXIT:$?"
+            )
+            HakchiLogger.fileLog("kernel", "hakchi flashBoot2: \(flashResult)")
+            guard flashResult.contains("EXIT:0") else {
+                throw HakchiError.kernelFlashFailed("hakchi flashBoot2 failed: \(flashResult)")
+            }
+        } else if useSunxiFlash {
+            // Method 2: sunxi-flash burn_boot2
+            HakchiLogger.fileLog("kernel", "Flash method: sunxi-flash burn_boot2")
             let writeResult = try await shell.executeCommand(
                 "sunxi-flash burn_boot2 < \(remoteTmp) 2>&1; echo EXIT:$?"
             )
@@ -200,14 +230,14 @@ actor KernelManager {
                 throw HakchiError.kernelFlashFailed("sunxi-flash burn_boot2 failed: \(writeResult)")
             }
         } else {
-            // Fallback: MTD-based write
+            // Method 3 (last resort): MTD-based write
+            HakchiLogger.fileLog("kernel", "Flash method: MTD fallback")
             let mtdInfo = try await shell.executeCommand("cat /proc/mtd 2>/dev/null")
             HakchiLogger.fileLog("kernel", "/proc/mtd: \(mtdInfo)")
             let kernelPart = parseMTDPartition(named: "kernel", from: mtdInfo)
             mtdDev = "/dev/\(kernelPart ?? "mtd2")"
             HakchiLogger.fileLog("kernel", "Using MTD device: \(mtdDev)")
 
-            // Erase first (required for NAND)
             let eraseResult = try await shell.executeCommand(
                 "flash_erase \(mtdDev) 0 0 2>&1 || flash_eraseall \(mtdDev) 2>&1; echo ERASE_EXIT:$?"
             )
@@ -259,9 +289,10 @@ actor KernelManager {
 
             if !src.isEmpty && !nand.isEmpty && src != nand {
                 HakchiLogger.fileLog("kernel", "MD5 MISMATCH — src: \(src), nand: \(nand)")
-                // Log but don't throw — NAND read-back may include extra padding
-                // that causes legitimate mismatches on some devices
-                HakchiLogger.kernel.warning("MD5 mismatch after flash — src: \(src), nand: \(nand) (may be padding)")
+                throw HakchiError.kernelFlashFailed(
+                    "Verification failed: MD5 mismatch after flash (source: \(src), NAND: \(nand)). "
+                    + "The kernel may not have been written correctly."
+                )
             } else {
                 HakchiLogger.fileLog("kernel", "Verify OK — MD5 match: \(src)")
             }

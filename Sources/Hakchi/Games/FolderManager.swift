@@ -146,21 +146,75 @@ final class FolderManager {
 
     // MARK: - Sync support
 
+    /// Sequential folder index counter for deterministic CLV-S-XXXXX codes (matching C#).
+    private var folderIndex = 0
+
+    /// Generate folder CLV code using sequential numbering (matching C# NesMenuFolder).
+    private func nextFolderCode() -> String {
+        folderIndex += 1
+        return "CLV-S-\(String(format: "%05d", folderIndex))"
+    }
+
     /// Generate .desktop files for folders during console sync.
+    /// Includes back-navigation entries so users can navigate up from subfolders.
     func generateFolderDesktopFiles(basePath: String) -> [(path: String, content: String)] {
         var results: [(String, String)] = []
+        folderIndex = 0
 
         for folder in folders {
-            let code = "CLV-F-\(folder.id.uuidString.prefix(5).uppercased())"
+            let code = nextFolderCode()
             let path = "\(basePath)/\(code)/\(code).desktop"
-            let content = """
-            [Desktop Entry]
-            Type=Folder
-            Name=\(folder.name)
-            Icon=/usr/share/games/\(code)/\(code).png
-            SortPriority=\(String(format: "%03d", folder.position))
-            """
-            results.append((path, content))
+
+            // Cyrillic prefix for sort ordering (matching C#: folders sort before games)
+            let sortPrefix = "\u{0410}" // Cyrillic "А" sorts before ASCII
+
+            var lines: [String] = []
+            lines.append("[Desktop Entry]")
+            lines.append("Type=Application")
+            lines.append("Exec=/bin/chmenu \(code)")
+            lines.append("Path=/var/lib/clover/profiles/0/\(code)")
+            lines.append("Name=\(folder.name)")
+            lines.append("Icon=/usr/share/games/\(code)/\(code).png")
+            lines.append("")
+            lines.append("[X-CLOVER Game]")
+            lines.append("Code=\(code)")
+            lines.append("TestID=777")
+            lines.append("ID=0")
+            lines.append("Players=1")
+            lines.append("Simultaneous=0")
+            lines.append("ReleaseDate=0000-00-00")
+            lines.append("SaveCount=0")
+            lines.append("SortRawTitle=\(sortPrefix)\(String(format: "%03d", folder.position))")
+            lines.append("SortRawPublisher=")
+            lines.append("Copyright=")
+
+            results.append((path, lines.joined(separator: "\n")))
+
+            // Generate "Back" entry for this folder (critical for navigation)
+            let backCode = nextFolderCode()
+            let backPath = "\(basePath)/\(code)/\(backCode).desktop"
+
+            var backLines: [String] = []
+            backLines.append("[Desktop Entry]")
+            backLines.append("Type=Application")
+            backLines.append("Exec=/bin/chmenu \(folder.parentID?.uuidString ?? "000")")
+            backLines.append("Path=/var/lib/clover/profiles/0/\(backCode)")
+            backLines.append("Name=..")
+            backLines.append("Icon=/usr/share/games/\(backCode)/\(backCode).png")
+            backLines.append("")
+            backLines.append("[X-CLOVER Game]")
+            backLines.append("Code=\(backCode)")
+            backLines.append("TestID=777")
+            backLines.append("ID=0")
+            backLines.append("Players=1")
+            backLines.append("Simultaneous=0")
+            backLines.append("ReleaseDate=0000-00-00")
+            backLines.append("SaveCount=0")
+            backLines.append("SortRawTitle=\u{0409}") // Sorts first (before folder content)
+            backLines.append("SortRawPublisher=")
+            backLines.append("Copyright=")
+
+            results.append((backPath, backLines.joined(separator: "\n")))
         }
 
         return results

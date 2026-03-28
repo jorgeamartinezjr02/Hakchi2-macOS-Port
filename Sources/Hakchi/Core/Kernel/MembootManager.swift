@@ -26,6 +26,16 @@ actor MembootManager {
     ) async throws {
         progress(0.0, "Preparing memboot...")
 
+        // Validate sizes before starting
+        guard bootImgData.count <= FELConstants.transferMaxTotal else {
+            throw HakchiError.kernelFlashFailed(
+                "boot.img too large (\(bootImgData.count) bytes, max \(FELConstants.transferMaxTotal))")
+        }
+        guard ubootData.count <= FELConstants.ubootMaxSize else {
+            throw HakchiError.kernelFlashFailed(
+                "uboot.bin too large (\(ubootData.count) bytes, max \(FELConstants.ubootMaxSize))")
+        }
+
         // ── Step 1: Initialise DRAM via FES1 ──────────────────────────────
         progress(0.05, "Initialising DRAM (loading FES1)...")
         try device.initDRAM(fes1Data: fes1Data)
@@ -42,11 +52,19 @@ actor MembootManager {
         let pSize = bootImage.pageSize
         HakchiLogger.kernel.info("Boot image: kernel=\(kSize)B, ramdisk=\(rSize)B, page=\(pSize)")
 
+        // Pad boot.img to sector boundary (matching C# Fel.sector_size alignment)
+        var paddedBootImg = bootImgData
+        let sectorSize = Int(FELConstants.sectorSize)
+        let bootRemainder = paddedBootImg.count % sectorSize
+        if bootRemainder != 0 {
+            paddedBootImg.append(Data(count: sectorSize - bootRemainder))
+        }
+
         // ── Step 3: Write boot.img to DRAM ────────────────────────────────
-        progress(0.20, "Loading boot.img into DRAM (\(bootImgData.count / 1024) KB)...")
+        progress(0.20, "Loading boot.img into DRAM (\(paddedBootImg.count / 1024) KB)...")
         try device.writeMemoryWithProgress(
             address: FELConstants.bootImgAddr,
-            data: bootImgData,
+            data: paddedBootImg,
             progress: { value, msg in
                 progress(0.20 + value * 0.30, msg)
             }
@@ -129,53 +147,61 @@ actor MembootManager {
 
     // MARK: - Private
 
+    /// Dynamically find "bootcmd=" in U-Boot binary and return the offset of the value
+    /// (i.e., the byte right after "bootcmd="). Returns nil if not found.
+    private func findBootcmdOffset(in uboot: Data) -> Int? {
+        let marker = Array("bootcmd=".utf8)
+        let limit = uboot.count - marker.count
+        for i in 0..<limit {
+            var found = true
+            for j in 0..<marker.count {
+                if uboot[i + j] != marker[j] {
+                    found = false
+                    break
+                }
+            }
+            if found {
+                return i + marker.count
+            }
+        }
+        return nil
+    }
+
     /// Patch the U-Boot bootcmd to boot from the RAM address where we loaded boot.img.
     ///
-    /// The original bootcmd at offset 0x6A543 is:
-    ///   `bootcmd=ext4load sunxi_flash 4:0 43800000 hakchi/boot/boot.img; boota 43800000;`
-    /// We replace it with the full `setenv bootargs …; boota 47400000` command.
-    /// Without explicit `setenv bootargs`, U-Boot loads args from NAND env and the
-    /// boot.img cmdline (with hakchi-clovershell) is ignored.
+    /// Dynamically searches for "bootcmd=" in the binary (matching C# Fel.UBootBin setter).
+    /// Replaces the value with "boota 47400000" — U-Boot's `boota` reads bootargs from
+    /// the Android boot image header, so we do NOT inject setenv bootargs.
     private func patchBootcmd(_ uboot: inout Data) {
-        let offset = FELConstants.bootcmdOffset
-        guard uboot.count > offset + 256 else {
-            HakchiLogger.kernel.warning("U-Boot too small to patch bootcmd at offset 0x\(String(format: "%X", offset))")
+        guard let cmdOffset = findBootcmdOffset(in: uboot) else {
+            HakchiLogger.kernel.warning("Could not find 'bootcmd=' in U-Boot binary, skipping patch")
             return
         }
 
-        // Verify "bootcmd=" is at the expected offset
-        let marker = "bootcmd="
-        let existing = String(data: uboot[offset..<(offset + marker.count)], encoding: .ascii) ?? ""
-        guard existing == marker else {
-            HakchiLogger.kernel.warning("bootcmd not found at expected offset, skipping patch")
-            return
-        }
+        HakchiLogger.kernel.info("Found bootcmd= at offset 0x\(String(format: "%X", cmdOffset - 8)), value starts at 0x\(String(format: "%X", cmdOffset))")
 
-        // Check if already patched with setenv bootargs
-        let checkLen = min(offset + 256, uboot.count) - offset
-        let currentCmd = String(data: uboot[offset..<(offset + checkLen)], encoding: .ascii)?
-            .components(separatedBy: "\0").first ?? ""
-        if currentCmd.contains("setenv bootargs") && currentCmd.contains("boota 47400000") {
-            HakchiLogger.kernel.info("bootcmd already patched with setenv bootargs, skipping")
-            return
-        }
+        // Find end of original bootcmd string (null-terminated in U-Boot env)
+        let searchEnd = min(cmdOffset + 512, uboot.count)
+        let originalEnd = uboot[cmdOffset..<searchEnd].firstIndex(of: 0) ?? (searchEnd - 1)
+        let originalLength = originalEnd - cmdOffset + 1
 
-        // Build replacement: "bootcmd=setenv bootargs …; boota 47400000" + null terminator
-        let replacement = marker + FELConstants.bootcmdRAM
-        var replacementData = Data(replacement.utf8)
+        // Build replacement value + null terminator
+        let newCmd = FELConstants.bootcmdRAM
+        var replacementData = Data(newCmd.utf8)
         replacementData.append(0) // null terminator
 
-        // Find end of original string (null-terminated in U-Boot env)
-        let searchEnd = min(offset + 512, uboot.count)
-        let originalEnd = uboot[offset..<searchEnd].firstIndex(of: 0) ?? (searchEnd - 1)
-        let originalLength = originalEnd - offset + 1 // include null terminator
+        // Guard: replacement must fit within original string space
+        guard replacementData.count <= originalLength else {
+            HakchiLogger.kernel.warning("Replacement bootcmd (\(replacementData.count) bytes) exceeds original (\(originalLength) bytes), skipping patch")
+            return
+        }
 
-        // Ensure replacement fits; pad with nulls if shorter than original
+        // Pad with nulls to match original length
         while replacementData.count < originalLength {
             replacementData.append(0)
         }
 
-        uboot.replaceSubrange(offset..<(offset + replacementData.count), with: replacementData)
-        HakchiLogger.kernel.info("Patched bootcmd → \(replacement)")
+        uboot.replaceSubrange(cmdOffset..<(cmdOffset + replacementData.count), with: replacementData)
+        HakchiLogger.kernel.info("Patched bootcmd value → '\(newCmd)'")
     }
 }

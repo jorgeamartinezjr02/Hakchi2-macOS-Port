@@ -49,6 +49,16 @@ final class FELDevice {
 
         isOpen = true
         HakchiLogger.fel.info("FEL device opened successfully")
+
+        // Validate board ID matches Allwinner R16/A33 (0x00166700)
+        do {
+            let version = try getVersion()
+            if version.socID != 0x00166700 {
+                HakchiLogger.fel.warning("Unexpected SoC ID: 0x\(String(format: "%08X", version.socID)) (expected 0x00166700 for R16/A33)")
+            }
+        } catch {
+            HakchiLogger.fel.warning("Could not verify board ID on open: \(error)")
+        }
     }
 
     func close() {
@@ -213,10 +223,14 @@ final class FELDevice {
 
     // MARK: - Public FEL Commands
 
-    /// Read the FEL status after a command (8 bytes via aw_usb_read).
-    /// This matches the C tool's `fel_status()` — required after verify, write, read, exec.
+    /// FEL status response: [mark:2][tag:2][state:1][pad:3] = 8 bytes.
+    /// State != 0 indicates a FEL-level error (e.g., bad address, failed write).
     private func felStatus() throws {
-        let _ = try felRead(length: 8)
+        let data = try felRead(length: 8)
+        // Parse state byte at offset 4 (after mark[2] + tag[2])
+        if data.count >= 5 && data[4] != 0 {
+            throw HakchiError.felCommunicationError("FEL status error: state=\(data[4])")
+        }
     }
 
     func getVersion() throws -> FELVersion {
@@ -231,8 +245,10 @@ final class FELDevice {
     }
 
     func readMemory(address: UInt32, length: UInt32) throws -> Data {
+        // Allwinner FEL requires 4-byte aligned transfer lengths
+        let alignedLength = (length + 3) & ~UInt32(3)
         var result = Data()
-        var remaining = length
+        var remaining = alignedLength
         var currentAddr = address
 
         while remaining > 0 {
@@ -245,16 +261,24 @@ final class FELDevice {
             remaining -= chunkSize
         }
 
-        return result
+        // Return only the requested length (trim alignment padding)
+        return Data(result.prefix(Int(length)))
     }
 
     func writeMemory(address: UInt32, data: Data) throws {
+        // Allwinner FEL requires 4-byte aligned transfer lengths
+        var alignedData = data
+        let remainder = data.count % 4
+        if remainder != 0 {
+            alignedData.append(Data(count: 4 - remainder))
+        }
+
         var offset = 0
         var currentAddr = address
 
-        while offset < data.count {
-            let chunkSize = min(Int(FELConstants.transferMaxSize), data.count - offset)
-            let chunk = Data(data[offset..<(offset + chunkSize)])
+        while offset < alignedData.count {
+            let chunkSize = min(Int(FELConstants.transferMaxSize), alignedData.count - offset)
+            let chunk = Data(alignedData[offset..<(offset + chunkSize)])
             try sendFELRequest(command: FELConstants.felDownload, address: currentAddr, length: UInt32(chunkSize))
             try felWrite(data: chunk)
             try felStatus()
@@ -274,8 +298,9 @@ final class FELDevice {
         length: UInt32,
         progress: ((Double, String) -> Void)? = nil
     ) throws -> Data {
+        let alignedLength = (length + 3) & ~UInt32(3)
         var result = Data()
-        var remaining = length
+        var remaining = alignedLength
         var currentAddr = address
         let total = Double(length)
 
@@ -288,11 +313,11 @@ final class FELDevice {
             currentAddr += chunkSize
             remaining -= chunkSize
 
-            let transferred = total - Double(remaining)
+            let transferred = min(Double(result.count), total)
             progress?(transferred / total, "Reading \(Int(transferred / 1024))KB / \(Int(total / 1024))KB")
         }
 
-        return result
+        return Data(result.prefix(Int(length)))
     }
 
     func writeMemoryWithProgress(
@@ -300,20 +325,27 @@ final class FELDevice {
         data: Data,
         progress: ((Double, String) -> Void)? = nil
     ) throws {
+        var alignedData = data
+        let remainder = data.count % 4
+        if remainder != 0 {
+            alignedData.append(Data(count: 4 - remainder))
+        }
+
         var offset = 0
         var currentAddr = address
         let total = Double(data.count)
 
-        while offset < data.count {
-            let chunkSize = min(Int(FELConstants.transferMaxSize), data.count - offset)
-            let chunk = Data(data[offset..<(offset + chunkSize)])
+        while offset < alignedData.count {
+            let chunkSize = min(Int(FELConstants.transferMaxSize), alignedData.count - offset)
+            let chunk = Data(alignedData[offset..<(offset + chunkSize)])
             try sendFELRequest(command: FELConstants.felDownload, address: currentAddr, length: UInt32(chunkSize))
             try felWrite(data: chunk)
             try felStatus()
             currentAddr += UInt32(chunkSize)
             offset += chunkSize
 
-            progress?(Double(offset) / total, "Writing \(offset / 1024)KB / \(Int(total / 1024))KB")
+            let written = min(Double(offset), total)
+            progress?(written / total, "Writing \(Int(written / 1024))KB / \(Int(total / 1024))KB")
         }
     }
 

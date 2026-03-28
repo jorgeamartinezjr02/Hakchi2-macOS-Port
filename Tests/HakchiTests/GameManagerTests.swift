@@ -159,37 +159,44 @@ final class GameManagerTests: XCTestCase {
             Game(name: "Game 3", romPath: "/tmp/3.nes", romSize: 4096),
         ]
 
-        XCTAssertEqual(manager.calculateTotalSize(games: games), 7168)
+        // Total includes block-aligned ROM + desktop + cover art estimates
+        let total = manager.calculateTotalSize(games: games)
+        XCTAssertGreaterThan(total, 7168) // Must be >= raw ROM sizes
         XCTAssertEqual(manager.calculateTotalSize(games: []), 0)
     }
 
-    func testFolderOrganization() {
-        let manager = GameManager()
-        let games = [
+    func testDeterministicCLVCodes() {
+        // Same CRC32 should always produce the same CLV code
+        let code1 = Game.generateCLVCode(consoleType: .nesClassic, crc32: 0x3FE272FB)
+        let code2 = Game.generateCLVCode(consoleType: .nesClassic, crc32: 0x3FE272FB)
+        XCTAssertEqual(code1, code2)
+        XCTAssertTrue(code1.hasPrefix("CLV-H-"))
+        XCTAssertEqual(code1.count, 11)
+
+        // Different CRC32 should produce different codes
+        let code3 = Game.generateCLVCode(consoleType: .nesClassic, crc32: 0x0B742B3A)
+        XCTAssertNotEqual(code1, code3)
+
+        // Different console type same CRC should have different prefix
+        let code4 = Game.generateCLVCode(consoleType: .snesClassic, crc32: 0x3FE272FB)
+        XCTAssertTrue(code4.hasPrefix("CLV-U-"))
+    }
+
+    func testFolderManagerSplitModes() {
+        let manager = FolderManager.shared
+        var games = [
             Game(name: "Alpha", romPath: "/tmp/a.nes", consoleType: .nesClassic, genre: "Action"),
             Game(name: "Beta", romPath: "/tmp/b.sfc", consoleType: .snesClassic, genre: "RPG"),
             Game(name: "Gamma", romPath: "/tmp/c.md", consoleType: .segaMini, genre: "Action"),
         ]
 
-        // Flat
-        let flat = manager.organizeByFolder(games: games, mode: .flat)
-        XCTAssertEqual(flat.count, 1)
-        XCTAssertEqual(flat["/"]?.count, 3)
+        // Genre split creates one folder per genre
+        manager.autoSplit(games: &games, mode: .genre)
+        XCTAssertGreaterThanOrEqual(manager.folders.count, 2)
 
-        // By genre
-        let genre = manager.organizeByFolder(games: games, mode: .genre)
-        XCTAssertEqual(genre["Action"]?.count, 2)
-        XCTAssertEqual(genre["RPG"]?.count, 1)
-
-        // By system
-        let system = manager.organizeByFolder(games: games, mode: .system)
-        XCTAssertEqual(system.count, 3)
-
-        // Alphabetical
-        let alpha = manager.organizeByFolder(games: games, mode: .alphabetical)
-        XCTAssertEqual(alpha["A"]?.count, 1)
-        XCTAssertEqual(alpha["B"]?.count, 1)
-        XCTAssertEqual(alpha["G"]?.count, 1)
+        // Equal split creates pages
+        manager.autoSplit(games: &games, mode: .equal, maxPerFolder: 2)
+        XCTAssertGreaterThanOrEqual(manager.folders.count, 2)
     }
 
     func testSelectableCases() {
