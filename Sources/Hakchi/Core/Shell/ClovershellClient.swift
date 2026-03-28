@@ -69,7 +69,13 @@ final class ClovershellClient {
         libusb_set_auto_detach_kernel_driver(handle, 1)
 
         // Claim all available interfaces
-        let dev = libusb_get_device(handle)!
+        guard let dev = libusb_get_device(handle) else {
+            libusb_close(handle)
+            handle = nil
+            libusb_exit(ctx)
+            context = nil
+            throw HakchiError.felCommunicationError("Failed to get USB device reference")
+        }
         var config: UnsafeMutablePointer<libusb_config_descriptor>?
         if libusb_get_config_descriptor(dev, 0, &config) == 0, let cfg = config {
             for i in 0..<Int(cfg.pointee.bNumInterfaces) {
@@ -126,7 +132,13 @@ final class ClovershellClient {
 
     func disconnect() {
         if let h = handle {
-            let dev = libusb_get_device(h)!
+            guard let dev = libusb_get_device(h) else {
+                libusb_close(h)
+                handle = nil
+                if let ctx = context { libusb_exit(ctx); context = nil }
+                isConnected = false
+                return
+            }
             var config: UnsafeMutablePointer<libusb_config_descriptor>?
             if libusb_get_config_descriptor(dev, 0, &config) == 0, let cfg = config {
                 for i in (0..<Int(cfg.pointee.bNumInterfaces)).reversed() {
@@ -245,7 +257,8 @@ final class ClovershellClient {
     // MARK: - File Operations (via shell commands)
 
     func readFile(remotePath: String) throws -> Data {
-        return try executeRaw("cat '\(remotePath)'")
+        let safePath = remotePath.replacingOccurrences(of: "'", with: "'\\''")
+        return try executeRaw("cat '\(safePath)'")
     }
 
     func writeFile(remotePath: String, data: Data) throws {
@@ -253,9 +266,11 @@ final class ClovershellClient {
         // This avoids base64 overhead and shell argument limits.
         guard isConnected else { throw HakchiError.notConnected }
 
-        try sendPacket(.execNewReq, arg: 0, payload: Data("cat > '\(remotePath)'".utf8))
+        let safePath = remotePath.replacingOccurrences(of: "'", with: "'\\''")
+        HakchiLogger.fileLog("clovershell", "writeFile: \(data.count) bytes → \(remotePath)")
+        try sendPacket(.execNewReq, arg: 0, payload: Data("cat > '\(safePath)'".utf8))
 
-        // Wait for session response
+        // Phase 1: Wait for session assignment
         var sessionID: UInt8 = 0
         let (cmd, arg, _) = try recvPacket(timeout: usbTimeout)
         guard cmd == .execNewResp else {
@@ -263,26 +278,59 @@ final class ClovershellClient {
         }
         sessionID = arg
 
-        // Send file data through stdin in chunks (max 65000 bytes each to stay under UInt16 limit)
-        let chunkSize = 65000
-        var offset = 0
-        while offset < data.count {
-            let end = min(offset + chunkSize, data.count)
-            try sendPacket(.execStdin, arg: sessionID, payload: Data(data[offset..<end]))
-            offset = end
+        // Phase 2: Wait for execPID — confirms the `cat` process is running
+        // and its stdin pipe is connected. Without this, data sent immediately
+        // after execNewResp is lost because `cat` hasn't started reading yet.
+        var gotPID = false
+        for _ in 0..<10 {
+            do {
+                let pkt = try recvPacket(timeout: 2000)
+                if pkt.cmd == .execPID {
+                    gotPID = true
+                    break
+                }
+            } catch {
+                break
+            }
+        }
+        if !gotPID {
+            // Fallback: if execPID never arrives (older firmware), use a safety delay
+            Thread.sleep(forTimeInterval: 0.1)
+            HakchiLogger.fileLog("clovershell", "writeFile: execPID not received, using 100ms delay")
         }
 
-        // Close stdin (empty payload signals EOF)
+        // Phase 3: Send file data with flow control
+        // Use 3000ms timeout per chunk (larger data = more time needed)
+        let chunkSize = 65000
+        let flowCheckInterval = 4 // pause every 4 chunks (~260KB)
+        var offset = 0
+        var chunksSinceCheck = 0
+
+        while offset < data.count {
+            let end = min(offset + chunkSize, data.count)
+            try sendPacket(.execStdin, arg: sessionID, payload: Data(data[offset..<end]), timeout: 3000)
+            offset = end
+            chunksSinceCheck += 1
+
+            // Flow control: give device time to consume pipe buffer
+            if chunksSinceCheck >= flowCheckInterval && offset < data.count {
+                chunksSinceCheck = 0
+                Thread.sleep(forTimeInterval: 0.002) // 2ms pause
+            }
+        }
+
+        HakchiLogger.fileLog("clovershell", "writeFile: sent \(data.count) bytes in \(offset / chunkSize + 1) chunks")
+
+        // Phase 4: Close stdin (empty payload = EOF)
         try sendPacket(.execStdin, arg: sessionID, payload: Data())
 
-        // Drain responses until we get execResult
+        // Phase 5: Drain responses until execResult
         while true {
             let (respCmd, _, _) = try recvPacket(timeout: usbTimeout)
             if respCmd == .execResult { break }
-            if respCmd == .execStdout || respCmd == .execStderr || respCmd == .pong || respCmd == .execPID {
-                continue
-            }
         }
+
+        HakchiLogger.fileLog("clovershell", "writeFile: complete")
     }
 
     /// Send a ping and wait for pong to verify the connection is alive.
@@ -297,7 +345,7 @@ final class ClovershellClient {
 
     /// Send a Clovershell packet (4-byte header + payload as one USB transfer).
     /// Payload must not exceed 65535 bytes (UInt16 length field).
-    private func sendPacket(_ cmd: Command, arg: UInt8, payload: Data) throws {
+    private func sendPacket(_ cmd: Command, arg: UInt8, payload: Data, timeout: UInt32 = 1000) throws {
         guard payload.count <= Int(UInt16.max) else {
             throw HakchiError.felCommunicationError(
                 "Clovershell payload too large (\(payload.count) bytes, max \(UInt16.max))")
@@ -315,7 +363,7 @@ final class ClovershellClient {
             libusb_bulk_transfer(
                 handle, endpointOut,
                 UnsafeMutablePointer(mutating: ptr.baseAddress?.assumingMemoryBound(to: UInt8.self)),
-                Int32(pkt.count), &transferred, 1000
+                Int32(pkt.count), &transferred, timeout
             )
         }
         guard rc == 0 else {

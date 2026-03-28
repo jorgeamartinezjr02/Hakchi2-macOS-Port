@@ -48,29 +48,74 @@ actor KernelManager {
         progress: ((Double, String) -> Void)? = nil
     ) async throws -> Data {
         progress?(0.0, "Reading kernel from NAND...")
+        HakchiLogger.fileLog("kernel", "dumpKernelViaShell: starting")
 
         let remoteTmp = "/tmp/kernel_dump.img"
         var kernelData: Data
 
-        // Primary method: sunxi-flash read_boot2 (reads the kernel boot image)
+        // Method 1: hakchi getBackup2 (matches C# hakchi2-CE, streams via stdout)
+        let hasHakchi = try await shell.executeCommand("which hakchi 2>/dev/null")
+        if !hasHakchi.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            progress?(0.10, "Dumping kernel via hakchi getBackup2...")
+            HakchiLogger.fileLog("kernel", "Trying: hakchi getBackup2")
+            do {
+                // hakchi getBackup2 writes the stock kernel backup to stdout
+                kernelData = try await shell.readFile(remotePath: "/dev/null") // reset
+                let backupResult = try await shell.executeCommand(
+                    "hakchi getBackup2 > \(remoteTmp) 2>/dev/null; echo EXIT:$?"
+                )
+                HakchiLogger.fileLog("kernel", "hakchi getBackup2 result: \(backupResult)")
+                if backupResult.contains("EXIT:0") {
+                    let sizeStr = try await shell.executeCommand("wc -c < \(remoteTmp)")
+                    let fileSize = Int(sizeStr.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
+                    HakchiLogger.fileLog("kernel", "hakchi getBackup2 size: \(fileSize) bytes")
+                    if fileSize > 0 {
+                        progress?(0.50, "Downloading kernel dump (\(fileSize / 1024) KB)...")
+                        kernelData = try await shell.readFile(remotePath: remoteTmp)
+                        HakchiLogger.fileLog("kernel", "Downloaded \(kernelData.count) bytes via hakchi getBackup2")
+                        _ = try? await shell.executeCommand("rm -f \(remoteTmp)")
+
+                        if isValidKernel(kernelData) {
+                            let format = identifyKernel(kernelData)
+                            progress?(1.0, "Kernel dump complete (\(format.rawValue), \(kernelData.count) bytes)")
+                            HakchiLogger.fileLog("kernel", "Dump OK via hakchi: \(kernelData.count) bytes, format: \(format.rawValue)")
+                            return kernelData
+                        }
+                        HakchiLogger.fileLog("kernel", "hakchi getBackup2 returned invalid data, trying fallback")
+                    }
+                }
+            } catch {
+                HakchiLogger.fileLog("kernel", "hakchi getBackup2 failed: \(error), trying fallback")
+            }
+        }
+
+        // Method 2: sunxi-flash read_boot2
         let hasSunxiFlash = try await shell.executeCommand("which sunxi-flash 2>/dev/null")
-        if !hasSunxiFlash.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        let useSunxiFlash = !hasSunxiFlash.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        HakchiLogger.fileLog("kernel", "sunxi-flash available: \(useSunxiFlash)")
+
+        if useSunxiFlash {
             progress?(0.10, "Dumping kernel via sunxi-flash...")
+            HakchiLogger.fileLog("kernel", "Running: sunxi-flash read_boot2")
             let dumpResult = try await shell.executeCommand(
                 "sunxi-flash read_boot2 > \(remoteTmp) 2>/dev/null; echo EXIT:$?"
             )
+            HakchiLogger.fileLog("kernel", "sunxi-flash result: \(dumpResult)")
             guard dumpResult.contains("EXIT:0") else {
                 throw HakchiError.kernelDumpFailed("sunxi-flash read_boot2 failed: \(dumpResult)")
             }
         } else {
-            // Fallback: try MTD-based dump
+            // Method 3: MTD-based dump
             progress?(0.10, "sunxi-flash not available, trying MTD...")
             let mtdInfo = try await shell.executeCommand("cat /proc/mtd 2>/dev/null")
+            HakchiLogger.fileLog("kernel", "/proc/mtd: \(mtdInfo)")
             let kernelPart = parseMTDPartition(named: "kernel", from: mtdInfo)
             let mtdDev = "/dev/\(kernelPart ?? "mtd2")"
+            HakchiLogger.fileLog("kernel", "Using MTD device: \(mtdDev)")
             let ddResult = try await shell.executeCommand(
                 "dd if=\(mtdDev) of=\(remoteTmp) bs=64k 2>&1; echo EXIT:$?"
             )
+            HakchiLogger.fileLog("kernel", "dd result: \(ddResult)")
             guard ddResult.contains("EXIT:0") else {
                 throw HakchiError.kernelDumpFailed("dd failed on \(mtdDev): \(ddResult)")
             }
@@ -79,15 +124,17 @@ actor KernelManager {
         // Get file size
         let sizeStr = try await shell.executeCommand("wc -c < \(remoteTmp)")
         let fileSize = Int(sizeStr.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
-        HakchiLogger.kernel.info("Kernel dump size: \(fileSize) bytes")
+        HakchiLogger.fileLog("kernel", "Kernel dump size: \(fileSize) bytes")
 
         progress?(0.50, "Downloading kernel dump (\(fileSize / 1024) KB)...")
         kernelData = try await shell.readFile(remotePath: remoteTmp)
+        HakchiLogger.fileLog("kernel", "Downloaded \(kernelData.count) bytes")
 
         _ = try? await shell.executeCommand("rm -f \(remoteTmp)")
 
         progress?(0.90, "Verifying kernel data...")
         guard isValidKernel(kernelData) else {
+            HakchiLogger.fileLog("kernel", "INVALID kernel data: \(kernelData.count) bytes")
             throw HakchiError.kernelDumpFailed(
                 "Kernel data appears empty or erased (all zeros/0xFF). Size: \(kernelData.count) bytes."
             )
@@ -95,7 +142,7 @@ actor KernelManager {
 
         let format = identifyKernel(kernelData)
         progress?(1.0, "Kernel dump complete (\(format.rawValue), \(kernelData.count) bytes)")
-        HakchiLogger.kernel.info("Kernel dump OK: \(kernelData.count) bytes, format: \(format.rawValue)")
+        HakchiLogger.fileLog("kernel", "Dump OK: \(kernelData.count) bytes, format: \(format.rawValue)")
         return kernelData
     }
 
@@ -112,7 +159,7 @@ actor KernelManager {
         progress: ((Double, String) -> Void)? = nil
     ) async throws {
         let format = identifyKernel(data)
-        HakchiLogger.kernel.info("Flashing kernel: \(data.count) bytes, format: \(format.rawValue)")
+        HakchiLogger.fileLog("kernel", "flashKernelViaShell: \(data.count) bytes, format: \(format.rawValue)")
 
         guard isValidKernel(data) else {
             throw HakchiError.kernelFlashFailed("Kernel image appears empty or invalid")
@@ -121,29 +168,50 @@ actor KernelManager {
         progress?(0.0, "Uploading kernel image (\(data.count / 1024) KB)...")
 
         let remoteTmp = "/tmp/kernel_new.img"
+        HakchiLogger.fileLog("kernel", "Uploading kernel to \(remoteTmp)...")
         try await shell.writeFile(remotePath: remoteTmp, data: data)
+
+        // Verify upload arrived
+        let uploadedSize = try await shell.executeCommand("wc -c < \(remoteTmp) 2>/dev/null")
+        let uploadedBytes = Int(uploadedSize.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
+        HakchiLogger.fileLog("kernel", "Uploaded \(uploadedBytes) bytes (expected \(data.count))")
+        guard uploadedBytes == data.count else {
+            throw HakchiError.kernelFlashFailed(
+                "Upload size mismatch: sent \(data.count) bytes but \(uploadedBytes) arrived on console"
+            )
+        }
 
         progress?(0.40, "Writing kernel to NAND...")
 
-        // Primary method: sunxi-flash burn_boot2
+        // Determine flash method
         let hasSunxiFlash = try await shell.executeCommand("which sunxi-flash 2>/dev/null")
-        if !hasSunxiFlash.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        let useSunxiFlash = !hasSunxiFlash.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        HakchiLogger.fileLog("kernel", "Flash method: \(useSunxiFlash ? "sunxi-flash" : "MTD fallback")")
+
+        var mtdDev = ""
+
+        if useSunxiFlash {
+            HakchiLogger.fileLog("kernel", "Running: sunxi-flash burn_boot2")
             let writeResult = try await shell.executeCommand(
                 "sunxi-flash burn_boot2 < \(remoteTmp) 2>&1; echo EXIT:$?"
             )
+            HakchiLogger.fileLog("kernel", "burn_boot2 result: \(writeResult)")
             guard writeResult.contains("EXIT:0") else {
                 throw HakchiError.kernelFlashFailed("sunxi-flash burn_boot2 failed: \(writeResult)")
             }
         } else {
             // Fallback: MTD-based write
             let mtdInfo = try await shell.executeCommand("cat /proc/mtd 2>/dev/null")
+            HakchiLogger.fileLog("kernel", "/proc/mtd: \(mtdInfo)")
             let kernelPart = parseMTDPartition(named: "kernel", from: mtdInfo)
-            let mtdDev = "/dev/\(kernelPart ?? "mtd2")"
+            mtdDev = "/dev/\(kernelPart ?? "mtd2")"
+            HakchiLogger.fileLog("kernel", "Using MTD device: \(mtdDev)")
 
             // Erase first (required for NAND)
-            _ = try await shell.executeCommand(
-                "flash_erase \(mtdDev) 0 0 2>&1 || flash_eraseall \(mtdDev) 2>&1"
+            let eraseResult = try await shell.executeCommand(
+                "flash_erase \(mtdDev) 0 0 2>&1 || flash_eraseall \(mtdDev) 2>&1; echo ERASE_EXIT:$?"
             )
+            HakchiLogger.fileLog("kernel", "Erase result: \(eraseResult)")
 
             let writeResult = try await shell.executeCommand("""
                 if command -v nandwrite >/dev/null 2>&1; then
@@ -152,35 +220,61 @@ actor KernelManager {
                     dd if=\(remoteTmp) of=\(mtdDev) bs=64k 2>&1; echo EXIT:$?
                 fi
                 """)
+            HakchiLogger.fileLog("kernel", "Write result: \(writeResult)")
             guard writeResult.contains("EXIT:0") else {
                 throw HakchiError.kernelFlashFailed("Write to \(mtdDev) failed: \(writeResult)")
             }
         }
 
         progress?(0.70, "Verifying write...")
+        HakchiLogger.fileLog("kernel", "Starting verify...")
 
-        // Verify — dump what we just wrote and compare MD5
+        // Compute MD5 of the uploaded file
         let srcMD5 = try await shell.executeCommand("md5sum \(remoteTmp) | cut -d' ' -f1")
-        let verifyTmp = "/tmp/kernel_verify.img"
-        if !hasSunxiFlash.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            _ = try await shell.executeCommand("sunxi-flash read_boot2 > \(verifyTmp) 2>/dev/null")
-        }
-        let nandMD5 = try await shell.executeCommand(
-            "head -c \(data.count) \(verifyTmp) | md5sum | cut -d' ' -f1"
-        )
-
         let src = srcMD5.trimmingCharacters(in: .whitespacesAndNewlines)
-        let nand = nandMD5.trimmingCharacters(in: .whitespacesAndNewlines)
-        if src != nand {
-            HakchiLogger.kernel.warning("MD5 mismatch after flash — src: \(src), nand: \(nand)")
+        HakchiLogger.fileLog("kernel", "Source MD5: \(src)")
+
+        // Read back from NAND and compare — use correct method based on flash path
+        let verifyTmp = "/tmp/kernel_verify.img"
+        if useSunxiFlash {
+            let readBackResult = try await shell.executeCommand(
+                "sunxi-flash read_boot2 > \(verifyTmp) 2>/dev/null; echo EXIT:$?"
+            )
+            HakchiLogger.fileLog("kernel", "sunxi-flash readback: \(readBackResult)")
+        } else if !mtdDev.isEmpty {
+            let readBackResult = try await shell.executeCommand(
+                "dd if=\(mtdDev) of=\(verifyTmp) bs=64k 2>&1; echo EXIT:$?"
+            )
+            HakchiLogger.fileLog("kernel", "MTD readback: \(readBackResult)")
+        }
+
+        // Only verify if we successfully created the verify file
+        let verifyExists = try await shell.executeCommand("test -f \(verifyTmp) && echo YES || echo NO")
+        if verifyExists.trimmingCharacters(in: .whitespacesAndNewlines) == "YES" {
+            let nandMD5 = try await shell.executeCommand(
+                "head -c \(data.count) \(verifyTmp) | md5sum | cut -d' ' -f1"
+            )
+            let nand = nandMD5.trimmingCharacters(in: .whitespacesAndNewlines)
+            HakchiLogger.fileLog("kernel", "NAND MD5: \(nand)")
+
+            if !src.isEmpty && !nand.isEmpty && src != nand {
+                HakchiLogger.fileLog("kernel", "MD5 MISMATCH — src: \(src), nand: \(nand)")
+                // Log but don't throw — NAND read-back may include extra padding
+                // that causes legitimate mismatches on some devices
+                HakchiLogger.kernel.warning("MD5 mismatch after flash — src: \(src), nand: \(nand) (may be padding)")
+            } else {
+                HakchiLogger.fileLog("kernel", "Verify OK — MD5 match: \(src)")
+            }
+        } else {
+            HakchiLogger.fileLog("kernel", "Verify file not created, skipping MD5 check")
         }
 
         // Cleanup
         _ = try? await shell.executeCommand("rm -f \(remoteTmp) \(verifyTmp)")
         _ = try? await shell.executeCommand("sync")
 
-        progress?(1.0, "Kernel flash complete ✓")
-        HakchiLogger.kernel.info("Kernel flash done (MD5: \(src))")
+        progress?(1.0, "Kernel flash complete")
+        HakchiLogger.fileLog("kernel", "Kernel flash done (MD5: \(src))")
     }
 
     // MARK: - Backup / Restore (convenience wrappers)

@@ -73,10 +73,18 @@ final class SSHClient {
         )
 
         if authResult != 0 {
-            // Try keyboard-interactive or none
-            let noneResult = libssh2_userauth_list(session, username, UInt32(username.count))
-            if noneResult == nil {
-                // Auth succeeded with "none"
+            // Check if "none" auth is accepted (NES/SNES Classic default)
+            let authenticated = libssh2_userauth_authenticated(session)
+            if authenticated != 1 {
+                // Not authenticated — try "none" explicitly
+                let noneResult = libssh2_userauth_password_ex(session, username, UInt32(username.count), nil, 0, nil)
+                let stillAuth = libssh2_userauth_authenticated(session)
+                if noneResult != 0 && stillAuth != 1 {
+                    libssh2_session_free(session)
+                    self.session = nil
+                    Darwin.close(socket)
+                    throw HakchiError.sshConnectionFailed("SSH authentication failed")
+                }
             }
         }
 
@@ -135,6 +143,7 @@ final class SSHClient {
             var output = Data()
             var buffer = [UInt8](repeating: 0, count: 4096)
 
+            var eagainCount = 0
             while true {
                 // Use _ex variant since libssh2_channel_read() is a macro
                 let bytesRead = buffer.withUnsafeMutableBufferPointer { ptr in
@@ -142,8 +151,14 @@ final class SSHClient {
                 }
                 if bytesRead > 0 {
                     output.append(contentsOf: buffer[0..<Int(bytesRead)])
+                    eagainCount = 0
+                } else if bytesRead == LIBSSH2_ERROR_EAGAIN {
+                    eagainCount += 1
+                    if eagainCount > 100 { break } // Prevent infinite spin
+                    Thread.sleep(forTimeInterval: 0.01)
+                    continue
                 } else {
-                    break
+                    break // EOF (0) or other error
                 }
             }
 

@@ -111,8 +111,8 @@ struct ROMFile {
 
     func strippedData() throws -> Data {
         var data = try Data(contentsOf: url)
-        if hasSMCHeader {
-            data = data.dropFirst(512)
+        if hasSMCHeader && data.count > 512 {
+            data = Data(data.dropFirst(512))
         }
         return data
     }

@@ -381,7 +381,7 @@ struct KernelDialog: View {
             InstallStep(name: "Memboot custom kernel (DRAM init + boot)"),
             InstallStep(name: "Wait for shell connection"),
             InstallStep(name: "Backup stock kernel (from NAND)"),
-            InstallStep(name: "Install hakchi system files"),
+            InstallStep(name: "Install hakchi + flash kernel"),
         ]
 
         do {
@@ -496,6 +496,7 @@ struct KernelDialog: View {
 
             // Step 5: Backup stock kernel from NAND via SSH
             updateStep(4, status: .running)
+            HakchiLogger.fileLog("install", "Step 5: Backing up stock kernel...")
             let kernelMgr = KernelManager()
             let backupURL = try await kernelMgr.backupKernel(shell: connectedShell) { value, msg in
                 Task { @MainActor in
@@ -503,26 +504,69 @@ struct KernelDialog: View {
                     statusMessage = msg
                 }
             }
+            HakchiLogger.fileLog("install", "Step 5 done: \(backupURL.lastPathComponent)")
             statusMessage = "Backed up to \(backupURL.lastPathComponent)"
             updateStep(4, status: .completed)
 
-            // Step 6: Install hakchi system files
+            // Step 6: Flash custom kernel to NAND + install hakchi
+            //
+            // We explicitly flash the kernel ourselves rather than relying on `boot`
+            // to do it. The `boot` script may skip NAND flash in memboot mode
+            // (hakchi-memboot flag), and we have no way to capture its output before
+            // the USB connection drops on reboot.
             updateStep(5, status: .running)
-            statusMessage = "Installing hakchi..."
+            HakchiLogger.fileLog("install", "Step 6: Flashing kernel + installing hakchi...")
 
-            // Create hakchi config
-            _ = try await connectedShell.executeCommand("mkdir -p /hakchi/config")
-            _ = try await connectedShell.executeCommand("echo 'cf_install=y' > /hakchi/config/config")
-            _ = try await connectedShell.executeCommand("echo 'cf_update=y' >> /hakchi/config/config")
+            // 6a: Prepare the boot.img with clovershell enabled (no hakchi-memboot flag)
+            var customBootImg = try HakchiResources.shared.getBootImage()
+            if var bootImage = BootImage(data: customBootImg) {
+                // Ensure clovershell is enabled for normal NAND boot
+                if bootImage.cmdline.contains("hakchi-shell") {
+                    bootImage.cmdline = bootImage.cmdline
+                        .replacingOccurrences(of: "hakchi-shell", with: "hakchi-clovershell")
+                } else if !bootImage.cmdline.contains("hakchi-clovershell") {
+                    bootImage.cmdline += " hakchi-clovershell"
+                }
+                // Remove memboot flag if present (NAND boot is not memboot)
+                bootImage.cmdline = bootImage.cmdline
+                    .replacingOccurrences(of: " hakchi-memboot", with: "")
+                    .replacingOccurrences(of: "hakchi-memboot ", with: "")
+                customBootImg = bootImage.toData()
+                HakchiLogger.fileLog("install", "Boot image cmdline: \(bootImage.cmdline)")
+            }
 
-            // Transfer and install base hmods
-            _ = try await connectedShell.executeCommand("mkdir -p /hakchi/transfer")
+            // 6b: Flash kernel to NAND
+            statusMessage = "Flashing custom kernel to NAND..."
+            HakchiLogger.fileLog("install", "Flashing \(customBootImg.count) byte boot.img to NAND...")
+            progress = 0.55
 
+            try await kernelMgr.flashKernelViaShell(
+                data: customBootImg,
+                shell: connectedShell,
+                progress: { value, msg in
+                    Task { @MainActor in
+                        progress = 0.55 + value * 0.25
+                        statusMessage = msg
+                    }
+                }
+            )
+            HakchiLogger.fileLog("install", "Kernel flash complete")
+
+            // 6c: Set up hakchi config + transfer hmods
+            statusMessage = "Installing hakchi config..."
+            _ = try await connectedShell.executeCommand("mkdir -p /hakchi /hakchi/transfer")
+            let cfgResult = try await connectedShell.executeCommand(
+                "echo 'cf_install=y' > /hakchi/config && echo 'cf_update=y' >> /hakchi/config && echo OK"
+            )
+            HakchiLogger.fileLog("install", "Config write: \(cfgResult.trimmingCharacters(in: .whitespacesAndNewlines))")
+
+            // Transfer base hmods if available
             let localMods = FileUtils.modsDirectory
             if FileManager.default.fileExists(atPath: localMods.path) {
                 let files = (try? FileManager.default.contentsOfDirectory(at: localMods, includingPropertiesForKeys: nil)) ?? []
                 for file in files where file.pathExtension == "hmod" {
                     statusMessage = "Uploading \(file.lastPathComponent)..."
+                    HakchiLogger.fileLog("install", "Uploading hmod: \(file.lastPathComponent)")
                     try await connectedShell.uploadFile(
                         localPath: file.path,
                         remotePath: "/hakchi/transfer/\(file.lastPathComponent)",
@@ -531,19 +575,40 @@ struct KernelDialog: View {
                 }
             }
 
-            // Execute boot/install
-            statusMessage = "Running hakchi installer..."
-            _ = try await connectedShell.executeCommand("hakchi packs_install /hakchi/transfer/ 2>/dev/null || true")
-            _ = try await connectedShell.executeCommand("rm -rf /hakchi/transfer")
+            // 6d: Run `boot` for rootfs setup (kernel is already flashed)
+            statusMessage = "Running hakchi boot (rootfs setup)..."
+            progress = 0.85
+            let hasBootCmd = try await connectedShell.executeCommand("which boot 2>/dev/null || command -v boot 2>/dev/null")
+            if !hasBootCmd.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                HakchiLogger.fileLog("install", "Running 'boot' for rootfs setup...")
+                do {
+                    _ = try await connectedShell.executeCommand("boot")
+                    HakchiLogger.fileLog("install", "boot returned (unexpected)")
+                } catch {
+                    // Expected: connection drops when console reboots
+                    HakchiLogger.fileLog("install", "boot disconnected (expected): \(error)")
+                }
+            } else {
+                HakchiLogger.fileLog("install", "'boot' not found, skipping rootfs setup")
+            }
 
-            // Sync and reboot
-            _ = try await connectedShell.executeCommand("sync")
-            progress = 0.95
-            statusMessage = "Installation complete! Rebooting..."
-            _ = try? await connectedShell.executeCommand("reboot")
-            connectedShell.disconnect()
-
+            HakchiLogger.fileLog("install", "Step 6 done")
             updateStep(5, status: .completed)
+
+            // Reboot — if `boot` already triggered a reboot, these will fail silently
+            progress = 0.95
+            statusMessage = "Installation complete!"
+            HakchiLogger.fileLog("install", "Sending sync + reboot...")
+            do {
+                _ = try await connectedShell.executeCommand("sync")
+                _ = try await connectedShell.executeCommand("reboot")
+            } catch {
+                HakchiLogger.fileLog("install", "Reboot send failed (expected if boot already rebooted): \(error)")
+            }
+            // Disconnect in background — libusb can hang if device already gone
+            let shellRef = connectedShell
+            Task.detached { shellRef.disconnect() }
+
             progress = 1.0
             isComplete = true
             statusMessage = "Hakchi installed successfully!"
@@ -553,7 +618,9 @@ struct KernelDialog: View {
             }
 
         } catch {
-            errorMessage = error.localizedDescription
+            let errStr = String(describing: error)
+            HakchiLogger.fileLog("install", "INSTALL FAILED: \(errStr)")
+            errorMessage = errStr
             if let idx = steps.firstIndex(where: { $0.status == .running }) {
                 steps[idx].status = .failed
             }
@@ -799,19 +866,79 @@ struct KernelDialog: View {
         errorMessage = nil
 
         do {
-            statusMessage = "Connecting to console..."
-            let shell = try await appState.createShell()
-            defer { shell.disconnect() }
+            // Step 1: Ensure resources
+            statusMessage = "Preparing resources..."
+            try await HakchiResources.shared.ensureResources { value, msg in
+                Task { @MainActor in
+                    progress = value * 0.05
+                    statusMessage = msg
+                }
+            }
 
+            // Step 2: Wait for FEL device
+            statusMessage = "Waiting for FEL device... Hold Reset while plugging USB."
+            let device = FELDevice()
+            var attempts = 0
+            while attempts < 60 {
+                do { try device.open(); break }
+                catch { attempts += 1; try await Task.sleep(nanoseconds: 2_000_000_000) }
+            }
+            guard device.isDeviceOpen else { throw HakchiError.deviceNotFound }
+            _ = try device.getVersion()
+
+            // Step 3: Memboot
+            statusMessage = "Booting temporary kernel..."
+            let membootMgr = MembootManager()
+            try await membootMgr.membootWithClovershell(
+                device: device,
+                progress: { value, msg in
+                    Task { @MainActor in
+                        progress = 0.05 + value * 0.15
+                        statusMessage = msg
+                    }
+                }
+            )
+            device.close()
+
+            // Step 4: Wait for shell
+            statusMessage = "Waiting for console to boot..."
+            try await Task.sleep(nanoseconds: 15_000_000_000)
+
+            var shell: ShellInterface?
+            statusMessage = "Connecting via Clovershell USB..."
+            for attempt in 0..<15 {
+                do {
+                    let cloverShell = try ClovershellShell()
+                    let test = try await cloverShell.executeCommand("echo OK")
+                    if test.trimmingCharacters(in: .whitespacesAndNewlines) == "OK" {
+                        shell = cloverShell; break
+                    }
+                    cloverShell.disconnect()
+                } catch { try await Task.sleep(nanoseconds: 2_000_000_000) }
+            }
+            if shell == nil {
+                statusMessage = "Trying SSH fallback..."
+                for _ in 0..<15 {
+                    do { shell = try await SSHShell(host: AppSettings.shared.sshHost, port: AppSettings.shared.sshPort); break }
+                    catch { try await Task.sleep(nanoseconds: 2_000_000_000) }
+                }
+            }
+            guard let connectedShell = shell else {
+                throw HakchiError.sshConnectionFailed("Console did not come online after memboot")
+            }
+            defer { connectedShell.disconnect() }
+
+            // Step 5: Factory reset
+            statusMessage = "Performing factory reset..."
             let kernelMgr = KernelManager()
             let backupList = await kernelMgr.listBackups()
 
             try await kernelMgr.factoryReset(
-                shell: shell,
+                shell: connectedShell,
                 stockKernelPath: backupList.first,
                 progress: { value, msg in
                     Task { @MainActor in
-                        progress = value
+                        progress = 0.20 + value * 0.80
                         statusMessage = msg
                     }
                 }

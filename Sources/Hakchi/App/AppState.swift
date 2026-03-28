@@ -50,6 +50,7 @@ final class AppState: ObservableObject {
     }
 
     private var cancellables = Set<AnyCancellable>()
+    private var syncTask: Task<Void, Never>?
 
     let settings = AppSettings.shared
 
@@ -111,34 +112,40 @@ final class AppState: ObservableObject {
         }
     }
 
-    func syncGames() async {
-        guard isConnected else { return }
-        showProgress = true
-        progressTitle = "Syncing Games"
-        progressValue = 0
+    func syncGames() {
+        // Cancel any in-flight sync before starting a new one
+        syncTask?.cancel()
+        syncTask = Task { @MainActor [weak self] in
+            guard let self = self, self.isConnected else { return }
+            self.showProgress = true
+            self.progressTitle = "Syncing Games"
+            self.progressValue = 0
 
-        let selectedGames = games.filter { selectedGameIDs.contains($0.id) }
-        let gamesToSync = selectedGames.isEmpty ? games : selectedGames
+            let selectedGames = self.games.filter { self.selectedGameIDs.contains($0.id) }
+            let gamesToSync = selectedGames.isEmpty ? self.games : selectedGames
 
-        do {
-            let shell = try await createShell()
-            defer { shell.disconnect() }
-            try await gameManager.syncToConsole(
-                games: gamesToSync,
-                consoleType: consoleType,
-                shell: shell,
-                progress: { [weak self] value, message in
-                    Task { @MainActor in
-                        self?.progressValue = value
-                        self?.progressMessage = message
+            do {
+                let shell = try await self.createShell()
+                defer { shell.disconnect() }
+                try await self.gameManager.syncToConsole(
+                    games: gamesToSync,
+                    consoleType: self.consoleType,
+                    shell: shell,
+                    progress: { [weak self] value, message in
+                        Task { @MainActor in
+                            self?.progressValue = value
+                            self?.progressMessage = message
+                        }
                     }
+                )
+            } catch {
+                if !Task.isCancelled {
+                    self.progressMessage = "Error: \(error.localizedDescription)"
                 }
-            )
-        } catch {
-            progressMessage = "Error: \(error.localizedDescription)"
-        }
+            }
 
-        showProgress = false
+            self.showProgress = false
+        }
     }
 
     func rebootConsole() async {
@@ -152,11 +159,21 @@ final class AppState: ObservableObject {
         }
     }
 
-    /// Create a ShellInterface using the best available connection method
+    /// Create a ShellInterface using the best available connection method.
+    /// Verifies the connection is functional before returning.
     func createShell() async throws -> ShellInterface {
         // Try Clovershell first (USB direct), fall back to SSH
         if let clovershell = try? ClovershellShell() {
-            return clovershell
+            // Verify it's actually a Clovershell device (not FEL mode)
+            do {
+                let test = try await clovershell.executeCommand("echo OK")
+                if test.trimmingCharacters(in: .whitespacesAndNewlines) == "OK" {
+                    return clovershell
+                }
+            } catch {
+                // Connection failed — not a real Clovershell device
+            }
+            clovershell.disconnect()
         }
         let host = UserDefaults.standard.string(forKey: "sshHost") ?? "169.254.1.1"
         let port = UserDefaults.standard.integer(forKey: "sshPort")

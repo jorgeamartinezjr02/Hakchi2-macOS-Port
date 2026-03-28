@@ -40,6 +40,14 @@ final class FolderManager {
     }
 
     func moveFolder(_ id: UUID, toParent parentID: UUID?) {
+        // Prevent circular dependency: walk up from parentID to ensure id is not an ancestor
+        if let targetParent = parentID {
+            var current: UUID? = targetParent
+            while let cur = current {
+                if cur == id { return } // Would create a cycle
+                current = folders.first(where: { $0.id == cur })?.parentID
+            }
+        }
         if let index = folders.firstIndex(where: { $0.id == id }) {
             folders[index].parentID = parentID
             saveFolders()
@@ -117,7 +125,8 @@ final class FolderManager {
                 groups[key] = folder.id
             }
 
-            games[i].folder = groups[key]!.uuidString
+            guard let folderID = groups[key] else { continue }
+            games[i].folder = folderID.uuidString
         }
     }
 

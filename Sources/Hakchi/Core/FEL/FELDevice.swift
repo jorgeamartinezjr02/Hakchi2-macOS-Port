@@ -103,6 +103,7 @@ final class FELDevice {
     // MARK: - Low-level USB
 
     private func bulkSend(_ data: Data, retries: Int = 3) throws {
+        guard handle != nil else { throw HakchiError.notConnected }
         var lastError: Int32 = 0
         for attempt in 0..<retries {
             var transferred: Int32 = 0
@@ -132,6 +133,7 @@ final class FELDevice {
     }
 
     private func bulkReceive(length: Int) throws -> Data {
+        guard handle != nil else { throw HakchiError.notConnected }
         var result = Data()
         var remaining = length
 
@@ -151,7 +153,9 @@ final class FELDevice {
             guard rc == 0 else {
                 throw HakchiError.felCommunicationError("Bulk receive failed: \(rc)")
             }
-            if transferred <= 0 { break }
+            if transferred <= 0 {
+                throw HakchiError.felCommunicationError("Bulk receive returned no data (expected \(remaining) more bytes)")
+            }
             result.append(buffer.prefix(Int(transferred)))
             remaining -= Int(transferred)
         }
@@ -317,10 +321,11 @@ final class FELDevice {
 
     /// Read a little-endian UInt32 from Data at the given byte offset.
     private static func readU32LE(_ data: Data, offset: Int) -> UInt32 {
-        UInt32(data[offset])
-        | (UInt32(data[offset + 1]) << 8)
-        | (UInt32(data[offset + 2]) << 16)
-        | (UInt32(data[offset + 3]) << 24)
+        guard offset + 3 < data.count else { return 0 }
+        return UInt32(data[offset])
+            | (UInt32(data[offset + 1]) << 8)
+            | (UInt32(data[offset + 2]) << 16)
+            | (UInt32(data[offset + 3]) << 24)
     }
 
     /// Initialize DRAM using the Allwinner FES1 binary.

@@ -56,7 +56,8 @@ final class GameDatabase {
         do {
             let data = try Data(contentsOf: url)
             let decoded = try JSONDecoder().decode([String: GameMetadata].self, from: data)
-            entries = decoded
+            // Normalize all keys to uppercase for consistent CRC32 lookups
+            entries = Dictionary(uniqueKeysWithValues: decoded.map { ($0.key.uppercased(), $0.value) })
             isLoaded = true
             HakchiLogger.games.info("Loaded game database: \(self.entries.count) entries")
         } catch {

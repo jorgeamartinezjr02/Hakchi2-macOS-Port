@@ -80,12 +80,51 @@ final class ClovershellShell: ShellInterface {
     }
 
     func writeFile(remotePath: String, data: Data) async throws {
-        try client.writeFile(remotePath: remotePath, data: data)
+        // Clovershell stdin streaming is unreliable for large files (no backpressure).
+        // Use base64 chunked transfer via executeCommand instead — each chunk is an
+        // independent command that completes before the next one starts.
+        let safePath = remotePath.replacingOccurrences(of: "'", with: "'\\''")
+        let chunkSize = 32768 // 32KB raw → ~44KB base64, fits in one Clovershell packet
+        HakchiLogger.fileLog("clovershell", "writeFile(base64): \(data.count) bytes → \(remotePath)")
+
+        // Create/truncate the file
+        let initResult = try client.executeCommand(": > '\(safePath)' && echo OK")
+        guard initResult.trimmingCharacters(in: .whitespacesAndNewlines) == "OK" else {
+            throw HakchiError.sftpTransferFailed("Failed to create \(remotePath): \(initResult)")
+        }
+
+        var offset = 0
+        var chunkIndex = 0
+        let totalChunks = (data.count + chunkSize - 1) / chunkSize
+
+        while offset < data.count {
+            let end = min(offset + chunkSize, data.count)
+            let chunk = data[offset..<end]
+            let base64 = chunk.base64EncodedString()
+
+            // Use printf to avoid echo's newline interpretation issues with special chars
+            let result = try client.executeCommand(
+                "printf '%s' '\(base64)' | base64 -d >> '\(safePath)' && echo OK"
+            )
+            guard result.trimmingCharacters(in: .whitespacesAndNewlines) == "OK" else {
+                throw HakchiError.sftpTransferFailed(
+                    "Chunk \(chunkIndex+1)/\(totalChunks) failed for \(remotePath): \(result)"
+                )
+            }
+
+            offset = end
+            chunkIndex += 1
+            if chunkIndex % 20 == 0 {
+                HakchiLogger.fileLog("clovershell", "writeFile(base64): chunk \(chunkIndex)/\(totalChunks)")
+            }
+        }
+
+        HakchiLogger.fileLog("clovershell", "writeFile(base64): complete (\(totalChunks) chunks)")
     }
 
     func uploadFile(localPath: String, remotePath: String, progress: ((Double) -> Void)?) async throws {
         let data = try Data(contentsOf: URL(fileURLWithPath: localPath))
-        try client.writeFile(remotePath: remotePath, data: data)
+        try await writeFile(remotePath: remotePath, data: data)
         progress?(1.0)
     }
 
@@ -96,7 +135,8 @@ final class ClovershellShell: ShellInterface {
     }
 
     func listDirectory(path: String) async throws -> [String] {
-        let output = try client.executeCommand("ls -1 \(path)")
+        let safePath = path.replacingOccurrences(of: "'", with: "'\\''")
+        let output = try client.executeCommand("ls -1 '\(safePath)'")
         return output.split(separator: "\n").map(String.init).filter { !$0.isEmpty }
     }
 

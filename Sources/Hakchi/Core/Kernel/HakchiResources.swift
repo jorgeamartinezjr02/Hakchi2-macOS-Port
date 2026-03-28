@@ -172,10 +172,11 @@ final class HakchiResources {
             throw HakchiError.invalidData("Download failed with status: \((response as? HTTPURLResponse)?.statusCode ?? 0)")
         }
 
-        let totalBytes = Int(httpResponse.expectedContentLength)
+        let rawContentLength = httpResponse.expectedContentLength
+        let totalBytes = rawContentLength > 0 ? Int(rawContentLength) : 0
         var receivedBytes = 0
         var buffer = Data()
-        buffer.reserveCapacity(min(totalBytes, 80 * 1024 * 1024))
+        buffer.reserveCapacity(totalBytes > 0 ? min(totalBytes, 80 * 1024 * 1024) : 1024 * 1024)
 
         for try await byte in asyncBytes {
             buffer.append(byte)

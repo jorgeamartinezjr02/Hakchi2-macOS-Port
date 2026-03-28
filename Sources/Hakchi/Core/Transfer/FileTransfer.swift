@@ -64,6 +64,11 @@ actor FileTransfer {
         }
     }
 
+    /// Shell-escape a string for safe single-quoted interpolation.
+    private func shellEscape(_ s: String) -> String {
+        s.replacingOccurrences(of: "'", with: "'\\''")
+    }
+
     func syncFiles(
         operations: [SyncOperation],
         basePath: String,
@@ -73,11 +78,12 @@ actor FileTransfer {
 
         for (index, op) in operations.enumerated() {
             let gameDir = "\(basePath)/CLV-Z-\(op.game.id.uuidString.prefix(5).uppercased())"
+            let safeDir = shellEscape(gameDir)
 
             switch op.type {
             case .upload:
                 progress?(Double(index) / total, "Uploading \(op.game.name)...")
-                _ = try await executeCommand("mkdir -p \(gameDir)")
+                _ = try await executeCommand("mkdir -p '\(safeDir)'")
                 try await uploadFile(
                     localPath: op.game.romPath,
                     remotePath: "\(gameDir)/\(URL(fileURLWithPath: op.game.romPath).lastPathComponent)"
@@ -85,12 +91,12 @@ actor FileTransfer {
 
             case .delete:
                 progress?(Double(index) / total, "Removing \(op.game.name)...")
-                _ = try await executeCommand("rm -rf \(gameDir)")
+                _ = try await executeCommand("rm -rf '\(safeDir)'")
 
             case .update:
                 progress?(Double(index) / total, "Updating \(op.game.name)...")
-                _ = try await executeCommand("rm -rf \(gameDir)")
-                _ = try await executeCommand("mkdir -p \(gameDir)")
+                _ = try await executeCommand("rm -rf '\(safeDir)'")
+                _ = try await executeCommand("mkdir -p '\(safeDir)'")
                 try await uploadFile(
                     localPath: op.game.romPath,
                     remotePath: "\(gameDir)/\(URL(fileURLWithPath: op.game.romPath).lastPathComponent)"

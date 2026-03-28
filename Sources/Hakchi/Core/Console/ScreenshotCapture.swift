@@ -87,8 +87,9 @@ final class ScreenshotCapture {
         }
 
         return data.withUnsafeBytes { ptr -> NSImage? in
+            guard let baseAddress = ptr.baseAddress else { return nil }
             guard let context = CGContext(
-                data: UnsafeMutableRawPointer(mutating: ptr.baseAddress!),
+                data: UnsafeMutableRawPointer(mutating: baseAddress),
                 width: width,
                 height: height,
                 bitsPerComponent: bitsPerComponent,
@@ -104,8 +105,9 @@ final class ScreenshotCapture {
 
     private static func createRGBAImage(from data: Data, width: Int, height: Int) -> NSImage? {
         return data.withUnsafeBytes { ptr -> NSImage? in
+            guard let baseAddress = ptr.baseAddress else { return nil }
             guard let context = CGContext(
-                data: UnsafeMutableRawPointer(mutating: ptr.baseAddress!),
+                data: UnsafeMutableRawPointer(mutating: baseAddress),
                 width: width,
                 height: height,
                 bitsPerComponent: 8,

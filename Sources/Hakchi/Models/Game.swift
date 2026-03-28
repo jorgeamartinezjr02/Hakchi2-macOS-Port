@@ -82,7 +82,7 @@ struct Game: Identifiable, Codable, Hashable {
 
     static func generateCLVCode(consoleType: ConsoleType) -> String {
         let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        let suffix = String((0..<5).map { _ in chars.randomElement()! })
+        let suffix = String((0..<5).map { _ in chars.randomElement() ?? Character("A") })
         return "\(consoleType.clvPrefix)-\(suffix)"
     }
 }

@@ -71,12 +71,17 @@ final class TrashBin {
         try FileManager.default.moveItem(at: romURL, to: restoredROM)
         game.romPath = restoredROM.path
 
-        // Restore cover art
+        // Restore cover art (non-fatal — ROM is the critical asset)
         if let coverPath = trashed.trashedCoverPath, FileManager.default.fileExists(atPath: coverPath) {
             let coverURL = URL(fileURLWithPath: coverPath)
             let restoredCover = BoxArtManager.coverArtDirectory.appendingPathComponent(coverURL.lastPathComponent)
-            try FileManager.default.moveItem(at: coverURL, to: restoredCover)
-            game.coverArtPath = restoredCover.path
+            do {
+                try FileManager.default.moveItem(at: coverURL, to: restoredCover)
+                game.coverArtPath = restoredCover.path
+            } catch {
+                HakchiLogger.games.warning("Failed to restore cover art for \(game.name): \(error.localizedDescription)")
+                game.coverArtPath = nil
+            }
         }
 
         // Clean up trash directory

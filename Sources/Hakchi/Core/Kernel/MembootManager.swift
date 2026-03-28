@@ -167,8 +167,8 @@ actor MembootManager {
 
         // Find end of original string (null-terminated in U-Boot env)
         let searchEnd = min(offset + 512, uboot.count)
-        let originalEnd = uboot[offset..<searchEnd].firstIndex(of: 0) ?? searchEnd
-        let originalLength = originalEnd - offset + 1 // include null
+        let originalEnd = uboot[offset..<searchEnd].firstIndex(of: 0) ?? (searchEnd - 1)
+        let originalLength = originalEnd - offset + 1 // include null terminator
 
         // Ensure replacement fits; pad with nulls if shorter than original
         while replacementData.count < originalLength {

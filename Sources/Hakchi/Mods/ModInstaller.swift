@@ -4,18 +4,24 @@ final class ModInstaller {
     private let modsBasePath = "/var/lib/hakchi/transfer"
     private let installedModsPath = "/var/lib/hakchi/rootfs/etc/mods"
 
+    /// Shell-escape a string for safe single-quoted interpolation.
+    private func shellEscape(_ s: String) -> String {
+        s.replacingOccurrences(of: "'", with: "'\\''")
+    }
+
     func installMod(_ mod: Mod, ssh: SSHClient, progress: ((Double, String) -> Void)? = nil) async throws {
         HakchiLogger.mods.info("Installing mod: \(mod.name)")
 
+        let safeName = shellEscape(mod.name)
         let sftp = SFTPClient(sshClient: ssh)
 
         progress?(0.1, "Preparing \(mod.name)...")
 
         // Ensure transfer directory exists
-        try await ssh.execute("mkdir -p \(modsBasePath)")
+        try await ssh.execute("mkdir -p '\(shellEscape(modsBasePath))'")
 
         // Upload hmod file
-        let remoteHmodPath = "\(modsBasePath)/\(mod.name).hmod"
+        let remoteHmodPath = "\(modsBasePath)/\(safeName).hmod"
         progress?(0.2, "Uploading \(mod.name)...")
 
         try await sftp.upload(
@@ -30,13 +36,13 @@ final class ModInstaller {
         progress?(0.7, "Installing \(mod.name) on console...")
 
         let installCmd = """
-        cd \(modsBasePath) && \
-        mkdir -p \(mod.name) && \
-        tar xzf \(mod.name).hmod -C \(mod.name) 2>/dev/null; \
-        cd \(mod.name)/* 2>/dev/null || cd \(mod.name); \
+        cd '\(shellEscape(modsBasePath))' && \
+        mkdir -p '\(safeName)' && \
+        tar xzf '\(safeName).hmod' -C '\(safeName)' 2>/dev/null; \
+        cd '\(safeName)'/* 2>/dev/null || cd '\(safeName)'; \
         if [ -f install ]; then chmod +x install && ./install; fi && \
-        echo '\(mod.name)' >> \(installedModsPath)/installed && \
-        rm -rf \(modsBasePath)/\(mod.name) \(modsBasePath)/\(mod.name).hmod
+        echo '\(safeName)' >> '\(shellEscape(installedModsPath))/installed' && \
+        rm -rf '\(shellEscape(modsBasePath))/\(safeName)' '\(shellEscape(modsBasePath))/\(safeName).hmod'
         """
 
         let result = try await ssh.execute(installCmd)
@@ -48,14 +54,15 @@ final class ModInstaller {
     func uninstallMod(_ mod: Mod, ssh: SSHClient, progress: ((Double, String) -> Void)? = nil) async throws {
         HakchiLogger.mods.info("Uninstalling mod: \(mod.name)")
 
+        let safeName = shellEscape(mod.name)
         progress?(0.1, "Removing \(mod.name)...")
 
         let uninstallCmd = """
-        if [ -f \(modsBasePath)/\(mod.name)/uninstall ]; then \
-            cd \(modsBasePath)/\(mod.name) && chmod +x uninstall && ./uninstall; \
+        if [ -f '\(shellEscape(modsBasePath))/\(safeName)/uninstall' ]; then \
+            cd '\(shellEscape(modsBasePath))/\(safeName)' && chmod +x uninstall && ./uninstall; \
         fi && \
-        sed -i '/\(mod.name)/d' \(installedModsPath)/installed 2>/dev/null; \
-        rm -rf \(modsBasePath)/\(mod.name)
+        sed -i '/\(safeName)/d' '\(shellEscape(installedModsPath))/installed' 2>/dev/null; \
+        rm -rf '\(shellEscape(modsBasePath))/\(safeName)'
         """
 
         try await ssh.execute(uninstallCmd)
@@ -65,7 +72,7 @@ final class ModInstaller {
     }
 
     func listInstalledMods(ssh: SSHClient) async throws -> [String] {
-        let result = try await ssh.execute("cat \(installedModsPath)/installed 2>/dev/null || echo ''")
+        let result = try await ssh.execute("cat '\(shellEscape(installedModsPath))/installed' 2>/dev/null || echo ''")
         return result
             .components(separatedBy: .newlines)
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }

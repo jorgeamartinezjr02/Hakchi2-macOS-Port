@@ -31,6 +31,10 @@ final class SFTPClient {
         }
     }
 
+    deinit {
+        closeSFTP()
+    }
+
     func upload(localPath: String, remotePath: String, progress: ((Double) -> Void)? = nil) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             do {
@@ -100,8 +104,8 @@ final class SFTPClient {
 
         // Get file size — use _ex variant since libssh2_sftp_stat() is a macro
         var attrs = LIBSSH2_SFTP_ATTRIBUTES()
-        libssh2_sftp_stat_ex(sftp, remotePath, UInt32(remotePath.count), LIBSSH2_SFTP_STAT, &attrs)
-        let totalSize = Double(attrs.filesize)
+        let statResult = libssh2_sftp_stat_ex(sftp, remotePath, UInt32(remotePath.count), LIBSSH2_SFTP_STAT, &attrs)
+        let totalSize = statResult == 0 ? Double(attrs.filesize) : 0.0
 
         // Use _ex variant since libssh2_sftp_open() is a macro
         guard let handle = libssh2_sftp_open_ex(
@@ -139,13 +143,19 @@ final class SFTPClient {
     func mkdir(path: String) throws {
         let sftp = try openSFTP()
         // Use _ex variant since libssh2_sftp_mkdir() is a macro
-        libssh2_sftp_mkdir_ex(sftp, path, UInt32(path.count), Int(LIBSSH2_SFTP_S_IRWXU | LIBSSH2_SFTP_S_IRGRP | LIBSSH2_SFTP_S_IXGRP))
+        let rc = libssh2_sftp_mkdir_ex(sftp, path, UInt32(path.count), Int(LIBSSH2_SFTP_S_IRWXU | LIBSSH2_SFTP_S_IRGRP | LIBSSH2_SFTP_S_IXGRP))
+        guard rc == 0 else {
+            throw HakchiError.sftpTransferFailed("Failed to create directory: \(path)")
+        }
     }
 
     func remove(path: String) throws {
         let sftp = try openSFTP()
         // Use _ex variant since libssh2_sftp_unlink() is a macro
-        libssh2_sftp_unlink_ex(sftp, path, UInt32(path.count))
+        let rc = libssh2_sftp_unlink_ex(sftp, path, UInt32(path.count))
+        guard rc == 0 else {
+            throw HakchiError.sftpTransferFailed("Failed to remove file: \(path)")
+        }
     }
 
     func listDirectory(path: String) throws -> [String] {

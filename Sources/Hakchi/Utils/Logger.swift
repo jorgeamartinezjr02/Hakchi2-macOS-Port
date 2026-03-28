@@ -27,11 +27,14 @@ enum HakchiLogger {
         return df
     }()
 
+    private static let logQueue = DispatchQueue(label: "com.hakchi.logger", qos: .utility)
+
     /// Write a line to ~/hakchi2/logs/hakchi_debug.log
     static func fileLog(_ category: String, _ message: String) {
         let timestamp = dateFormatter.string(from: Date())
         let line = "[\(timestamp)] [\(category)] \(message)\n"
-        if let data = line.data(using: .utf8) {
+        guard let data = line.data(using: .utf8) else { return }
+        logQueue.async {
             if FileManager.default.fileExists(atPath: logFile.path) {
                 if let fh = try? FileHandle(forWritingTo: logFile) {
                     fh.seekToEndOfFile()
