@@ -64,23 +64,71 @@ final class FELDevice {
         isOpen = false
     }
 
+    /// Reconnect to the FEL device (e.g. after FES1 exec causes USB disconnect).
+    func reconnect() {
+        HakchiLogger.fel.info("Reconnecting to FEL device...")
+        // Release current handle without destroying context
+        if let h = handle {
+            libusb_release_interface(h, interfaceNumber)
+            libusb_close(h)
+            handle = nil
+        }
+        isOpen = false
+
+        // Try to re-open for up to 30 seconds
+        for _ in 0..<30 {
+            handle = libusb_open_device_with_vid_pid(
+                context,
+                FELConstants.vendorID,
+                FELConstants.productID
+            )
+            if handle != nil { break }
+            Thread.sleep(forTimeInterval: 1.0)
+        }
+
+        guard handle != nil else {
+            HakchiLogger.fel.error("Reconnect failed: device not found")
+            return
+        }
+
+        libusb_set_auto_detach_kernel_driver(handle, 1)
+        if libusb_claim_interface(handle, interfaceNumber) == 0 {
+            isOpen = true
+            HakchiLogger.fel.info("Reconnected successfully")
+        } else {
+            HakchiLogger.fel.error("Reconnect: failed to claim interface")
+        }
+    }
+
     // MARK: - Low-level USB
 
-    private func bulkSend(_ data: Data) throws {
-        var transferred: Int32 = 0
-        let result = data.withUnsafeBytes { ptr in
-            libusb_bulk_transfer(
-                handle,
-                endpointOut,
-                UnsafeMutablePointer(mutating: ptr.bindMemory(to: UInt8.self).baseAddress),
-                Int32(data.count),
-                &transferred,
-                FELConstants.usbTimeout
-            )
+    private func bulkSend(_ data: Data, retries: Int = 3) throws {
+        var lastError: Int32 = 0
+        for attempt in 0..<retries {
+            var transferred: Int32 = 0
+            let result = data.withUnsafeBytes { ptr in
+                libusb_bulk_transfer(
+                    handle,
+                    endpointOut,
+                    UnsafeMutablePointer(mutating: ptr.bindMemory(to: UInt8.self).baseAddress),
+                    Int32(data.count),
+                    &transferred,
+                    FELConstants.usbTimeout
+                )
+            }
+            if result == 0 { return }
+            lastError = result
+            HakchiLogger.fel.warning("Bulk send attempt \(attempt + 1)/\(retries) failed: \(result)")
+            // LIBUSB_ERROR_TIMEOUT = -7: retry after clearing stale state
+            if result == -7 {
+                libusb_clear_halt(handle, endpointOut)
+                libusb_clear_halt(handle, endpointIn)
+                Thread.sleep(forTimeInterval: 0.1)
+            } else {
+                break
+            }
         }
-        guard result == 0 else {
-            throw HakchiError.felCommunicationError("Bulk send failed: \(result)")
-        }
+        throw HakchiError.felCommunicationError("Bulk send failed: \(lastError)")
     }
 
     private func bulkReceive(length: Int) throws -> Data {
@@ -161,9 +209,18 @@ final class FELDevice {
 
     // MARK: - Public FEL Commands
 
+    /// Read the FEL status after a command (8 bytes via aw_usb_read).
+    /// This matches the C tool's `fel_status()` — required after verify, write, read, exec.
+    private func felStatus() throws {
+        let _ = try felRead(length: 8)
+    }
+
     func getVersion() throws -> FELVersion {
         try sendFELRequest(command: FELConstants.felVerifyDevice)
         let data = try felRead(length: 32)
+        // FEL verify requires reading the 8-byte status (matches C tool's fel_status())
+        // Without this, leftover bytes on the bus corrupt the next command.
+        try felStatus()
         let version = FELVersion(data: data)
         HakchiLogger.fel.info("FEL version: \(version.description)")
         return version
@@ -178,6 +235,7 @@ final class FELDevice {
             let chunkSize = min(remaining, FELConstants.transferMaxSize)
             try sendFELRequest(command: FELConstants.felUpload, address: currentAddr, length: chunkSize)
             let chunk = try felRead(length: Int(chunkSize))
+            try felStatus()
             result.append(chunk)
             currentAddr += chunkSize
             remaining -= chunkSize
@@ -195,6 +253,7 @@ final class FELDevice {
             let chunk = Data(data[offset..<(offset + chunkSize)])
             try sendFELRequest(command: FELConstants.felDownload, address: currentAddr, length: UInt32(chunkSize))
             try felWrite(data: chunk)
+            try felStatus()
             currentAddr += UInt32(chunkSize)
             offset += chunkSize
         }
@@ -202,6 +261,7 @@ final class FELDevice {
 
     func execute(address: UInt32) throws {
         try sendFELRequest(command: FELConstants.felExec, address: address)
+        try felStatus()
         HakchiLogger.fel.info("Executing code at 0x\(String(format: "%08X", address))")
     }
 
@@ -219,6 +279,7 @@ final class FELDevice {
             let chunkSize = min(remaining, FELConstants.transferMaxSize)
             try sendFELRequest(command: FELConstants.felUpload, address: currentAddr, length: chunkSize)
             let chunk = try felRead(length: Int(chunkSize))
+            try felStatus()
             result.append(chunk)
             currentAddr += chunkSize
             remaining -= chunkSize
@@ -244,6 +305,7 @@ final class FELDevice {
             let chunk = Data(data[offset..<(offset + chunkSize)])
             try sendFELRequest(command: FELConstants.felDownload, address: currentAddr, length: UInt32(chunkSize))
             try felWrite(data: chunk)
+            try felStatus()
             currentAddr += UInt32(chunkSize)
             offset += chunkSize
 
@@ -298,6 +360,16 @@ final class FELDevice {
 
         // ── 3. Wait for DRAM to stabilise ────────────────────────────────
         Thread.sleep(forTimeInterval: 2.0)
+
+        // ── 3b. Verify device is still responsive, reconnect if needed ──
+        do {
+            _ = try getVersion()
+        } catch {
+            HakchiLogger.fel.info("Device unresponsive after FES1, reconnecting...")
+            reconnect()
+            Thread.sleep(forTimeInterval: 2.0)
+            _ = try getVersion()
+        }
 
         // ── 4. Verify DRAM is alive ──────────────────────────────────────
         let testAddr = FELConstants.dramBase + 0x100

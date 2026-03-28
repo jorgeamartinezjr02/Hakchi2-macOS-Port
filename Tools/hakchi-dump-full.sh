@@ -8,7 +8,7 @@ CLOVER_EXEC="./Tools/clover-exec"
 FES1="Resources/boot/fes1.bin"
 UBOOT="Resources/boot/uboot.bin"
 BOOTIMG="Resources/boot/boot.img"
-BACKUP_DIR="$HOME/.hakchi2/kernel_backup"
+BACKUP_DIR="$HOME/hakchi2/kernel_backup"
 
 echo "╔══════════════════════════════════════════════╗"
 echo "║  hakchi kernel dump — Full FEL+Clovershell    ║"

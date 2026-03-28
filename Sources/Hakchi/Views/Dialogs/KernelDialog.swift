@@ -373,6 +373,8 @@ struct KernelDialog: View {
     private func performInstall() async {
         isRunning = true
         errorMessage = nil
+        HakchiLogger.clearLog()
+        HakchiLogger.fileLog("install", "=== Install/Repair started ===")
         steps = [
             InstallStep(name: "Download hakchi resources"),
             InstallStep(name: "Wait for console in FEL mode"),
@@ -430,35 +432,66 @@ struct KernelDialog: View {
             device.close() // USB device identity changes after kernel boots
             updateStep(2, status: .completed)
 
-            // Step 4: Wait for shell connection (SSH over USB-Ethernet)
+            // Step 4: Wait for shell connection (Clovershell USB, then SSH fallback)
             updateStep(3, status: .running)
             statusMessage = "Waiting for console to boot..."
-            try await Task.sleep(nanoseconds: 5_000_000_000) // 5s for kernel boot
+            HakchiLogger.fileLog("shell", "Waiting 15s for kernel boot + clovershell daemon...")
+            try await Task.sleep(nanoseconds: 15_000_000_000) // 15s for kernel boot + clovershell
 
             var shell: ShellInterface?
-            for attempt in 0..<30 { // 60 seconds max
+
+            // Try Clovershell first (USB direct — preferred for memboot with hakchi-clovershell)
+            statusMessage = "Connecting via Clovershell USB..."
+            HakchiLogger.fileLog("shell", "Attempting Clovershell connection...")
+            for attempt in 0..<15 {
                 do {
-                    let sshShell = try await SSHShell(
-                        host: AppSettings.shared.sshHost,
-                        port: AppSettings.shared.sshPort
-                    )
-                    shell = sshShell
-                    break
+                    let cloverShell = try ClovershellShell()
+                    // Quick test
+                    let test = try await cloverShell.executeCommand("echo OK")
+                    if test.trimmingCharacters(in: .whitespacesAndNewlines) == "OK" {
+                        shell = cloverShell
+                        HakchiLogger.fileLog("shell", "Clovershell connected on attempt \(attempt + 1)")
+                        break
+                    }
+                    cloverShell.disconnect()
                 } catch {
-                    if attempt == 14 {
-                        statusMessage = "Still waiting for SSH... (this can take up to 60s)"
+                    HakchiLogger.fileLog("shell", "Clovershell attempt \(attempt + 1)/15 failed: \(error)")
+                    if attempt == 7 {
+                        statusMessage = "Still waiting for Clovershell..."
                     }
                     try await Task.sleep(nanoseconds: 2_000_000_000)
                 }
             }
 
+            // Fallback to SSH if Clovershell didn't work
+            if shell == nil {
+                statusMessage = "Trying SSH fallback..."
+                HakchiLogger.fileLog("shell", "Clovershell failed, trying SSH fallback...")
+                for attempt in 0..<15 {
+                    do {
+                        let sshShell = try await SSHShell(
+                            host: AppSettings.shared.sshHost,
+                            port: AppSettings.shared.sshPort
+                        )
+                        shell = sshShell
+                        HakchiLogger.fileLog("shell", "SSH connected on attempt \(attempt + 1)")
+                        break
+                    } catch {
+                        HakchiLogger.fileLog("shell", "SSH attempt \(attempt + 1)/15 failed: \(error)")
+                        try await Task.sleep(nanoseconds: 2_000_000_000)
+                    }
+                }
+            }
+
             guard let connectedShell = shell else {
+                HakchiLogger.fileLog("shell", "FAILED: No shell connection after all attempts")
                 throw HakchiError.sshConnectionFailed(
                     "Console did not come online after memboot. "
                     + "Check USB cable and that DRAM was initialised correctly."
                 )
             }
             statusMessage = "Shell connected"
+            HakchiLogger.fileLog("shell", "Shell connected successfully")
             updateStep(3, status: .completed)
 
             // Step 5: Backup stock kernel from NAND via SSH
@@ -592,21 +625,38 @@ struct KernelDialog: View {
             device.close()
             updateStep(2, status: .completed)
 
-            // Step 4: Wait for SSH
+            // Step 4: Wait for shell (Clovershell USB, then SSH fallback)
             updateStep(3, status: .running)
             statusMessage = "Waiting for console to boot..."
-            try await Task.sleep(nanoseconds: 5_000_000_000)
+            try await Task.sleep(nanoseconds: 15_000_000_000)
 
             var shell: ShellInterface?
-            for _ in 0..<30 {
+            statusMessage = "Connecting via Clovershell USB..."
+            for attempt in 0..<15 {
                 do {
-                    shell = try await SSHShell(
-                        host: AppSettings.shared.sshHost,
-                        port: AppSettings.shared.sshPort
-                    )
-                    break
+                    let cloverShell = try ClovershellShell()
+                    let test = try await cloverShell.executeCommand("echo OK")
+                    if test.trimmingCharacters(in: .whitespacesAndNewlines) == "OK" {
+                        shell = cloverShell
+                        break
+                    }
+                    cloverShell.disconnect()
                 } catch {
                     try await Task.sleep(nanoseconds: 2_000_000_000)
+                }
+            }
+            if shell == nil {
+                statusMessage = "Trying SSH fallback..."
+                for _ in 0..<15 {
+                    do {
+                        shell = try await SSHShell(
+                            host: AppSettings.shared.sshHost,
+                            port: AppSettings.shared.sshPort
+                        )
+                        break
+                    } catch {
+                        try await Task.sleep(nanoseconds: 2_000_000_000)
+                    }
                 }
             }
             guard let connectedShell = shell else {
@@ -691,13 +741,28 @@ struct KernelDialog: View {
             device.close()
             updateStep(2, status: .completed)
 
-            // Step 4: Wait for SSH
+            // Step 4: Wait for shell (Clovershell USB, then SSH fallback)
             updateStep(3, status: .running)
-            try await Task.sleep(nanoseconds: 5_000_000_000)
+            statusMessage = "Waiting for console to boot..."
+            try await Task.sleep(nanoseconds: 15_000_000_000)
             var shell: ShellInterface?
-            for _ in 0..<30 {
-                do { shell = try await SSHShell(host: AppSettings.shared.sshHost, port: AppSettings.shared.sshPort); break }
-                catch { try await Task.sleep(nanoseconds: 2_000_000_000) }
+            statusMessage = "Connecting via Clovershell USB..."
+            for attempt in 0..<15 {
+                do {
+                    let cloverShell = try ClovershellShell()
+                    let test = try await cloverShell.executeCommand("echo OK")
+                    if test.trimmingCharacters(in: .whitespacesAndNewlines) == "OK" {
+                        shell = cloverShell; break
+                    }
+                    cloverShell.disconnect()
+                } catch { try await Task.sleep(nanoseconds: 2_000_000_000) }
+            }
+            if shell == nil {
+                statusMessage = "Trying SSH fallback..."
+                for _ in 0..<15 {
+                    do { shell = try await SSHShell(host: AppSettings.shared.sshHost, port: AppSettings.shared.sshPort); break }
+                    catch { try await Task.sleep(nanoseconds: 2_000_000_000) }
+                }
             }
             guard let connectedShell = shell else {
                 throw HakchiError.sshConnectionFailed("Console did not come online")

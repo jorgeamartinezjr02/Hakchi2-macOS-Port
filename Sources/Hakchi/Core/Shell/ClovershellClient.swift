@@ -249,11 +249,39 @@ final class ClovershellClient {
     }
 
     func writeFile(remotePath: String, data: Data) throws {
-        // Write via base64 encoding through shell
-        let base64 = data.base64EncodedString()
-        let result = try executeCommand("echo '\(base64)' | base64 -d > '\(remotePath)'; echo $?")
-        guard result.trimmingCharacters(in: .whitespacesAndNewlines) == "0" else {
-            throw HakchiError.sftpTransferFailed("Failed to write \(remotePath)")
+        // Stream raw data through stdin using `cat > file`.
+        // This avoids base64 overhead and shell argument limits.
+        guard isConnected else { throw HakchiError.notConnected }
+
+        try sendPacket(.execNewReq, arg: 0, payload: Data("cat > '\(remotePath)'".utf8))
+
+        // Wait for session response
+        var sessionID: UInt8 = 0
+        let (cmd, arg, _) = try recvPacket(timeout: usbTimeout)
+        guard cmd == .execNewResp else {
+            throw HakchiError.sftpTransferFailed("Unexpected response starting write to \(remotePath)")
+        }
+        sessionID = arg
+
+        // Send file data through stdin in chunks (max 65000 bytes each to stay under UInt16 limit)
+        let chunkSize = 65000
+        var offset = 0
+        while offset < data.count {
+            let end = min(offset + chunkSize, data.count)
+            try sendPacket(.execStdin, arg: sessionID, payload: Data(data[offset..<end]))
+            offset = end
+        }
+
+        // Close stdin (empty payload signals EOF)
+        try sendPacket(.execStdin, arg: sessionID, payload: Data())
+
+        // Drain responses until we get execResult
+        while true {
+            let (respCmd, _, _) = try recvPacket(timeout: usbTimeout)
+            if respCmd == .execResult { break }
+            if respCmd == .execStdout || respCmd == .execStderr || respCmd == .pong || respCmd == .execPID {
+                continue
+            }
         }
     }
 
@@ -268,7 +296,12 @@ final class ClovershellClient {
     // MARK: - Low-level Protocol
 
     /// Send a Clovershell packet (4-byte header + payload as one USB transfer).
+    /// Payload must not exceed 65535 bytes (UInt16 length field).
     private func sendPacket(_ cmd: Command, arg: UInt8, payload: Data) throws {
+        guard payload.count <= Int(UInt16.max) else {
+            throw HakchiError.felCommunicationError(
+                "Clovershell payload too large (\(payload.count) bytes, max \(UInt16.max))")
+        }
         let len = UInt16(payload.count)
         var pkt = Data(capacity: 4 + Int(len))
         pkt.append(cmd.rawValue)

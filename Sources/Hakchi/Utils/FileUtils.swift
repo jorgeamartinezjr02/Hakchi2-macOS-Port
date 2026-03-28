@@ -2,8 +2,8 @@ import Foundation
 
 enum FileUtils {
     static let hakchiDirectory: URL = {
-        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        return appSupport.appendingPathComponent("Hakchi", isDirectory: true)
+        let home = FileManager.default.homeDirectoryForCurrentUser
+        return home.appendingPathComponent("hakchi2", isDirectory: true)
     }()
 
     static let gamesDirectory: URL = {

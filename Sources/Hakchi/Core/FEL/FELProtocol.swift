@@ -6,7 +6,7 @@ enum FELConstants {
     static let vendorID: UInt16 = 0x1F3A
     static let productID: UInt16 = 0xEFE8
 
-    static let usbTimeout: UInt32 = 10000 // 10 seconds
+    static let usbTimeout: UInt32 = 30000 // 30 seconds
     static let bulkChunkSize: Int = 65536  // 64KB
 
     // AWUSBRequest signatures
