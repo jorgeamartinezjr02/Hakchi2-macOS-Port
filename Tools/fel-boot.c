@@ -268,7 +268,14 @@ int main(int argc, char **argv) {
     /* Patch bootcmd to set bootargs (with hakchi-clovershell) then boot from RAM.
      * Without explicit setenv, U-Boot loads bootargs from NAND env and ignores
      * the boot.img cmdline — clovershell never starts. */
+    /* Two-phase bootcmd:
+     * 1. Clear the stale NAND env bootargs and save (fixes permanent boot)
+     * 2. Set memboot bootargs with clovershell for THIS boot only
+     * 3. Boot the RAM image
+     * After saveenv, the NAND env has empty bootargs. On next normal NAND boot,
+     * U-Boot's boota will use the boot.img cmdline instead. */
     const char *new_cmd =
+        "setenv bootargs; saveenv; "
         "setenv bootargs root=/dev/nandb decrypt ro console=ttyS0,115200 loglevel=4 "
         "ion_cma_512m=16m coherent_pool=4m consoleblank=0 "
         "hakchi-clovershell hakchi-memboot; boota 47400000";
