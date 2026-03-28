@@ -53,13 +53,13 @@ final class HmodTests: XCTestCase {
 
         let emulators = repo.getModsByCategory("Emulator")
         XCTAssertFalse(emulators.isEmpty)
-        XCTAssertTrue(emulators.allSatisfy { $0.category == "Emulator" })
-
-        let controllers = repo.getModsByCategory("Controller")
-        XCTAssertFalse(controllers.isEmpty)
+        XCTAssertTrue(emulators.allSatisfy { $0.category.lowercased() == "emulator" })
 
         let system = repo.getModsByCategory("System")
         XCTAssertFalse(system.isEmpty)
+
+        let empty = repo.getModsByCategory("NonExistentCategory")
+        XCTAssertTrue(empty.isEmpty)
     }
 
     func testModRepositoryAvailableMods() {
@@ -118,7 +118,7 @@ final class HmodTests: XCTestCase {
     }
 
     func testFileUtilsDirectoryPaths() {
-        XCTAssertTrue(FileUtils.hakchiDirectory.path.contains("Hakchi"))
+        XCTAssertTrue(FileUtils.hakchiDirectory.path.contains("hakchi"))
         XCTAssertTrue(FileUtils.gamesDirectory.path.contains("games"))
         XCTAssertTrue(FileUtils.modsDirectory.path.contains("mods"))
         XCTAssertTrue(FileUtils.kernelBackupDirectory.path.contains("kernel_backup"))

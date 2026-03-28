@@ -25,9 +25,9 @@ struct ROMFile {
     /// All ROM extensions supported (native + RetroArch cores)
     static let allSupportedExtensions = [
         // NES
-        "nes", "fds", "unf", "unif",
+        "nes", "fds", "unf", "unif", "qd",
         // SNES
-        "sfc", "smc", "fig", "swc",
+        "sfc", "smc", "fig", "swc", "sfrom",
         // Genesis / Mega Drive
         "md", "smd", "gen", "bin",
         // Game Boy
@@ -56,9 +56,9 @@ struct ROMFile {
 
     static func detectConsoleType(extension ext: String) -> ConsoleType {
         switch ext.lowercased() {
-        case "nes", "fds", "unf", "unif":
+        case "nes", "fds", "unf", "unif", "qd":
             return .nesUSA
-        case "sfc", "smc", "fig", "swc":
+        case "sfc", "smc", "fig", "swc", "sfrom":
             return .snesUSA
         case "md", "smd", "gen", "bin", "sms", "gg":
             return .genesisUSA

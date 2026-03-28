@@ -44,10 +44,13 @@ enum FELConstants {
     static let ubootMaxSize: UInt32 = 0x200000    // 2MB — max U-Boot binary
 
     // U-Boot bootcmd patching — offset is found dynamically by searching for "bootcmd="
-    // The replacement command simply boots the image in RAM; U-Boot's `boota` reads
-    // bootargs from the Android boot image header at 0x47400000, so we do NOT inject
-    // setenv bootargs (that would override the boot.img cmdline and break clovershell).
-    static let bootcmdRAM: String = "boota 47400000"
+    // Allwinner U-Boot loads bootargs from NAND env on startup; `boota` does NOT
+    // replace them with the boot.img cmdline. We must explicitly setenv bootargs
+    // with hakchi-clovershell/hakchi-memboot, then chain to boota.
+    static let bootcmdRAM: String =
+        "setenv bootargs root=/dev/nandb decrypt ro console=ttyS0,115200 loglevel=4 " +
+        "ion_cma_512m=16m coherent_pool=4m consoleblank=0 " +
+        "hakchi-clovershell hakchi-memboot; boota 47400000"
 
     // DRAM initialization — Allwinner R16/A33 (sun8iw5p1) SoC
     static let socR16: UInt32 = 0x1667
