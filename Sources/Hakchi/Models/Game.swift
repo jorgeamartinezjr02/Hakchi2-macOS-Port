@@ -19,6 +19,9 @@ struct Game: Identifiable, Codable, Hashable {
     var saveCount: Int
     var simultaneous: Bool
     var clvCode: String
+    var assignedCore: String?
+    var system: String?
+    var region: String
 
     init(
         id: UUID = UUID(),
@@ -38,7 +41,10 @@ struct Game: Identifiable, Codable, Hashable {
         commandLine: String = "",
         saveCount: Int = 0,
         simultaneous: Bool = false,
-        clvCode: String = ""
+        clvCode: String = "",
+        assignedCore: String? = nil,
+        system: String? = nil,
+        region: String = "USA"
     ) {
         self.id = id
         self.name = name
@@ -56,6 +62,9 @@ struct Game: Identifiable, Codable, Hashable {
         self.genre = genre
         self.saveCount = saveCount
         self.simultaneous = simultaneous
+        self.assignedCore = assignedCore
+        self.system = system
+        self.region = region
 
         if clvCode.isEmpty {
             self.clvCode = Self.generateCLVCode(consoleType: consoleType)

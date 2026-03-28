@@ -21,6 +21,7 @@ app: build
 	@mkdir -p "$(APP_BUNDLE)/Contents/Resources/boot"
 	@cp Resources/boot/boot.img "$(APP_BUNDLE)/Contents/Resources/boot/" 2>/dev/null || true
 	@cp Resources/boot/uboot.bin "$(APP_BUNDLE)/Contents/Resources/boot/" 2>/dev/null || true
+	@cp Resources/boot/fes1.bin "$(APP_BUNDLE)/Contents/Resources/boot/" 2>/dev/null || true
 	@if [ -f Resources/AppIcon.icns ]; then \
 		cp Resources/AppIcon.icns "$(APP_BUNDLE)/Contents/Resources/"; \
 	fi

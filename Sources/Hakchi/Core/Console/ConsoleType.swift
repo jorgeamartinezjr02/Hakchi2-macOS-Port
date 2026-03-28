@@ -18,6 +18,15 @@ enum ConsoleType: String, Codable, CaseIterable, Identifiable {
 
     case unknown = "Unknown"
 
+    // Aliases used throughout the codebase
+    static let nesUSA = ConsoleType.nesClassic
+    static let nesEU = ConsoleType.nesClassicEUR
+    static let snesUSA = ConsoleType.snesClassic
+    static let snesEU = ConsoleType.snesClassicEUR
+    static let genesisUSA = ConsoleType.segaMini
+    static let megaDriveEU = ConsoleType.megaDriveMini
+    static let megaDriveJP = ConsoleType.megaDriveMini  // No separate JP case; map to megaDriveMini
+
     var id: String { rawValue }
 
     var shortName: String {
@@ -136,6 +145,17 @@ enum ConsoleType: String, Codable, CaseIterable, Identifiable {
         case .unknown: return "CLV-Z"
         }
     }
+
+    // System family as a string (e.g. "NES", "SNES", "Sega")
+    var systemFamily: String { family.rawValue }
+
+    // Convenience family checks
+    var isNES: Bool { family == .nes }
+    var isSNES: Bool { family == .snes }
+    var isSega: Bool { family == .sega }
+
+    // Alias for stockEmulator used by RetroArch core logic
+    var nativeEmulatorPath: String { stockEmulator }
 
     // Selectable console types (excludes .unknown)
     static var selectableCases: [ConsoleType] {

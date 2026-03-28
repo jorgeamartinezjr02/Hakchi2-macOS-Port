@@ -35,7 +35,9 @@ enum FELConstants {
 
     // U-Boot bootcmd patching
     static let bootcmdOffset: Int = 0x6A543     // Offset of "bootcmd=" in uboot.bin
-    static let bootcmdRAM: String = "boota 47400000" // Boot from RAM address
+    // Full bootcmd that explicitly sets bootargs before booting from RAM.
+    // Without setenv, U-Boot loads bootargs from its NAND env and ignores boot.img cmdline.
+    static let bootcmdRAM: String = "setenv bootargs root=/dev/nandb decrypt ro console=ttyS0,115200 loglevel=4 ion_cma_512m=16m coherent_pool=4m consoleblank=0 hakchi-clovershell hakchi-memboot; boota 47400000"
 
     // DRAM initialization — Allwinner R16/A33 (sun8iw5p1) SoC
     static let socR16: UInt32 = 0x1667

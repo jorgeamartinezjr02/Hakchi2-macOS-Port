@@ -265,18 +265,29 @@ int main(int argc, char **argv) {
     /* ── Step 4: Write U-Boot to DRAM ───────────────────── */
     printf("\n[4/6] Loading U-Boot to 0x%08X...\n", UBOOT_ADDR);
 
-    /* Patch bootcmd to boot from transfer address */
-    char new_cmd[80];
-    snprintf(new_cmd, sizeof(new_cmd), "boota %x", TRANSFER_ADDR);
-    /* Pad with spaces + null to overwrite old command */
+    /* Patch bootcmd to set bootargs (with hakchi-clovershell) then boot from RAM.
+     * Without explicit setenv, U-Boot loads bootargs from NAND env and ignores
+     * the boot.img cmdline — clovershell never starts. */
+    const char *new_cmd =
+        "setenv bootargs root=/dev/nandb decrypt ro console=ttyS0,115200 loglevel=4 "
+        "ion_cma_512m=16m coherent_pool=4m consoleblank=0 "
+        "hakchi-clovershell hakchi-memboot; boota 47400000";
     size_t new_len = strlen(new_cmd);
+    /* Find end of original bootcmd string */
+    size_t orig_end = cmd_offset + 8;
+    while (orig_end < uboot_size && uboot[orig_end] != '\0') orig_end++;
+    size_t orig_len = orig_end - (cmd_offset + 8);
+    /* Write new command, ensuring it fits */
+    if (new_len > orig_len + 64) {
+        fprintf(stderr, "WARNING: new bootcmd longer than available space, truncating\n");
+        new_len = orig_len;
+    }
     memcpy(uboot + cmd_offset + 8, new_cmd, new_len);
-    memset(uboot + cmd_offset + 8 + new_len, 0, 1);
-    /* Fill rest with nulls */
-    for (size_t i = cmd_offset + 8 + new_len + 1; i < uboot_size && uboot[i] != '\0'; i++)
+    /* Null-terminate and zero out remainder */
+    for (size_t i = cmd_offset + 8 + new_len; i <= orig_end; i++)
         uboot[i] = '\0';
 
-    printf("  Patched bootcmd: %.40s\n", uboot + cmd_offset);
+    printf("  Patched bootcmd: %.120s\n", uboot + cmd_offset);
 
     rc = fel_write_large(UBOOT_ADDR, uboot, uboot_size, "U-Boot");
     if (rc) return 1;
@@ -289,110 +300,13 @@ int main(int argc, char **argv) {
         return 1;
     }
     printf("  U-Boot started → booting kernel from RAM...\n");
-    printf("  Waiting 15s for kernel boot...\n");
-    usleep(15000000);
+    printf("  Kernel is booting with hakchi-clovershell enabled.\n");
+    printf("  Use clover-exec to communicate with the console.\n");
 
-    /* ── Step 6: SSH kernel dump ────────────────────────── */
-    printf("\n[6/6] Connecting via SSH to dump kernel...\n");
-
-    /* Release USB before SSH */
+    /* Release USB */
     libusb_release_interface(handle, 0);
     libusb_close(handle);
     libusb_exit(NULL);
-
-    char ssh_opts[] = "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "
-                      "-o ConnectTimeout=5 -o LogLevel=ERROR";
-
-    /* Wait for SSH */
-    printf("  Waiting for SSH (169.254.1.1)...\n");
-    int connected = 0;
-    for (int i = 0; i < 30; i++) {
-        char cmd[256];
-        snprintf(cmd, sizeof(cmd),
-            "ssh %s root@169.254.1.1 'echo OK' 2>/dev/null | grep -q OK", ssh_opts);
-        if (system(cmd) == 0) {
-            printf("  SSH connected ✓ (attempt %d)\n", i+1);
-            connected = 1;
-            break;
-        }
-        printf("  Attempt %d/30...\n", i+1);
-        usleep(2000000);
-    }
-    if (!connected) {
-        fprintf(stderr, "SSH timeout. Try manually:\n");
-        fprintf(stderr, "  ssh -o StrictHostKeyChecking=no root@169.254.1.1\n");
-        return 1;
-    }
-
-    /* Dump kernel */
-    printf("  Reading MTD partitions...\n");
-    char mtd_cmd[512];
-    snprintf(mtd_cmd, sizeof(mtd_cmd),
-        "ssh %s root@169.254.1.1 'cat /proc/mtd' 2>/dev/null", ssh_opts);
-    system(mtd_cmd);
-
-    printf("  Finding kernel partition...\n");
-    char find_cmd[512];
-    snprintf(find_cmd, sizeof(find_cmd),
-        "ssh %s root@169.254.1.1 \"grep '\\\"kernel\\\"' /proc/mtd | cut -d: -f1\" 2>/dev/null",
-        ssh_opts);
-    FILE *fp = popen(find_cmd, "r");
-    char mtd_dev[32] = "mtd2";
-    if (fp) {
-        if (fgets(mtd_dev, sizeof(mtd_dev), fp)) {
-            mtd_dev[strcspn(mtd_dev, "\n\r ")] = 0;
-        }
-        pclose(fp);
-    }
-    if (strlen(mtd_dev) == 0) strcpy(mtd_dev, "mtd2");
-    printf("  Using /dev/%s\n", mtd_dev);
-
-    printf("  Dumping kernel...\n");
-    char dump_cmd[512];
-    snprintf(dump_cmd, sizeof(dump_cmd),
-        "ssh %s root@169.254.1.1 'dd if=/dev/%s of=/tmp/kdump.img bs=64k' 2>/dev/null",
-        ssh_opts, mtd_dev);
-    system(dump_cmd);
-
-    /* Create backup dir and download */
-    system("mkdir -p $HOME/.hakchi2/kernel_backup");
-
-    char ts[32];
-    {
-        time_t t = time(NULL);
-        struct tm *tm = localtime(&t);
-        strftime(ts, sizeof(ts), "%Y%m%d_%H%M%S", tm);
-    }
-
-    char local_path[256];
-    snprintf(local_path, sizeof(local_path),
-        "%s/.hakchi2/kernel_backup/kernel_backup_%s.img",
-        getenv("HOME"), ts);
-
-    printf("  Downloading to %s...\n", local_path);
-    char scp_cmd[512];
-    snprintf(scp_cmd, sizeof(scp_cmd),
-        "scp %s root@169.254.1.1:/tmp/kdump.img '%s' 2>/dev/null",
-        ssh_opts, local_path);
-    system(scp_cmd);
-
-    /* Verify */
-    FILE *lf = fopen(local_path, "rb");
-    if (lf) {
-        fseek(lf, 0, SEEK_END);
-        long fsz = ftell(lf);
-        fclose(lf);
-        printf("\n╔══════════════════════════════════════════════╗\n");
-        printf("║  KERNEL DUMP COMPLETE ✓                       ║\n");
-        printf("╠══════════════════════════════════════════════╣\n");
-        printf("║  File: kernel_backup_%s.img\n", ts);
-        printf("║  Size: %ld bytes (%ld KB)\n", fsz, fsz/1024);
-        printf("║  Path: %s\n", local_path);
-        printf("╚══════════════════════════════════════════════╝\n");
-    } else {
-        fprintf(stderr, "ERROR: Download failed\n");
-        return 1;
-    }
 
     return 0;
 }

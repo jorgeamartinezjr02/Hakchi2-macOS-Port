@@ -11,8 +11,8 @@ final class AppSettings: ObservableObject {
     // MARK: - Console
 
     var defaultConsoleType: ConsoleType {
-        let raw = defaults.string(forKey: "defaultConsoleType") ?? "SNES Classic (USA)"
-        return ConsoleType(rawValue: raw) ?? .snesUSA
+        let raw = defaults.string(forKey: "defaultConsoleType") ?? "SNES Classic"
+        return ConsoleType(rawValue: raw) ?? .snesClassic
     }
 
     var autoDetectConsole: Bool {

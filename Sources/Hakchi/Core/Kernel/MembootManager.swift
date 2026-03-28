@@ -133,11 +133,12 @@ actor MembootManager {
     ///
     /// The original bootcmd at offset 0x6A543 is:
     ///   `bootcmd=ext4load sunxi_flash 4:0 43800000 hakchi/boot/boot.img; boota 43800000;`
-    /// We replace it with:
-    ///   `bootcmd=boota 47400000` (padded with nulls)
+    /// We replace it with the full `setenv bootargs …; boota 47400000` command.
+    /// Without explicit `setenv bootargs`, U-Boot loads args from NAND env and the
+    /// boot.img cmdline (with hakchi-clovershell) is ignored.
     private func patchBootcmd(_ uboot: inout Data) {
         let offset = FELConstants.bootcmdOffset
-        guard uboot.count > offset + 80 else {
+        guard uboot.count > offset + 256 else {
             HakchiLogger.kernel.warning("U-Boot too small to patch bootcmd at offset 0x\(String(format: "%X", offset))")
             return
         }
@@ -150,13 +151,26 @@ actor MembootManager {
             return
         }
 
-        // Build replacement: "bootcmd=boota 47400000" + null padding
+        // Check if already patched with setenv bootargs
+        let checkLen = min(offset + 256, uboot.count) - offset
+        let currentCmd = String(data: uboot[offset..<(offset + checkLen)], encoding: .ascii)?
+            .components(separatedBy: "\0").first ?? ""
+        if currentCmd.contains("setenv bootargs") && currentCmd.contains("boota 47400000") {
+            HakchiLogger.kernel.info("bootcmd already patched with setenv bootargs, skipping")
+            return
+        }
+
+        // Build replacement: "bootcmd=setenv bootargs …; boota 47400000" + null terminator
         let replacement = marker + FELConstants.bootcmdRAM
         var replacementData = Data(replacement.utf8)
+        replacementData.append(0) // null terminator
 
-        // Null-pad to overwrite the rest of the original command
-        let originalEnd = uboot[offset...].firstIndex(of: 0) ?? (offset + 80)
-        let originalLength = originalEnd - offset
+        // Find end of original string (null-terminated in U-Boot env)
+        let searchEnd = min(offset + 512, uboot.count)
+        let originalEnd = uboot[offset..<searchEnd].firstIndex(of: 0) ?? searchEnd
+        let originalLength = originalEnd - offset + 1 // include null
+
+        // Ensure replacement fits; pad with nulls if shorter than original
         while replacementData.count < originalLength {
             replacementData.append(0)
         }

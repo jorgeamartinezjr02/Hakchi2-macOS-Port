@@ -36,10 +36,8 @@ final class FELDevice {
             throw HakchiError.deviceNotFound
         }
 
-        // Detach kernel driver if needed
-        if libusb_kernel_driver_active(handle, interfaceNumber) == 1 {
-            libusb_detach_kernel_driver(handle, interfaceNumber)
-        }
+        // Auto-detach kernel driver on macOS for reliable USB access
+        libusb_set_auto_detach_kernel_driver(handle, 1)
 
         guard libusb_claim_interface(handle, interfaceNumber) == 0 else {
             libusb_close(handle)
@@ -86,22 +84,31 @@ final class FELDevice {
     }
 
     private func bulkReceive(length: Int) throws -> Data {
-        var buffer = Data(count: length)
-        var transferred: Int32 = 0
-        let result = buffer.withUnsafeMutableBytes { ptr in
-            libusb_bulk_transfer(
-                handle,
-                endpointIn,
-                ptr.bindMemory(to: UInt8.self).baseAddress,
-                Int32(length),
-                &transferred,
-                FELConstants.usbTimeout
-            )
+        var result = Data()
+        var remaining = length
+
+        while remaining > 0 {
+            var buffer = Data(count: remaining)
+            var transferred: Int32 = 0
+            let rc = buffer.withUnsafeMutableBytes { ptr in
+                libusb_bulk_transfer(
+                    handle,
+                    endpointIn,
+                    ptr.bindMemory(to: UInt8.self).baseAddress,
+                    Int32(remaining),
+                    &transferred,
+                    FELConstants.usbTimeout
+                )
+            }
+            guard rc == 0 else {
+                throw HakchiError.felCommunicationError("Bulk receive failed: \(rc)")
+            }
+            if transferred <= 0 { break }
+            result.append(buffer.prefix(Int(transferred)))
+            remaining -= Int(transferred)
         }
-        guard result == 0 else {
-            throw HakchiError.felCommunicationError("Bulk receive failed: \(result)")
-        }
-        return buffer.prefix(Int(transferred))
+
+        return result
     }
 
     // MARK: - FEL Protocol
