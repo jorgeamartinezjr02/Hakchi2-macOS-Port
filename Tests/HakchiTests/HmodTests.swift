@@ -83,36 +83,42 @@ final class HmodTests: XCTestCase {
     }
 
     func testBootImageParsing() {
-        // Create a minimal valid boot image
-        var data = Data(count: 4096)
+        // Create a valid boot image with page size 2048, kernel 1024, ramdisk 512
+        // Layout: header page (2048) + kernel page (2048) + ramdisk page (2048) = 6144 bytes
+        let pageSize: UInt32 = 2048
+        let kernelSize: UInt32 = 1024
+        let ramdiskSize: UInt32 = 512
+        var data = Data(count: Int(pageSize) * 3)
+
+        // Write header fields as little-endian bytes
+        func writeU32(_ value: UInt32, at offset: Int) {
+            data[offset] = UInt8(value & 0xFF)
+            data[offset+1] = UInt8((value >> 8) & 0xFF)
+            data[offset+2] = UInt8((value >> 16) & 0xFF)
+            data[offset+3] = UInt8((value >> 24) & 0xFF)
+        }
 
         // Magic "ANDROID!"
-        let magic = "ANDROID!".data(using: .ascii)!
+        let magic: [UInt8] = Array("ANDROID!".utf8)
         data.replaceSubrange(0..<8, with: magic)
-
-        // Kernel size = 1024
-        data.replaceSubrange(8..<12, with: withUnsafeBytes(of: UInt32(1024).littleEndian) { Data($0) })
-        // Kernel addr
-        data.replaceSubrange(12..<16, with: withUnsafeBytes(of: UInt32(0x40008000).littleEndian) { Data($0) })
-        // Ramdisk size = 512
-        data.replaceSubrange(16..<20, with: withUnsafeBytes(of: UInt32(512).littleEndian) { Data($0) })
-        // Ramdisk addr
-        data.replaceSubrange(20..<24, with: withUnsafeBytes(of: UInt32(0x41000000).littleEndian) { Data($0) })
-        // Page size = 2048
-        data.replaceSubrange(36..<40, with: withUnsafeBytes(of: UInt32(2048).littleEndian) { Data($0) })
+        writeU32(kernelSize, at: 8)
+        writeU32(0x40008000, at: 12)
+        writeU32(ramdiskSize, at: 16)
+        writeU32(0x41000000, at: 20)
+        writeU32(pageSize, at: 36)
 
         let image = BootImage(data: data)
         XCTAssertNotNil(image)
-        XCTAssertEqual(image?.kernelSize, 1024)
+        XCTAssertEqual(image?.kernelSize, kernelSize)
         XCTAssertEqual(image?.kernelAddr, 0x40008000)
-        XCTAssertEqual(image?.ramdiskSize, 512)
-        XCTAssertEqual(image?.pageSize, 2048)
+        XCTAssertEqual(image?.ramdiskSize, ramdiskSize)
+        XCTAssertEqual(image?.pageSize, pageSize)
     }
 
     func testHakchiError() {
         let error = HakchiError.deviceNotFound
         XCTAssertNotNil(error.errorDescription)
-        XCTAssertTrue(error.errorDescription!.contains("NES/SNES Classic"))
+        XCTAssertTrue(error.errorDescription!.contains("compatible console"))
 
         let romError = HakchiError.romNotSupported("xyz")
         XCTAssertTrue(romError.errorDescription!.contains("xyz"))

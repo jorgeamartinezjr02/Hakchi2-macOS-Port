@@ -22,26 +22,64 @@ struct ROMFile {
         self.consoleType = Self.detectConsoleType(extension: fileExtension)
     }
 
+    /// All ROM extensions supported (native + RetroArch cores)
+    static let allSupportedExtensions = [
+        // NES
+        "nes", "fds", "unf", "unif",
+        // SNES
+        "sfc", "smc", "fig", "swc",
+        // Genesis / Mega Drive
+        "md", "smd", "gen", "bin",
+        // Game Boy
+        "gb",
+        // Game Boy Color
+        "gbc",
+        // Game Boy Advance
+        "gba",
+        // TurboGrafx-16 / PC Engine
+        "pce",
+        // Sega Master System / Game Gear
+        "sms", "gg",
+        // N64
+        "n64", "z64", "v64",
+        // PS1
+        "cue", "iso", "pbp", "chd",
+        // Neo Geo Pocket
+        "ngp", "ngc",
+        // Atari 2600
+        "a26",
+    ]
+
     static func isSupportedExtension(_ ext: String) -> Bool {
-        let supported = ["nes", "fds", "unf", "unif", "sfc", "smc", "fig", "swc", "md", "smd", "gen", "bin"]
-        return supported.contains(ext.lowercased())
+        allSupportedExtensions.contains(ext.lowercased())
     }
 
     static func detectConsoleType(extension ext: String) -> ConsoleType {
         switch ext.lowercased() {
         case "nes", "fds", "unf", "unif":
-            return .nesClassic
+            return .nesUSA
         case "sfc", "smc", "fig", "swc":
-            return .snesClassic
-        case "md", "smd", "gen", "bin":
-            return .segaMini
+            return .snesUSA
+        case "md", "smd", "gen", "bin", "sms", "gg":
+            return .genesisUSA
         default:
+            // RetroArch-only systems default to unknown console type
+            // (they run via RetroArch, not a native emulator)
             return .unknown
         }
     }
 
+    /// Detect the system string for RetroArch core matching
+    static func detectSystem(extension ext: String) -> String? {
+        CoreManager.shared.detectSystem(for: ext)
+    }
+
     func toGame(metadata: GameMetadata? = nil) -> Game {
         let meta = metadata ?? GameDatabase.shared.lookup(crc32: crc32)
+        let system = Self.detectSystem(extension: fileExtension)
+        let defaultCore = system.flatMap { CoreManager.shared.defaultCoreID(for: $0) }
+        // Only assign a RetroArch core for non-native systems
+        let needsCore = consoleType == .unknown && system != nil
 
         return Game(
             name: meta?.name ?? filename,
@@ -52,7 +90,10 @@ struct ROMFile {
             romPath: url.path,
             romSize: fileSize,
             romCRC32: crc32,
-            consoleType: consoleType
+            consoleType: consoleType,
+            assignedCore: needsCore ? defaultCore : nil,
+            system: system ?? meta?.system,
+            region: meta?.region ?? "USA"
         )
     }
 

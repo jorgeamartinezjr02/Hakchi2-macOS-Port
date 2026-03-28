@@ -218,5 +218,4685 @@
     "crc32": "B4E76068",
     "system": "Genesis",
     "region": "USA"
+  },
+  "E28F2B40": {
+    "name": "Super Mario Bros. 2",
+    "sortName": "Super Mario Bros. 2",
+    "publisher": "Nintendo",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "E28F2B40",
+    "system": "NES",
+    "region": "USA"
+  },
+  "B9B4D9E0": {
+    "name": "Zelda II: The Adventure of Link",
+    "sortName": "Zelda II: The Adventure of Link",
+    "publisher": "Nintendo",
+    "releaseDate": "1987",
+    "players": 1,
+    "crc32": "B9B4D9E0",
+    "system": "NES",
+    "region": "USA"
+  },
+  "2470AE1C": {
+    "name": "Punch-Out!!",
+    "sortName": "Punch-Out!!",
+    "publisher": "Nintendo",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "2470AE1C",
+    "system": "NES",
+    "region": "USA"
+  },
+  "FB7A4B0D": {
+    "name": "Mike Tyson's Punch-Out!!",
+    "sortName": "Mike Tyson's Punch-Out!!",
+    "publisher": "Nintendo",
+    "releaseDate": "1987",
+    "players": 1,
+    "crc32": "FB7A4B0D",
+    "system": "NES",
+    "region": "USA"
+  },
+  "D29DB3C6": {
+    "name": "Excitebike",
+    "sortName": "Excitebike",
+    "publisher": "Nintendo",
+    "releaseDate": "1984",
+    "players": 1,
+    "crc32": "D29DB3C6",
+    "system": "NES",
+    "region": "USA"
+  },
+  "C7FBF4E1": {
+    "name": "Ninja Gaiden",
+    "sortName": "Ninja Gaiden",
+    "publisher": "Tecmo",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "C7FBF4E1",
+    "system": "NES",
+    "region": "USA"
+  },
+  "4318A2F8": {
+    "name": "Ninja Gaiden II: The Dark Sword of Chaos",
+    "sortName": "Ninja Gaiden II",
+    "publisher": "Tecmo",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "4318A2F8",
+    "system": "NES",
+    "region": "USA"
+  },
+  "7C1C0E8B": {
+    "name": "Ninja Gaiden III: The Ancient Ship of Doom",
+    "sortName": "Ninja Gaiden III",
+    "publisher": "Tecmo",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "7C1C0E8B",
+    "system": "NES",
+    "region": "USA"
+  },
+  "2C609D4B": {
+    "name": "Duck Hunt",
+    "sortName": "Duck Hunt",
+    "publisher": "Nintendo",
+    "releaseDate": "1984",
+    "players": 1,
+    "crc32": "2C609D4B",
+    "system": "NES",
+    "region": "USA"
+  },
+  "5E66EAEA": {
+    "name": "Double Dragon",
+    "sortName": "Double Dragon",
+    "publisher": "Technos",
+    "releaseDate": "1988",
+    "players": 2,
+    "crc32": "5E66EAEA",
+    "system": "NES",
+    "region": "USA"
+  },
+  "46DC6BBA": {
+    "name": "Double Dragon II: The Revenge",
+    "sortName": "Double Dragon II",
+    "publisher": "Technos",
+    "releaseDate": "1989",
+    "players": 2,
+    "crc32": "46DC6BBA",
+    "system": "NES",
+    "region": "USA"
+  },
+  "79F688BC": {
+    "name": "Bubble Bobble",
+    "sortName": "Bubble Bobble",
+    "publisher": "Taito",
+    "releaseDate": "1988",
+    "players": 2,
+    "crc32": "79F688BC",
+    "system": "NES",
+    "region": "USA"
+  },
+  "6D72C53A": {
+    "name": "Tetris",
+    "sortName": "Tetris",
+    "publisher": "Nintendo",
+    "releaseDate": "1989",
+    "players": 2,
+    "crc32": "6D72C53A",
+    "system": "NES",
+    "region": "USA"
+  },
+  "E2C94BC2": {
+    "name": "Pac-Man",
+    "sortName": "Pac-Man",
+    "publisher": "Namco",
+    "releaseDate": "1984",
+    "players": 2,
+    "crc32": "E2C94BC2",
+    "system": "NES",
+    "region": "USA"
+  },
+  "3A43ADE5": {
+    "name": "Galaga",
+    "sortName": "Galaga",
+    "publisher": "Namco",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "3A43ADE5",
+    "system": "NES",
+    "region": "USA"
+  },
+  "A2194C4C": {
+    "name": "Ice Climber",
+    "sortName": "Ice Climber",
+    "publisher": "Nintendo",
+    "releaseDate": "1985",
+    "players": 2,
+    "crc32": "A2194C4C",
+    "system": "NES",
+    "region": "USA"
+  },
+  "6C3A63B1": {
+    "name": "Balloon Fight",
+    "sortName": "Balloon Fight",
+    "publisher": "Nintendo",
+    "releaseDate": "1985",
+    "players": 2,
+    "crc32": "6C3A63B1",
+    "system": "NES",
+    "region": "USA"
+  },
+  "B8B9ACA3": {
+    "name": "Dr. Mario",
+    "sortName": "Dr. Mario",
+    "publisher": "Nintendo",
+    "releaseDate": "1990",
+    "players": 2,
+    "crc32": "B8B9ACA3",
+    "system": "NES",
+    "region": "USA"
+  },
+  "F54B34BD": {
+    "name": "Tecmo Bowl",
+    "sortName": "Tecmo Bowl",
+    "publisher": "Tecmo",
+    "releaseDate": "1989",
+    "players": 2,
+    "crc32": "F54B34BD",
+    "system": "NES",
+    "region": "USA"
+  },
+  "4E22368E": {
+    "name": "Tecmo Super Bowl",
+    "sortName": "Tecmo Super Bowl",
+    "publisher": "Tecmo",
+    "releaseDate": "1991",
+    "players": 2,
+    "crc32": "4E22368E",
+    "system": "NES",
+    "region": "USA"
+  },
+  "37FC1833": {
+    "name": "River City Ransom",
+    "sortName": "River City Ransom",
+    "publisher": "Technos",
+    "releaseDate": "1989",
+    "players": 2,
+    "crc32": "37FC1833",
+    "system": "NES",
+    "region": "USA"
+  },
+  "279710DC": {
+    "name": "Battletoads",
+    "sortName": "Battletoads",
+    "publisher": "Rare",
+    "releaseDate": "1991",
+    "players": 2,
+    "crc32": "279710DC",
+    "system": "NES",
+    "region": "USA"
+  },
+  "932A077A": {
+    "name": "Mega Man",
+    "sortName": "Mega Man",
+    "publisher": "Capcom",
+    "releaseDate": "1987",
+    "players": 1,
+    "crc32": "932A077A",
+    "system": "NES",
+    "region": "USA"
+  },
+  "F4F6B58A": {
+    "name": "Mega Man 3",
+    "sortName": "Mega Man 3",
+    "publisher": "Capcom",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "F4F6B58A",
+    "system": "NES",
+    "region": "USA"
+  },
+  "56B4BE28": {
+    "name": "Mega Man 4",
+    "sortName": "Mega Man 4",
+    "publisher": "Capcom",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "56B4BE28",
+    "system": "NES",
+    "region": "USA"
+  },
+  "B64C9E2D": {
+    "name": "Mega Man 5",
+    "sortName": "Mega Man 5",
+    "publisher": "Capcom",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "B64C9E2D",
+    "system": "NES",
+    "region": "USA"
+  },
+  "E62E3382": {
+    "name": "Mega Man 6",
+    "sortName": "Mega Man 6",
+    "publisher": "Capcom",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "E62E3382",
+    "system": "NES",
+    "region": "USA"
+  },
+  "D68A6F33": {
+    "name": "Castlevania II: Simon's Quest",
+    "sortName": "Castlevania II",
+    "publisher": "Konami",
+    "releaseDate": "1987",
+    "players": 1,
+    "crc32": "D68A6F33",
+    "system": "NES",
+    "region": "USA"
+  },
+  "ED3FA60B": {
+    "name": "Castlevania III: Dracula's Curse",
+    "sortName": "Castlevania III",
+    "publisher": "Konami",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "ED3FA60B",
+    "system": "NES",
+    "region": "USA"
+  },
+  "48E8AE0D": {
+    "name": "Donkey Kong",
+    "sortName": "Donkey Kong",
+    "publisher": "Nintendo",
+    "releaseDate": "1986",
+    "players": 2,
+    "crc32": "48E8AE0D",
+    "system": "NES",
+    "region": "USA"
+  },
+  "8E3A8B89": {
+    "name": "Donkey Kong Jr.",
+    "sortName": "Donkey Kong Jr.",
+    "publisher": "Nintendo",
+    "releaseDate": "1986",
+    "players": 2,
+    "crc32": "8E3A8B89",
+    "system": "NES",
+    "region": "USA"
+  },
+  "1ACA405F": {
+    "name": "Kid Icarus",
+    "sortName": "Kid Icarus",
+    "publisher": "Nintendo",
+    "releaseDate": "1987",
+    "players": 1,
+    "crc32": "1ACA405F",
+    "system": "NES",
+    "region": "USA"
+  },
+  "9F03B11F": {
+    "name": "Ghosts 'n Goblins",
+    "sortName": "Ghosts 'n Goblins",
+    "publisher": "Capcom",
+    "releaseDate": "1986",
+    "players": 1,
+    "crc32": "9F03B11F",
+    "system": "NES",
+    "region": "USA"
+  },
+  "5EC1E7C1": {
+    "name": "Gradius",
+    "sortName": "Gradius",
+    "publisher": "Konami",
+    "releaseDate": "1986",
+    "players": 1,
+    "crc32": "5EC1E7C1",
+    "system": "NES",
+    "region": "USA"
+  },
+  "D738C059": {
+    "name": "Life Force",
+    "sortName": "Life Force",
+    "publisher": "Konami",
+    "releaseDate": "1988",
+    "players": 2,
+    "crc32": "D738C059",
+    "system": "NES",
+    "region": "USA"
+  },
+  "B1B16B8A": {
+    "name": "Bionic Commando",
+    "sortName": "Bionic Commando",
+    "publisher": "Capcom",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "B1B16B8A",
+    "system": "NES",
+    "region": "USA"
+  },
+  "4A7B479E": {
+    "name": "Blaster Master",
+    "sortName": "Blaster Master",
+    "publisher": "Sunsoft",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "4A7B479E",
+    "system": "NES",
+    "region": "USA"
+  },
+  "5084444B": {
+    "name": "DuckTales",
+    "sortName": "DuckTales",
+    "publisher": "Capcom",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "5084444B",
+    "system": "NES",
+    "region": "USA"
+  },
+  "2CE13ACA": {
+    "name": "DuckTales 2",
+    "sortName": "DuckTales 2",
+    "publisher": "Capcom",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "2CE13ACA",
+    "system": "NES",
+    "region": "USA"
+  },
+  "1F6EA423": {
+    "name": "Chip 'n Dale: Rescue Rangers",
+    "sortName": "Chip 'n Dale: Rescue Rangers",
+    "publisher": "Capcom",
+    "releaseDate": "1990",
+    "players": 2,
+    "crc32": "1F6EA423",
+    "system": "NES",
+    "region": "USA"
+  },
+  "9BDE3267": {
+    "name": "Final Fantasy",
+    "sortName": "Final Fantasy",
+    "publisher": "Square",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "9BDE3267",
+    "system": "NES",
+    "region": "USA"
+  },
+  "A54B2F48": {
+    "name": "Dragon Warrior",
+    "sortName": "Dragon Warrior",
+    "publisher": "Enix",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "A54B2F48",
+    "system": "NES",
+    "region": "USA"
+  },
+  "BAA89E5C": {
+    "name": "Dragon Warrior III",
+    "sortName": "Dragon Warrior III",
+    "publisher": "Enix",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "BAA89E5C",
+    "system": "NES",
+    "region": "USA"
+  },
+  "EBBCE5A4": {
+    "name": "Dragon Warrior IV",
+    "sortName": "Dragon Warrior IV",
+    "publisher": "Enix",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "EBBCE5A4",
+    "system": "NES",
+    "region": "USA"
+  },
+  "E19F2B89": {
+    "name": "R.C. Pro-Am",
+    "sortName": "R.C. Pro-Am",
+    "publisher": "Rare",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "E19F2B89",
+    "system": "NES",
+    "region": "USA"
+  },
+  "F11EFE82": {
+    "name": "Adventure Island",
+    "sortName": "Adventure Island",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "F11EFE82",
+    "system": "NES",
+    "region": "USA"
+  },
+  "AB2F4E89": {
+    "name": "Battletoads & Double Dragon",
+    "sortName": "Battletoads & Double Dragon",
+    "publisher": "Rare",
+    "releaseDate": "1993",
+    "players": 2,
+    "crc32": "AB2F4E89",
+    "system": "NES",
+    "region": "USA"
+  },
+  "AA7B1ACA": {
+    "name": "Super Dodge Ball",
+    "sortName": "Super Dodge Ball",
+    "publisher": "Technos",
+    "releaseDate": "1989",
+    "players": 2,
+    "crc32": "AA7B1ACA",
+    "system": "NES",
+    "region": "USA"
+  },
+  "C48363B4": {
+    "name": "Little Nemo: The Dream Master",
+    "sortName": "Little Nemo: The Dream Master",
+    "publisher": "Capcom",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "C48363B4",
+    "system": "NES",
+    "region": "USA"
+  },
+  "20DDD2F2": {
+    "name": "Faxanadu",
+    "sortName": "Faxanadu",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "20DDD2F2",
+    "system": "NES",
+    "region": "USA"
+  },
+  "BE387AF0": {
+    "name": "Crystalis",
+    "sortName": "Crystalis",
+    "publisher": "SNK",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "BE387AF0",
+    "system": "NES",
+    "region": "USA"
+  },
+  "7B44A555": {
+    "name": "StarTropics",
+    "sortName": "StarTropics",
+    "publisher": "Nintendo",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "7B44A555",
+    "system": "NES",
+    "region": "USA"
+  },
+  "3D564757": {
+    "name": "Gargoyle's Quest II",
+    "sortName": "Gargoyle's Quest II",
+    "publisher": "Capcom",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "3D564757",
+    "system": "NES",
+    "region": "USA"
+  },
+  "A7DD7C5A": {
+    "name": "Super C",
+    "sortName": "Super C",
+    "publisher": "Konami",
+    "releaseDate": "1990",
+    "players": 2,
+    "crc32": "A7DD7C5A",
+    "system": "NES",
+    "region": "USA"
+  },
+  "D9748E2B": {
+    "name": "Jackal",
+    "sortName": "Jackal",
+    "publisher": "Konami",
+    "releaseDate": "1988",
+    "players": 2,
+    "crc32": "D9748E2B",
+    "system": "NES",
+    "region": "USA"
+  },
+  "41611E03": {
+    "name": "Rad Racer",
+    "sortName": "Rad Racer",
+    "publisher": "Square",
+    "releaseDate": "1987",
+    "players": 1,
+    "crc32": "41611E03",
+    "system": "NES",
+    "region": "USA"
+  },
+  "FC3E5C86": {
+    "name": "1942",
+    "sortName": "1942",
+    "publisher": "Capcom",
+    "releaseDate": "1986",
+    "players": 1,
+    "crc32": "FC3E5C86",
+    "system": "NES",
+    "region": "USA"
+  },
+  "3BE2053A": {
+    "name": "1943: The Battle of Midway",
+    "sortName": "1943",
+    "publisher": "Capcom",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "3BE2053A",
+    "system": "NES",
+    "region": "USA"
+  },
+  "DA9D6BEF": {
+    "name": "Bomberman",
+    "sortName": "Bomberman",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "DA9D6BEF",
+    "system": "NES",
+    "region": "USA"
+  },
+  "A3191A52": {
+    "name": "Solomon's Key",
+    "sortName": "Solomon's Key",
+    "publisher": "Tecmo",
+    "releaseDate": "1987",
+    "players": 1,
+    "crc32": "A3191A52",
+    "system": "NES",
+    "region": "USA"
+  },
+  "43A77F15": {
+    "name": "Paperboy",
+    "sortName": "Paperboy",
+    "publisher": "Mindscape",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "43A77F15",
+    "system": "NES",
+    "region": "USA"
+  },
+  "ACE52951": {
+    "name": "Spy Hunter",
+    "sortName": "Spy Hunter",
+    "publisher": "Sunsoft",
+    "releaseDate": "1987",
+    "players": 1,
+    "crc32": "ACE52951",
+    "system": "NES",
+    "region": "USA"
+  },
+  "C026E488": {
+    "name": "F-Zero",
+    "sortName": "F-Zero",
+    "publisher": "Nintendo",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "C026E488",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "1B95B508": {
+    "name": "Star Fox",
+    "sortName": "Star Fox",
+    "publisher": "Nintendo",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "1B95B508",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "D3B62D28": {
+    "name": "Super Mario World 2: Yoshi's Island",
+    "sortName": "Super Mario World 2: Yoshi's Island",
+    "publisher": "Nintendo",
+    "releaseDate": "1995",
+    "players": 1,
+    "crc32": "D3B62D28",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "95BA4019": {
+    "name": "Pilotwings",
+    "sortName": "Pilotwings",
+    "publisher": "Nintendo",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "95BA4019",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "A6E225E3": {
+    "name": "ActRaiser",
+    "sortName": "ActRaiser",
+    "publisher": "Enix",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "A6E225E3",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "09F4DE3A": {
+    "name": "Super Castlevania IV",
+    "sortName": "Super Castlevania IV",
+    "publisher": "Konami",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "09F4DE3A",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "F5A13307": {
+    "name": "Contra III: The Alien Wars",
+    "sortName": "Contra III",
+    "publisher": "Konami",
+    "releaseDate": "1992",
+    "players": 2,
+    "crc32": "F5A13307",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "A81B2A40": {
+    "name": "TMNT IV: Turtles in Time",
+    "sortName": "TMNT IV: Turtles in Time",
+    "publisher": "Konami",
+    "releaseDate": "1992",
+    "players": 2,
+    "crc32": "A81B2A40",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "E0D0C73F": {
+    "name": "NBA Jam",
+    "sortName": "NBA Jam",
+    "publisher": "Acclaim",
+    "releaseDate": "1994",
+    "players": 4,
+    "crc32": "E0D0C73F",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "30CC423D": {
+    "name": "Mortal Kombat",
+    "sortName": "Mortal Kombat",
+    "publisher": "Acclaim",
+    "releaseDate": "1993",
+    "players": 2,
+    "crc32": "30CC423D",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "F71E82B1": {
+    "name": "Mortal Kombat II",
+    "sortName": "Mortal Kombat II",
+    "publisher": "Acclaim",
+    "releaseDate": "1994",
+    "players": 2,
+    "crc32": "F71E82B1",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "ABE13480": {
+    "name": "Donkey Kong Country 2: Diddy's Kong Quest",
+    "sortName": "Donkey Kong Country 2",
+    "publisher": "Rare",
+    "releaseDate": "1995",
+    "players": 2,
+    "crc32": "ABE13480",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "68B295E7": {
+    "name": "Donkey Kong Country 3: Dixie Kong's Double Trouble!",
+    "sortName": "Donkey Kong Country 3",
+    "publisher": "Rare",
+    "releaseDate": "1996",
+    "players": 2,
+    "crc32": "68B295E7",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "C3808DB3": {
+    "name": "Final Fantasy IV",
+    "sortName": "Final Fantasy IV",
+    "publisher": "Square",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "C3808DB3",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "F7F53D3C": {
+    "name": "Final Fantasy V",
+    "sortName": "Final Fantasy V",
+    "publisher": "Square",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "F7F53D3C",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "0E24E2E8": {
+    "name": "Breath of Fire",
+    "sortName": "Breath of Fire",
+    "publisher": "Capcom",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "0E24E2E8",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "1F3F9B6E": {
+    "name": "Breath of Fire II",
+    "sortName": "Breath of Fire II",
+    "publisher": "Capcom",
+    "releaseDate": "1995",
+    "players": 1,
+    "crc32": "1F3F9B6E",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "D2228FA4": {
+    "name": "Super Mario RPG: Legend of the Seven Stars",
+    "sortName": "Super Mario RPG",
+    "publisher": "Nintendo",
+    "releaseDate": "1996",
+    "players": 1,
+    "crc32": "D2228FA4",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "33BE08B1": {
+    "name": "Kirby Super Star",
+    "sortName": "Kirby Super Star",
+    "publisher": "Nintendo",
+    "releaseDate": "1996",
+    "players": 2,
+    "crc32": "33BE08B1",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "652CF02A": {
+    "name": "Kirby's Dream Land 3",
+    "sortName": "Kirby's Dream Land 3",
+    "publisher": "Nintendo",
+    "releaseDate": "1997",
+    "players": 2,
+    "crc32": "652CF02A",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "39645E8A": {
+    "name": "Mega Man X2",
+    "sortName": "Mega Man X2",
+    "publisher": "Capcom",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "39645E8A",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "9F362E28": {
+    "name": "Mega Man X3",
+    "sortName": "Mega Man X3",
+    "publisher": "Capcom",
+    "releaseDate": "1995",
+    "players": 1,
+    "crc32": "9F362E28",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "B9444EC8": {
+    "name": "Super Ghouls 'n Ghosts",
+    "sortName": "Super Ghouls 'n Ghosts",
+    "publisher": "Capcom",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "B9444EC8",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "4E1A5734": {
+    "name": "Zombies Ate My Neighbors",
+    "sortName": "Zombies Ate My Neighbors",
+    "publisher": "Konami",
+    "releaseDate": "1993",
+    "players": 2,
+    "crc32": "4E1A5734",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "B0D54D45": {
+    "name": "SimCity",
+    "sortName": "SimCity",
+    "publisher": "Nintendo",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "B0D54D45",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "56DF9EE2": {
+    "name": "Super Punch-Out!!",
+    "sortName": "Super Punch-Out!!",
+    "publisher": "Nintendo",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "56DF9EE2",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "E7A29002": {
+    "name": "Harvest Moon",
+    "sortName": "Harvest Moon",
+    "publisher": "Natsume",
+    "releaseDate": "1996",
+    "players": 1,
+    "crc32": "E7A29002",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "E38BE3F3": {
+    "name": "Illusion of Gaia",
+    "sortName": "Illusion of Gaia",
+    "publisher": "Enix",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "E38BE3F3",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "42C9DA3B": {
+    "name": "Terranigma",
+    "sortName": "Terranigma",
+    "publisher": "Enix",
+    "releaseDate": "1995",
+    "players": 1,
+    "crc32": "42C9DA3B",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "9B2B7C43": {
+    "name": "Soul Blazer",
+    "sortName": "Soul Blazer",
+    "publisher": "Enix",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "9B2B7C43",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "50A70C94": {
+    "name": "Lufia II: Rise of the Sinistrals",
+    "sortName": "Lufia II",
+    "publisher": "Natsume",
+    "releaseDate": "1995",
+    "players": 1,
+    "crc32": "50A70C94",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "C1F79EF1": {
+    "name": "Gradius III",
+    "sortName": "Gradius III",
+    "publisher": "Konami",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "C1F79EF1",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "E4C56B2D": {
+    "name": "Axelay",
+    "sortName": "Axelay",
+    "publisher": "Konami",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "E4C56B2D",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "A41C29EB": {
+    "name": "UN Squadron",
+    "sortName": "UN Squadron",
+    "publisher": "Capcom",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "A41C29EB",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "51BD3B52": {
+    "name": "R-Type III: The Third Lightning",
+    "sortName": "R-Type III",
+    "publisher": "Irem",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "51BD3B52",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "8238BE2D": {
+    "name": "Demon's Crest",
+    "sortName": "Demon's Crest",
+    "publisher": "Capcom",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "8238BE2D",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "F7582612": {
+    "name": "The Legend of the Mystical Ninja",
+    "sortName": "Legend of the Mystical Ninja, The",
+    "publisher": "Konami",
+    "releaseDate": "1991",
+    "players": 2,
+    "crc32": "F7582612",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "45B7ADEA": {
+    "name": "Super Bomberman",
+    "sortName": "Super Bomberman",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1993",
+    "players": 4,
+    "crc32": "45B7ADEA",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "77CEA281": {
+    "name": "Super Bomberman 2",
+    "sortName": "Super Bomberman 2",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1994",
+    "players": 4,
+    "crc32": "77CEA281",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "D23B2B5A": {
+    "name": "Sunset Riders",
+    "sortName": "Sunset Riders",
+    "publisher": "Konami",
+    "releaseDate": "1993",
+    "players": 2,
+    "crc32": "D23B2B5A",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "F54AB90E": {
+    "name": "Teenage Mutant Ninja Turtles: Tournament Fighters",
+    "sortName": "TMNT: Tournament Fighters",
+    "publisher": "Konami",
+    "releaseDate": "1993",
+    "players": 2,
+    "crc32": "F54AB90E",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "AAF07B18": {
+    "name": "Sonic the Hedgehog 2",
+    "sortName": "Sonic the Hedgehog 2",
+    "publisher": "Sega",
+    "releaseDate": "1992",
+    "players": 2,
+    "crc32": "AAF07B18",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "EB443364": {
+    "name": "Sonic the Hedgehog 3",
+    "sortName": "Sonic the Hedgehog 3",
+    "publisher": "Sega",
+    "releaseDate": "1994",
+    "players": 2,
+    "crc32": "EB443364",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "A5406672": {
+    "name": "Sonic & Knuckles",
+    "sortName": "Sonic & Knuckles",
+    "publisher": "Sega",
+    "releaseDate": "1994",
+    "players": 2,
+    "crc32": "A5406672",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "E9AFEEED": {
+    "name": "Sonic Spinball",
+    "sortName": "Sonic Spinball",
+    "publisher": "Sega",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "E9AFEEED",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "94B85E6A": {
+    "name": "Phantasy Star IV",
+    "sortName": "Phantasy Star IV",
+    "publisher": "Sega",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "94B85E6A",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "4145AA8B": {
+    "name": "Phantasy Star II",
+    "sortName": "Phantasy Star II",
+    "publisher": "Sega",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "4145AA8B",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "5B2095F3": {
+    "name": "Phantasy Star III",
+    "sortName": "Phantasy Star III",
+    "publisher": "Sega",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "5B2095F3",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "A4B1BAA6": {
+    "name": "Shining Force",
+    "sortName": "Shining Force",
+    "publisher": "Sega",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "A4B1BAA6",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "E3CC76EE": {
+    "name": "Shining Force II",
+    "sortName": "Shining Force II",
+    "publisher": "Sega",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "E3CC76EE",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "B27A4913": {
+    "name": "Shining in the Darkness",
+    "sortName": "Shining in the Darkness",
+    "publisher": "Sega",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "B27A4913",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "3ABF2CBB": {
+    "name": "Comix Zone",
+    "sortName": "Comix Zone",
+    "publisher": "Sega",
+    "releaseDate": "1995",
+    "players": 1,
+    "crc32": "3ABF2CBB",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "8F739EC2": {
+    "name": "ToeJam & Earl",
+    "sortName": "ToeJam & Earl",
+    "publisher": "Sega",
+    "releaseDate": "1991",
+    "players": 2,
+    "crc32": "8F739EC2",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "F7D54BE1": {
+    "name": "ToeJam & Earl in Panic on Funkotron",
+    "sortName": "ToeJam & Earl in Panic on Funkotron",
+    "publisher": "Sega",
+    "releaseDate": "1993",
+    "players": 2,
+    "crc32": "F7D54BE1",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "0A5F1CF7": {
+    "name": "Ecco the Dolphin",
+    "sortName": "Ecco the Dolphin",
+    "publisher": "Sega",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "0A5F1CF7",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "B3629F7B": {
+    "name": "Ecco: The Tides of Time",
+    "sortName": "Ecco: The Tides of Time",
+    "publisher": "Sega",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "B3629F7B",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "39D36BB7": {
+    "name": "Altered Beast",
+    "sortName": "Altered Beast",
+    "publisher": "Sega",
+    "releaseDate": "1988",
+    "players": 2,
+    "crc32": "39D36BB7",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "F1A20E4A": {
+    "name": "Golden Axe",
+    "sortName": "Golden Axe",
+    "publisher": "Sega",
+    "releaseDate": "1989",
+    "players": 2,
+    "crc32": "F1A20E4A",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "D2CB5E1C": {
+    "name": "Golden Axe II",
+    "sortName": "Golden Axe II",
+    "publisher": "Sega",
+    "releaseDate": "1991",
+    "players": 2,
+    "crc32": "D2CB5E1C",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "B4B11C4F": {
+    "name": "Golden Axe III",
+    "sortName": "Golden Axe III",
+    "publisher": "Sega",
+    "releaseDate": "1993",
+    "players": 2,
+    "crc32": "B4B11C4F",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "D9AC3F52": {
+    "name": "Shinobi III: Return of the Ninja Master",
+    "sortName": "Shinobi III",
+    "publisher": "Sega",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "D9AC3F52",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "E6F010B4": {
+    "name": "The Revenge of Shinobi",
+    "sortName": "Revenge of Shinobi, The",
+    "publisher": "Sega",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "E6F010B4",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "2C3F9E82": {
+    "name": "Ristar",
+    "sortName": "Ristar",
+    "publisher": "Sega",
+    "releaseDate": "1995",
+    "players": 1,
+    "crc32": "2C3F9E82",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "AB91A016": {
+    "name": "Streets of Rage",
+    "sortName": "Streets of Rage",
+    "publisher": "Sega",
+    "releaseDate": "1991",
+    "players": 2,
+    "crc32": "AB91A016",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "C2178C3F": {
+    "name": "Streets of Rage 3",
+    "sortName": "Streets of Rage 3",
+    "publisher": "Sega",
+    "releaseDate": "1994",
+    "players": 2,
+    "crc32": "C2178C3F",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "1AD9C9C5": {
+    "name": "Vectorman",
+    "sortName": "Vectorman",
+    "publisher": "Sega",
+    "releaseDate": "1995",
+    "players": 1,
+    "crc32": "1AD9C9C5",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "8AD98F63": {
+    "name": "Vectorman 2",
+    "sortName": "Vectorman 2",
+    "publisher": "Sega",
+    "releaseDate": "1996",
+    "players": 1,
+    "crc32": "8AD98F63",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "2F5735CF": {
+    "name": "Earthworm Jim",
+    "sortName": "Earthworm Jim",
+    "publisher": "Shiny",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "2F5735CF",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "CEEA4BC8": {
+    "name": "Earthworm Jim 2",
+    "sortName": "Earthworm Jim 2",
+    "publisher": "Shiny",
+    "releaseDate": "1995",
+    "players": 2,
+    "crc32": "CEEA4BC8",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "64B0C232": {
+    "name": "Aladdin",
+    "sortName": "Aladdin",
+    "publisher": "Sega",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "64B0C232",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "2BFDA838": {
+    "name": "The Lion King",
+    "sortName": "Lion King, The",
+    "publisher": "Virgin",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "2BFDA838",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "B8D34C94": {
+    "name": "Castle of Illusion Starring Mickey Mouse",
+    "sortName": "Castle of Illusion",
+    "publisher": "Sega",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "B8D34C94",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "6DC1A2B8": {
+    "name": "World of Illusion Starring Mickey Mouse and Donald Duck",
+    "sortName": "World of Illusion",
+    "publisher": "Sega",
+    "releaseDate": "1992",
+    "players": 2,
+    "crc32": "6DC1A2B8",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "72FD9B3B": {
+    "name": "Rocket Knight Adventures",
+    "sortName": "Rocket Knight Adventures",
+    "publisher": "Konami",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "72FD9B3B",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "3EC5B2C8": {
+    "name": "Sparkster",
+    "sortName": "Sparkster",
+    "publisher": "Konami",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "3EC5B2C8",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "E2F4B96D": {
+    "name": "Contra: Hard Corps",
+    "sortName": "Contra: Hard Corps",
+    "publisher": "Konami",
+    "releaseDate": "1994",
+    "players": 2,
+    "crc32": "E2F4B96D",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "CC3AEB0B": {
+    "name": "Castlevania: Bloodlines",
+    "sortName": "Castlevania: Bloodlines",
+    "publisher": "Konami",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "CC3AEB0B",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "D9C65D9B": {
+    "name": "Mortal Kombat",
+    "sortName": "Mortal Kombat",
+    "publisher": "Acclaim",
+    "releaseDate": "1993",
+    "players": 2,
+    "crc32": "D9C65D9B",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "8C710A8E": {
+    "name": "Mortal Kombat II",
+    "sortName": "Mortal Kombat II",
+    "publisher": "Acclaim",
+    "releaseDate": "1994",
+    "players": 2,
+    "crc32": "8C710A8E",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "9EA39E3E": {
+    "name": "Mortal Kombat 3",
+    "sortName": "Mortal Kombat 3",
+    "publisher": "Acclaim",
+    "releaseDate": "1995",
+    "players": 2,
+    "crc32": "9EA39E3E",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "D1E89E0A": {
+    "name": "Strider",
+    "sortName": "Strider",
+    "publisher": "Sega",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "D1E89E0A",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "5CAA4520": {
+    "name": "Ghouls 'n Ghosts",
+    "sortName": "Ghouls 'n Ghosts",
+    "publisher": "Sega",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "5CAA4520",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "61B74E5E": {
+    "name": "Thunderforce III",
+    "sortName": "Thunderforce III",
+    "publisher": "Technosoft",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "61B74E5E",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "73D4DAD6": {
+    "name": "Thunderforce IV",
+    "sortName": "Thunderforce IV",
+    "publisher": "Technosoft",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "73D4DAD6",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "5C655EF1": {
+    "name": "MUSHA",
+    "sortName": "MUSHA",
+    "publisher": "Toaplan",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "5C655EF1",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "28AF1BB8": {
+    "name": "Landstalker",
+    "sortName": "Landstalker",
+    "publisher": "Sega",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "28AF1BB8",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "B2A39D75": {
+    "name": "Beyond Oasis",
+    "sortName": "Beyond Oasis",
+    "publisher": "Sega",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "B2A39D75",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "CC8ADCAE": {
+    "name": "Kid Chameleon",
+    "sortName": "Kid Chameleon",
+    "publisher": "Sega",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "CC8ADCAE",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "8D4C8E66": {
+    "name": "Columns",
+    "sortName": "Columns",
+    "publisher": "Sega",
+    "releaseDate": "1990",
+    "players": 2,
+    "crc32": "8D4C8E66",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "E47D2A8E": {
+    "name": "Dr. Robotnik's Mean Bean Machine",
+    "sortName": "Dr. Robotnik's Mean Bean Machine",
+    "publisher": "Sega",
+    "releaseDate": "1993",
+    "players": 2,
+    "crc32": "E47D2A8E",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "BF5A846E": {
+    "name": "Road Rash",
+    "sortName": "Road Rash",
+    "publisher": "Electronic Arts",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "BF5A846E",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "6CF13068": {
+    "name": "Road Rash II",
+    "sortName": "Road Rash II",
+    "publisher": "Electronic Arts",
+    "releaseDate": "1992",
+    "players": 2,
+    "crc32": "6CF13068",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "C8F83AA9": {
+    "name": "Dynamite Headdy",
+    "sortName": "Dynamite Headdy",
+    "publisher": "Sega",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "C8F83AA9",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "A6253A10": {
+    "name": "Ranger-X",
+    "sortName": "Ranger-X",
+    "publisher": "Sega",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "A6253A10",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "9C6C2E8B": {
+    "name": "Sonic 3D Blast",
+    "sortName": "Sonic 3D Blast",
+    "publisher": "Sega",
+    "releaseDate": "1996",
+    "players": 1,
+    "crc32": "9C6C2E8B",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "46607F2C": {
+    "name": "Pokemon Red Version",
+    "sortName": "Pokemon Red Version",
+    "publisher": "Nintendo",
+    "releaseDate": "1998",
+    "players": 2,
+    "crc32": "46607F2C",
+    "system": "GB",
+    "region": "USA"
+  },
+  "D6DA8A1A": {
+    "name": "Pokemon Blue Version",
+    "sortName": "Pokemon Blue Version",
+    "publisher": "Nintendo",
+    "releaseDate": "1998",
+    "players": 2,
+    "crc32": "D6DA8A1A",
+    "system": "GB",
+    "region": "USA"
+  },
+  "7D527D62": {
+    "name": "Pokemon Yellow Version",
+    "sortName": "Pokemon Yellow Version",
+    "publisher": "Nintendo",
+    "releaseDate": "1999",
+    "players": 2,
+    "crc32": "7D527D62",
+    "system": "GB",
+    "region": "USA"
+  },
+  "46DF91AD": {
+    "name": "Tetris",
+    "sortName": "Tetris",
+    "publisher": "Nintendo",
+    "releaseDate": "1989",
+    "players": 2,
+    "crc32": "46DF91AD",
+    "system": "GB",
+    "region": "USA"
+  },
+  "3C27415C": {
+    "name": "The Legend of Zelda: Link's Awakening",
+    "sortName": "Legend of Zelda: Link's Awakening, The",
+    "publisher": "Nintendo",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "3C27415C",
+    "system": "GB",
+    "region": "USA"
+  },
+  "20B2112A": {
+    "name": "Kirby's Dream Land",
+    "sortName": "Kirby's Dream Land",
+    "publisher": "Nintendo",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "20B2112A",
+    "system": "GB",
+    "region": "USA"
+  },
+  "96C37C47": {
+    "name": "Kirby's Dream Land 2",
+    "sortName": "Kirby's Dream Land 2",
+    "publisher": "Nintendo",
+    "releaseDate": "1995",
+    "players": 1,
+    "crc32": "96C37C47",
+    "system": "GB",
+    "region": "USA"
+  },
+  "63B521B5": {
+    "name": "Metroid II: Return of Samus",
+    "sortName": "Metroid II: Return of Samus",
+    "publisher": "Nintendo",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "63B521B5",
+    "system": "GB",
+    "region": "USA"
+  },
+  "CF08A1CC": {
+    "name": "Super Mario Land",
+    "sortName": "Super Mario Land",
+    "publisher": "Nintendo",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "CF08A1CC",
+    "system": "GB",
+    "region": "USA"
+  },
+  "B0614BE8": {
+    "name": "Super Mario Land 2: 6 Golden Coins",
+    "sortName": "Super Mario Land 2",
+    "publisher": "Nintendo",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "B0614BE8",
+    "system": "GB",
+    "region": "USA"
+  },
+  "D7AE4F2E": {
+    "name": "Wario Land: Super Mario Land 3",
+    "sortName": "Wario Land",
+    "publisher": "Nintendo",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "D7AE4F2E",
+    "system": "GB",
+    "region": "USA"
+  },
+  "57C27443": {
+    "name": "Wario Land II",
+    "sortName": "Wario Land II",
+    "publisher": "Nintendo",
+    "releaseDate": "1998",
+    "players": 1,
+    "crc32": "57C27443",
+    "system": "GB",
+    "region": "USA"
+  },
+  "CA2FC206": {
+    "name": "Donkey Kong Land",
+    "sortName": "Donkey Kong Land",
+    "publisher": "Rare",
+    "releaseDate": "1995",
+    "players": 1,
+    "crc32": "CA2FC206",
+    "system": "GB",
+    "region": "USA"
+  },
+  "19C8AE3A": {
+    "name": "Donkey Kong Land 2",
+    "sortName": "Donkey Kong Land 2",
+    "publisher": "Rare",
+    "releaseDate": "1996",
+    "players": 1,
+    "crc32": "19C8AE3A",
+    "system": "GB",
+    "region": "USA"
+  },
+  "A53FDB3A": {
+    "name": "Donkey Kong Land III",
+    "sortName": "Donkey Kong Land III",
+    "publisher": "Rare",
+    "releaseDate": "1997",
+    "players": 1,
+    "crc32": "A53FDB3A",
+    "system": "GB",
+    "region": "USA"
+  },
+  "B8DFBF47": {
+    "name": "Donkey Kong",
+    "sortName": "Donkey Kong",
+    "publisher": "Nintendo",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "B8DFBF47",
+    "system": "GB",
+    "region": "USA"
+  },
+  "5FD4B285": {
+    "name": "Dr. Mario",
+    "sortName": "Dr. Mario",
+    "publisher": "Nintendo",
+    "releaseDate": "1990",
+    "players": 2,
+    "crc32": "5FD4B285",
+    "system": "GB",
+    "region": "USA"
+  },
+  "B6CC4A74": {
+    "name": "Mega Man: Dr. Wily's Revenge",
+    "sortName": "Mega Man: Dr. Wily's Revenge",
+    "publisher": "Capcom",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "B6CC4A74",
+    "system": "GB",
+    "region": "USA"
+  },
+  "34B83EA1": {
+    "name": "Mega Man II",
+    "sortName": "Mega Man II",
+    "publisher": "Capcom",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "34B83EA1",
+    "system": "GB",
+    "region": "USA"
+  },
+  "08D87C5F": {
+    "name": "Mega Man III",
+    "sortName": "Mega Man III",
+    "publisher": "Capcom",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "08D87C5F",
+    "system": "GB",
+    "region": "USA"
+  },
+  "D8DEF0D3": {
+    "name": "Mega Man IV",
+    "sortName": "Mega Man IV",
+    "publisher": "Capcom",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "D8DEF0D3",
+    "system": "GB",
+    "region": "USA"
+  },
+  "AC82693F": {
+    "name": "Mega Man V",
+    "sortName": "Mega Man V",
+    "publisher": "Capcom",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "AC82693F",
+    "system": "GB",
+    "region": "USA"
+  },
+  "2D9E0A8A": {
+    "name": "Gargoyle's Quest",
+    "sortName": "Gargoyle's Quest",
+    "publisher": "Capcom",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "2D9E0A8A",
+    "system": "GB",
+    "region": "USA"
+  },
+  "9F0B549C": {
+    "name": "Final Fantasy Legend",
+    "sortName": "Final Fantasy Legend",
+    "publisher": "Square",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "9F0B549C",
+    "system": "GB",
+    "region": "USA"
+  },
+  "B5A1D8C5": {
+    "name": "Final Fantasy Legend II",
+    "sortName": "Final Fantasy Legend II",
+    "publisher": "Square",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "B5A1D8C5",
+    "system": "GB",
+    "region": "USA"
+  },
+  "1E0CF6C2": {
+    "name": "Final Fantasy Legend III",
+    "sortName": "Final Fantasy Legend III",
+    "publisher": "Square",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "1E0CF6C2",
+    "system": "GB",
+    "region": "USA"
+  },
+  "1AB67CF3": {
+    "name": "Final Fantasy Adventure",
+    "sortName": "Final Fantasy Adventure",
+    "publisher": "Square",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "1AB67CF3",
+    "system": "GB",
+    "region": "USA"
+  },
+  "B14D3DC4": {
+    "name": "Castlevania: The Adventure",
+    "sortName": "Castlevania: The Adventure",
+    "publisher": "Konami",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "B14D3DC4",
+    "system": "GB",
+    "region": "USA"
+  },
+  "84C2B07E": {
+    "name": "Castlevania II: Belmont's Revenge",
+    "sortName": "Castlevania II: Belmont's Revenge",
+    "publisher": "Konami",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "84C2B07E",
+    "system": "GB",
+    "region": "USA"
+  },
+  "E5BC7246": {
+    "name": "Contra: The Alien Wars",
+    "sortName": "Contra: The Alien Wars",
+    "publisher": "Konami",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "E5BC7246",
+    "system": "GB",
+    "region": "USA"
+  },
+  "17C3A89E": {
+    "name": "Kid Dracula",
+    "sortName": "Kid Dracula",
+    "publisher": "Konami",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "17C3A89E",
+    "system": "GB",
+    "region": "USA"
+  },
+  "1D5F4DC7": {
+    "name": "Tetris 2",
+    "sortName": "Tetris 2",
+    "publisher": "Nintendo",
+    "releaseDate": "1993",
+    "players": 2,
+    "crc32": "1D5F4DC7",
+    "system": "GB",
+    "region": "USA"
+  },
+  "F7C524DE": {
+    "name": "Tetris Attack",
+    "sortName": "Tetris Attack",
+    "publisher": "Nintendo",
+    "releaseDate": "1996",
+    "players": 2,
+    "crc32": "F7C524DE",
+    "system": "GB",
+    "region": "USA"
+  },
+  "84ECDA15": {
+    "name": "Game & Watch Gallery",
+    "sortName": "Game & Watch Gallery",
+    "publisher": "Nintendo",
+    "releaseDate": "1997",
+    "players": 1,
+    "crc32": "84ECDA15",
+    "system": "GB",
+    "region": "USA"
+  },
+  "87AC14AE": {
+    "name": "Game & Watch Gallery 2",
+    "sortName": "Game & Watch Gallery 2",
+    "publisher": "Nintendo",
+    "releaseDate": "1998",
+    "players": 1,
+    "crc32": "87AC14AE",
+    "system": "GB",
+    "region": "USA"
+  },
+  "E18B5D81": {
+    "name": "Mario's Picross",
+    "sortName": "Mario's Picross",
+    "publisher": "Nintendo",
+    "releaseDate": "1995",
+    "players": 1,
+    "crc32": "E18B5D81",
+    "system": "GB",
+    "region": "USA"
+  },
+  "C33A7CD1": {
+    "name": "Mole Mania",
+    "sortName": "Mole Mania",
+    "publisher": "Nintendo",
+    "releaseDate": "1996",
+    "players": 1,
+    "crc32": "C33A7CD1",
+    "system": "GB",
+    "region": "USA"
+  },
+  "F5BDE16E": {
+    "name": "Trip World",
+    "sortName": "Trip World",
+    "publisher": "Sunsoft",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "F5BDE16E",
+    "system": "GB",
+    "region": "USA"
+  },
+  "DD90F72A": {
+    "name": "Kid Icarus: Of Myths and Monsters",
+    "sortName": "Kid Icarus: Of Myths and Monsters",
+    "publisher": "Nintendo",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "DD90F72A",
+    "system": "GB",
+    "region": "USA"
+  },
+  "A290D3AB": {
+    "name": "Kwirk",
+    "sortName": "Kwirk",
+    "publisher": "Acclaim",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "A290D3AB",
+    "system": "GB",
+    "region": "USA"
+  },
+  "A6D0D01A": {
+    "name": "Alleyway",
+    "sortName": "Alleyway",
+    "publisher": "Nintendo",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "A6D0D01A",
+    "system": "GB",
+    "region": "USA"
+  },
+  "84462813": {
+    "name": "Baseball",
+    "sortName": "Baseball",
+    "publisher": "Nintendo",
+    "releaseDate": "1989",
+    "players": 2,
+    "crc32": "84462813",
+    "system": "GB",
+    "region": "USA"
+  },
+  "AE82E1E0": {
+    "name": "Pokemon Crystal Version",
+    "sortName": "Pokemon Crystal Version",
+    "publisher": "Nintendo",
+    "releaseDate": "2001",
+    "players": 2,
+    "crc32": "AE82E1E0",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "96F04BB9": {
+    "name": "Pokemon Gold Version",
+    "sortName": "Pokemon Gold Version",
+    "publisher": "Nintendo",
+    "releaseDate": "2000",
+    "players": 2,
+    "crc32": "96F04BB9",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "2D68C1D6": {
+    "name": "Pokemon Silver Version",
+    "sortName": "Pokemon Silver Version",
+    "publisher": "Nintendo",
+    "releaseDate": "2000",
+    "players": 2,
+    "crc32": "2D68C1D6",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "40A42B17": {
+    "name": "Pokemon Trading Card Game",
+    "sortName": "Pokemon Trading Card Game",
+    "publisher": "Nintendo",
+    "releaseDate": "2000",
+    "players": 2,
+    "crc32": "40A42B17",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "3F35B9D9": {
+    "name": "Pokemon Pinball",
+    "sortName": "Pokemon Pinball",
+    "publisher": "Nintendo",
+    "releaseDate": "1999",
+    "players": 1,
+    "crc32": "3F35B9D9",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "795D45AB": {
+    "name": "Shantae",
+    "sortName": "Shantae",
+    "publisher": "Capcom",
+    "releaseDate": "2002",
+    "players": 1,
+    "crc32": "795D45AB",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "F2DC6BE0": {
+    "name": "The Legend of Zelda: Oracle of Ages",
+    "sortName": "Legend of Zelda: Oracle of Ages, The",
+    "publisher": "Nintendo",
+    "releaseDate": "2001",
+    "players": 1,
+    "crc32": "F2DC6BE0",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "F89BD2B1": {
+    "name": "The Legend of Zelda: Oracle of Seasons",
+    "sortName": "Legend of Zelda: Oracle of Seasons, The",
+    "publisher": "Nintendo",
+    "releaseDate": "2001",
+    "players": 1,
+    "crc32": "F89BD2B1",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "A6216BBA": {
+    "name": "The Legend of Zelda: Link's Awakening DX",
+    "sortName": "Legend of Zelda: Link's Awakening DX, The",
+    "publisher": "Nintendo",
+    "releaseDate": "1998",
+    "players": 1,
+    "crc32": "A6216BBA",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "779E5E52": {
+    "name": "Wario Land 3",
+    "sortName": "Wario Land 3",
+    "publisher": "Nintendo",
+    "releaseDate": "2000",
+    "players": 1,
+    "crc32": "779E5E52",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "5A1B4A93": {
+    "name": "Wario Land II",
+    "sortName": "Wario Land II",
+    "publisher": "Nintendo",
+    "releaseDate": "1999",
+    "players": 1,
+    "crc32": "5A1B4A93",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "4E0AA88A": {
+    "name": "Mario Tennis",
+    "sortName": "Mario Tennis",
+    "publisher": "Nintendo",
+    "releaseDate": "2001",
+    "players": 2,
+    "crc32": "4E0AA88A",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "63E41D98": {
+    "name": "Mario Golf",
+    "sortName": "Mario Golf",
+    "publisher": "Nintendo",
+    "releaseDate": "1999",
+    "players": 2,
+    "crc32": "63E41D98",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "1E948EB1": {
+    "name": "Dragon Warrior I & II",
+    "sortName": "Dragon Warrior I & II",
+    "publisher": "Enix",
+    "releaseDate": "2000",
+    "players": 1,
+    "crc32": "1E948EB1",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "54D60B36": {
+    "name": "Dragon Warrior III",
+    "sortName": "Dragon Warrior III",
+    "publisher": "Enix",
+    "releaseDate": "2001",
+    "players": 1,
+    "crc32": "54D60B36",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "E220EF64": {
+    "name": "Dragon Warrior Monsters",
+    "sortName": "Dragon Warrior Monsters",
+    "publisher": "Enix",
+    "releaseDate": "1999",
+    "players": 2,
+    "crc32": "E220EF64",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "B1D5DE0A": {
+    "name": "Dragon Warrior Monsters 2: Cobi's Journey",
+    "sortName": "Dragon Warrior Monsters 2: Cobi's Journey",
+    "publisher": "Enix",
+    "releaseDate": "2001",
+    "players": 2,
+    "crc32": "B1D5DE0A",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "64A2B5E9": {
+    "name": "Metal Gear Solid",
+    "sortName": "Metal Gear Solid",
+    "publisher": "Konami",
+    "releaseDate": "2000",
+    "players": 1,
+    "crc32": "64A2B5E9",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "F59F6E8B": {
+    "name": "Survival Kids",
+    "sortName": "Survival Kids",
+    "publisher": "Konami",
+    "releaseDate": "1999",
+    "players": 1,
+    "crc32": "F59F6E8B",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "49D8C913": {
+    "name": "Mega Man Xtreme",
+    "sortName": "Mega Man Xtreme",
+    "publisher": "Capcom",
+    "releaseDate": "2000",
+    "players": 1,
+    "crc32": "49D8C913",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "39BDA21A": {
+    "name": "Mega Man Xtreme 2",
+    "sortName": "Mega Man Xtreme 2",
+    "publisher": "Capcom",
+    "releaseDate": "2001",
+    "players": 1,
+    "crc32": "39BDA21A",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "6ED5C852": {
+    "name": "Harvest Moon GBC",
+    "sortName": "Harvest Moon GBC",
+    "publisher": "Natsume",
+    "releaseDate": "1999",
+    "players": 1,
+    "crc32": "6ED5C852",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "A3CA83F5": {
+    "name": "Game & Watch Gallery 3",
+    "sortName": "Game & Watch Gallery 3",
+    "publisher": "Nintendo",
+    "releaseDate": "1999",
+    "players": 2,
+    "crc32": "A3CA83F5",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "CC18B6C4": {
+    "name": "Bomberman Max: Blue Champion",
+    "sortName": "Bomberman Max: Blue Champion",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1999",
+    "players": 2,
+    "crc32": "CC18B6C4",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "A12E0CB9": {
+    "name": "Bionic Commando: Elite Forces",
+    "sortName": "Bionic Commando: Elite Forces",
+    "publisher": "Nintendo",
+    "releaseDate": "2000",
+    "players": 1,
+    "crc32": "A12E0CB9",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "1E8B81B2": {
+    "name": "Crystalis",
+    "sortName": "Crystalis",
+    "publisher": "SNK",
+    "releaseDate": "2000",
+    "players": 1,
+    "crc32": "1E8B81B2",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "67E2FBA9": {
+    "name": "Lufia: The Legend Returns",
+    "sortName": "Lufia: The Legend Returns",
+    "publisher": "Natsume",
+    "releaseDate": "2001",
+    "players": 1,
+    "crc32": "67E2FBA9",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "8AC5E7F7": {
+    "name": "Magi Nation",
+    "sortName": "Magi Nation",
+    "publisher": "Interactive Imagination",
+    "releaseDate": "2001",
+    "players": 1,
+    "crc32": "8AC5E7F7",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "42DAEEC4": {
+    "name": "R-Type DX",
+    "sortName": "R-Type DX",
+    "publisher": "Irem",
+    "releaseDate": "1999",
+    "players": 1,
+    "crc32": "42DAEEC4",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "0D3CF8A2": {
+    "name": "Super Mario Bros. Deluxe",
+    "sortName": "Super Mario Bros. Deluxe",
+    "publisher": "Nintendo",
+    "releaseDate": "1999",
+    "players": 2,
+    "crc32": "0D3CF8A2",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "5B3B3626": {
+    "name": "Pokemon Ruby Version",
+    "sortName": "Pokemon Ruby Version",
+    "publisher": "Nintendo",
+    "releaseDate": "2003",
+    "players": 4,
+    "crc32": "5B3B3626",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "A6F71A0C": {
+    "name": "Pokemon Sapphire Version",
+    "sortName": "Pokemon Sapphire Version",
+    "publisher": "Nintendo",
+    "releaseDate": "2003",
+    "players": 4,
+    "crc32": "A6F71A0C",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "1F1C08FB": {
+    "name": "Pokemon Emerald Version",
+    "sortName": "Pokemon Emerald Version",
+    "publisher": "Nintendo",
+    "releaseDate": "2005",
+    "players": 4,
+    "crc32": "1F1C08FB",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "DD88761C": {
+    "name": "Pokemon FireRed Version",
+    "sortName": "Pokemon FireRed Version",
+    "publisher": "Nintendo",
+    "releaseDate": "2004",
+    "players": 4,
+    "crc32": "DD88761C",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "BC44FBCC": {
+    "name": "Pokemon LeafGreen Version",
+    "sortName": "Pokemon LeafGreen Version",
+    "publisher": "Nintendo",
+    "releaseDate": "2004",
+    "players": 4,
+    "crc32": "BC44FBCC",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "7B3FEB0D": {
+    "name": "Metroid Fusion",
+    "sortName": "Metroid Fusion",
+    "publisher": "Nintendo",
+    "releaseDate": "2002",
+    "players": 1,
+    "crc32": "7B3FEB0D",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "39DCA8D0": {
+    "name": "Metroid: Zero Mission",
+    "sortName": "Metroid: Zero Mission",
+    "publisher": "Nintendo",
+    "releaseDate": "2004",
+    "players": 1,
+    "crc32": "39DCA8D0",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "B10C9400": {
+    "name": "Fire Emblem",
+    "sortName": "Fire Emblem",
+    "publisher": "Nintendo",
+    "releaseDate": "2003",
+    "players": 1,
+    "crc32": "B10C9400",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "D46E3C9F": {
+    "name": "Fire Emblem: The Sacred Stones",
+    "sortName": "Fire Emblem: The Sacred Stones",
+    "publisher": "Nintendo",
+    "releaseDate": "2005",
+    "players": 1,
+    "crc32": "D46E3C9F",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "4AE5A345": {
+    "name": "Advance Wars",
+    "sortName": "Advance Wars",
+    "publisher": "Nintendo",
+    "releaseDate": "2001",
+    "players": 4,
+    "crc32": "4AE5A345",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "7F93C8F0": {
+    "name": "Advance Wars 2: Black Hole Rising",
+    "sortName": "Advance Wars 2",
+    "publisher": "Nintendo",
+    "releaseDate": "2003",
+    "players": 4,
+    "crc32": "7F93C8F0",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "7ACFF821": {
+    "name": "Golden Sun",
+    "sortName": "Golden Sun",
+    "publisher": "Nintendo",
+    "releaseDate": "2001",
+    "players": 1,
+    "crc32": "7ACFF821",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "C2BFC3F0": {
+    "name": "Golden Sun: The Lost Age",
+    "sortName": "Golden Sun: The Lost Age",
+    "publisher": "Nintendo",
+    "releaseDate": "2003",
+    "players": 1,
+    "crc32": "C2BFC3F0",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "A47DFEA0": {
+    "name": "Castlevania: Aria of Sorrow",
+    "sortName": "Castlevania: Aria of Sorrow",
+    "publisher": "Konami",
+    "releaseDate": "2003",
+    "players": 1,
+    "crc32": "A47DFEA0",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "B9B5FB01": {
+    "name": "Castlevania: Circle of the Moon",
+    "sortName": "Castlevania: Circle of the Moon",
+    "publisher": "Konami",
+    "releaseDate": "2001",
+    "players": 1,
+    "crc32": "B9B5FB01",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "CEBD6214": {
+    "name": "Castlevania: Harmony of Dissonance",
+    "sortName": "Castlevania: Harmony of Dissonance",
+    "publisher": "Konami",
+    "releaseDate": "2002",
+    "players": 1,
+    "crc32": "CEBD6214",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "24F7DF84": {
+    "name": "The Legend of Zelda: The Minish Cap",
+    "sortName": "Legend of Zelda: The Minish Cap, The",
+    "publisher": "Nintendo",
+    "releaseDate": "2004",
+    "players": 1,
+    "crc32": "24F7DF84",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "9FB3C001": {
+    "name": "The Legend of Zelda: A Link to the Past & Four Swords",
+    "sortName": "Legend of Zelda: A Link to the Past & Four Swords, The",
+    "publisher": "Nintendo",
+    "releaseDate": "2002",
+    "players": 4,
+    "crc32": "9FB3C001",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "41F3E5E1": {
+    "name": "Super Mario Advance",
+    "sortName": "Super Mario Advance",
+    "publisher": "Nintendo",
+    "releaseDate": "2001",
+    "players": 4,
+    "crc32": "41F3E5E1",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "1A195085": {
+    "name": "Super Mario Advance 2: Super Mario World",
+    "sortName": "Super Mario Advance 2",
+    "publisher": "Nintendo",
+    "releaseDate": "2002",
+    "players": 1,
+    "crc32": "1A195085",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "9C09E3A2": {
+    "name": "Super Mario Advance 3: Yoshi's Island",
+    "sortName": "Super Mario Advance 3",
+    "publisher": "Nintendo",
+    "releaseDate": "2002",
+    "players": 1,
+    "crc32": "9C09E3A2",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "45106B58": {
+    "name": "Super Mario Advance 4: Super Mario Bros. 3",
+    "sortName": "Super Mario Advance 4",
+    "publisher": "Nintendo",
+    "releaseDate": "2003",
+    "players": 1,
+    "crc32": "45106B58",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "D1A67D12": {
+    "name": "Mario Kart: Super Circuit",
+    "sortName": "Mario Kart: Super Circuit",
+    "publisher": "Nintendo",
+    "releaseDate": "2001",
+    "players": 4,
+    "crc32": "D1A67D12",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "5ACA7BDA": {
+    "name": "Mario & Luigi: Superstar Saga",
+    "sortName": "Mario & Luigi: Superstar Saga",
+    "publisher": "Nintendo",
+    "releaseDate": "2003",
+    "players": 1,
+    "crc32": "5ACA7BDA",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "A17E5BBB": {
+    "name": "Mario vs. Donkey Kong",
+    "sortName": "Mario vs. Donkey Kong",
+    "publisher": "Nintendo",
+    "releaseDate": "2004",
+    "players": 1,
+    "crc32": "A17E5BBB",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "D7B36C2F": {
+    "name": "WarioWare, Inc.: Mega Microgame$!",
+    "sortName": "WarioWare, Inc.",
+    "publisher": "Nintendo",
+    "releaseDate": "2003",
+    "players": 1,
+    "crc32": "D7B36C2F",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "3BE3C0AA": {
+    "name": "WarioWare: Twisted!",
+    "sortName": "WarioWare: Twisted!",
+    "publisher": "Nintendo",
+    "releaseDate": "2005",
+    "players": 1,
+    "crc32": "3BE3C0AA",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "1E66FDCE": {
+    "name": "Wario Land 4",
+    "sortName": "Wario Land 4",
+    "publisher": "Nintendo",
+    "releaseDate": "2001",
+    "players": 1,
+    "crc32": "1E66FDCE",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "CE78B24C": {
+    "name": "Kirby & the Amazing Mirror",
+    "sortName": "Kirby & the Amazing Mirror",
+    "publisher": "Nintendo",
+    "releaseDate": "2004",
+    "players": 4,
+    "crc32": "CE78B24C",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "8B7ADA25": {
+    "name": "Kirby: Nightmare in Dream Land",
+    "sortName": "Kirby: Nightmare in Dream Land",
+    "publisher": "Nintendo",
+    "releaseDate": "2002",
+    "players": 4,
+    "crc32": "8B7ADA25",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "6E0A6346": {
+    "name": "Mega Man Zero",
+    "sortName": "Mega Man Zero",
+    "publisher": "Capcom",
+    "releaseDate": "2002",
+    "players": 1,
+    "crc32": "6E0A6346",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "3D5C94BA": {
+    "name": "Mega Man Zero 2",
+    "sortName": "Mega Man Zero 2",
+    "publisher": "Capcom",
+    "releaseDate": "2003",
+    "players": 1,
+    "crc32": "3D5C94BA",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "2D7BE2C6": {
+    "name": "Mega Man Zero 3",
+    "sortName": "Mega Man Zero 3",
+    "publisher": "Capcom",
+    "releaseDate": "2004",
+    "players": 1,
+    "crc32": "2D7BE2C6",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "C50D89A0": {
+    "name": "Mega Man Zero 4",
+    "sortName": "Mega Man Zero 4",
+    "publisher": "Capcom",
+    "releaseDate": "2005",
+    "players": 1,
+    "crc32": "C50D89A0",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "12AF1C2C": {
+    "name": "Mega Man Battle Network",
+    "sortName": "Mega Man Battle Network",
+    "publisher": "Capcom",
+    "releaseDate": "2001",
+    "players": 2,
+    "crc32": "12AF1C2C",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "F48AF36D": {
+    "name": "Mega Man Battle Network 2",
+    "sortName": "Mega Man Battle Network 2",
+    "publisher": "Capcom",
+    "releaseDate": "2002",
+    "players": 2,
+    "crc32": "F48AF36D",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "E51B2B49": {
+    "name": "Mega Man Battle Network 3: Blue",
+    "sortName": "Mega Man Battle Network 3: Blue",
+    "publisher": "Capcom",
+    "releaseDate": "2003",
+    "players": 2,
+    "crc32": "E51B2B49",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "8ECEB8C4": {
+    "name": "Final Fantasy Tactics Advance",
+    "sortName": "Final Fantasy Tactics Advance",
+    "publisher": "Square Enix",
+    "releaseDate": "2003",
+    "players": 2,
+    "crc32": "8ECEB8C4",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "BE91EA5E": {
+    "name": "Final Fantasy I & II: Dawn of Souls",
+    "sortName": "Final Fantasy I & II: Dawn of Souls",
+    "publisher": "Square Enix",
+    "releaseDate": "2004",
+    "players": 1,
+    "crc32": "BE91EA5E",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "5A262D8E": {
+    "name": "Final Fantasy IV Advance",
+    "sortName": "Final Fantasy IV Advance",
+    "publisher": "Square Enix",
+    "releaseDate": "2005",
+    "players": 1,
+    "crc32": "5A262D8E",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "46C0BB14": {
+    "name": "Final Fantasy V Advance",
+    "sortName": "Final Fantasy V Advance",
+    "publisher": "Square Enix",
+    "releaseDate": "2006",
+    "players": 1,
+    "crc32": "46C0BB14",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "18D37B62": {
+    "name": "Final Fantasy VI Advance",
+    "sortName": "Final Fantasy VI Advance",
+    "publisher": "Square Enix",
+    "releaseDate": "2006",
+    "players": 1,
+    "crc32": "18D37B62",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "BD4B7B02": {
+    "name": "Sonic Advance",
+    "sortName": "Sonic Advance",
+    "publisher": "Sega",
+    "releaseDate": "2002",
+    "players": 4,
+    "crc32": "BD4B7B02",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "72C23C62": {
+    "name": "Sonic Advance 2",
+    "sortName": "Sonic Advance 2",
+    "publisher": "Sega",
+    "releaseDate": "2003",
+    "players": 4,
+    "crc32": "72C23C62",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "3CEAFA3B": {
+    "name": "Sonic Advance 3",
+    "sortName": "Sonic Advance 3",
+    "publisher": "Sega",
+    "releaseDate": "2004",
+    "players": 4,
+    "crc32": "3CEAFA3B",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "5ADB7F22": {
+    "name": "Drill Dozer",
+    "sortName": "Drill Dozer",
+    "publisher": "Nintendo",
+    "releaseDate": "2006",
+    "players": 1,
+    "crc32": "5ADB7F22",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "F0E16E20": {
+    "name": "Astro Boy: Omega Factor",
+    "sortName": "Astro Boy: Omega Factor",
+    "publisher": "Sega",
+    "releaseDate": "2004",
+    "players": 1,
+    "crc32": "F0E16E20",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "7AB9F8BA": {
+    "name": "Gunstar Super Heroes",
+    "sortName": "Gunstar Super Heroes",
+    "publisher": "Sega",
+    "releaseDate": "2005",
+    "players": 1,
+    "crc32": "7AB9F8BA",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "B78D3DE3": {
+    "name": "F-Zero: Maximum Velocity",
+    "sortName": "F-Zero: Maximum Velocity",
+    "publisher": "Nintendo",
+    "releaseDate": "2001",
+    "players": 4,
+    "crc32": "B78D3DE3",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "4DD04E89": {
+    "name": "F-Zero: GP Legend",
+    "sortName": "F-Zero: GP Legend",
+    "publisher": "Nintendo",
+    "releaseDate": "2004",
+    "players": 4,
+    "crc32": "4DD04E89",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "EAAC4E62": {
+    "name": "Harvest Moon: Friends of Mineral Town",
+    "sortName": "Harvest Moon: Friends of Mineral Town",
+    "publisher": "Natsume",
+    "releaseDate": "2003",
+    "players": 1,
+    "crc32": "EAAC4E62",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "0C850CA9": {
+    "name": "Pokemon Mystery Dungeon: Red Rescue Team",
+    "sortName": "Pokemon Mystery Dungeon: Red Rescue Team",
+    "publisher": "Nintendo",
+    "releaseDate": "2006",
+    "players": 1,
+    "crc32": "0C850CA9",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "6B02C3B5": {
+    "name": "Tactics Ogre: The Knight of Lodis",
+    "sortName": "Tactics Ogre",
+    "publisher": "Atlus",
+    "releaseDate": "2002",
+    "players": 2,
+    "crc32": "6B02C3B5",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "1CBE02E2": {
+    "name": "Breath of Fire",
+    "sortName": "Breath of Fire",
+    "publisher": "Capcom",
+    "releaseDate": "2001",
+    "players": 1,
+    "crc32": "1CBE02E2",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "AE1CBB03": {
+    "name": "Breath of Fire II",
+    "sortName": "Breath of Fire II",
+    "publisher": "Capcom",
+    "releaseDate": "2002",
+    "players": 1,
+    "crc32": "AE1CBB03",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "E8D3F9E8": {
+    "name": "Riviera: The Promised Land",
+    "sortName": "Riviera: The Promised Land",
+    "publisher": "Atlus",
+    "releaseDate": "2005",
+    "players": 1,
+    "crc32": "E8D3F9E8",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "A5B7A87E": {
+    "name": "Summon Night: Swordcraft Story",
+    "sortName": "Summon Night: Swordcraft Story",
+    "publisher": "Atlus",
+    "releaseDate": "2006",
+    "players": 1,
+    "crc32": "A5B7A87E",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "C87DD934": {
+    "name": "Yggdra Union",
+    "sortName": "Yggdra Union",
+    "publisher": "Atlus",
+    "releaseDate": "2006",
+    "players": 1,
+    "crc32": "C87DD934",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "BA258C3F": {
+    "name": "Mother 3",
+    "sortName": "Mother 3",
+    "publisher": "Nintendo",
+    "releaseDate": "2006",
+    "players": 1,
+    "crc32": "BA258C3F",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "B834CA48": {
+    "name": "Ninja Five-O",
+    "sortName": "Ninja Five-O",
+    "publisher": "Konami",
+    "releaseDate": "2003",
+    "players": 1,
+    "crc32": "B834CA48",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "AE3AD2E0": {
+    "name": "Boktai: The Sun Is in Your Hand",
+    "sortName": "Boktai",
+    "publisher": "Konami",
+    "releaseDate": "2003",
+    "players": 1,
+    "crc32": "AE3AD2E0",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "64F36E2B": {
+    "name": "Boktai 2: Solar Boy Django",
+    "sortName": "Boktai 2",
+    "publisher": "Konami",
+    "releaseDate": "2004",
+    "players": 1,
+    "crc32": "64F36E2B",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "E5F1B89A": {
+    "name": "Sword of Mana",
+    "sortName": "Sword of Mana",
+    "publisher": "Square Enix",
+    "releaseDate": "2003",
+    "players": 1,
+    "crc32": "E5F1B89A",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "23C87D58": {
+    "name": "Kingdom Hearts: Chain of Memories",
+    "sortName": "Kingdom Hearts: Chain of Memories",
+    "publisher": "Square Enix",
+    "releaseDate": "2004",
+    "players": 1,
+    "crc32": "23C87D58",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "C9ECA8EB": {
+    "name": "Donkey Kong Country",
+    "sortName": "Donkey Kong Country",
+    "publisher": "Nintendo",
+    "releaseDate": "2003",
+    "players": 1,
+    "crc32": "C9ECA8EB",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "8B34B970": {
+    "name": "Donkey Kong Country 2",
+    "sortName": "Donkey Kong Country 2",
+    "publisher": "Nintendo",
+    "releaseDate": "2004",
+    "players": 1,
+    "crc32": "8B34B970",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "45D7E7B3": {
+    "name": "Donkey Kong Country 3",
+    "sortName": "Donkey Kong Country 3",
+    "publisher": "Nintendo",
+    "releaseDate": "2005",
+    "players": 1,
+    "crc32": "45D7E7B3",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "2E95B29E": {
+    "name": "Bonk's Adventure",
+    "sortName": "Bonk's Adventure",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "2E95B29E",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "CA748E6D": {
+    "name": "Bonk's Revenge",
+    "sortName": "Bonk's Revenge",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "CA748E6D",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "3C29E2FA": {
+    "name": "Bonk 3: Bonk's Big Adventure",
+    "sortName": "Bonk 3",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1993",
+    "players": 2,
+    "crc32": "3C29E2FA",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "B486A8ED": {
+    "name": "Blazing Lazers",
+    "sortName": "Blazing Lazers",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "B486A8ED",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "F8F85AE0": {
+    "name": "Military Madness",
+    "sortName": "Military Madness",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1989",
+    "players": 2,
+    "crc32": "F8F85AE0",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "24A2B37F": {
+    "name": "Ys Book I & II",
+    "sortName": "Ys Book I & II",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "24A2B37F",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "3F9F95A4": {
+    "name": "Ys III: Wanderers from Ys",
+    "sortName": "Ys III",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "3F9F95A4",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "56139B56": {
+    "name": "Ys IV: The Dawn of Ys",
+    "sortName": "Ys IV",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "56139B56",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "D15CB6BB": {
+    "name": "R-Type",
+    "sortName": "R-Type",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "D15CB6BB",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "35E84871": {
+    "name": "Soldier Blade",
+    "sortName": "Soldier Blade",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "35E84871",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "B44B2F3E": {
+    "name": "Super Star Soldier",
+    "sortName": "Super Star Soldier",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "B44B2F3E",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "4AF3C3EB": {
+    "name": "Gate of Thunder",
+    "sortName": "Gate of Thunder",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "4AF3C3EB",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "B53C684E": {
+    "name": "Lords of Thunder",
+    "sortName": "Lords of Thunder",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "B53C684E",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "CF1A0032": {
+    "name": "Legendary Axe",
+    "sortName": "Legendary Axe",
+    "publisher": "NEC",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "CF1A0032",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "6F4B42A7": {
+    "name": "Legendary Axe II",
+    "sortName": "Legendary Axe II",
+    "publisher": "NEC",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "6F4B42A7",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "C150637A": {
+    "name": "Dungeon Explorer",
+    "sortName": "Dungeon Explorer",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1989",
+    "players": 5,
+    "crc32": "C150637A",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "2D211AE2": {
+    "name": "Neutopia",
+    "sortName": "Neutopia",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "2D211AE2",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "66F616E2": {
+    "name": "Neutopia II",
+    "sortName": "Neutopia II",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "66F616E2",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "2BC023FC": {
+    "name": "Cadash",
+    "sortName": "Cadash",
+    "publisher": "Working Designs",
+    "releaseDate": "1991",
+    "players": 2,
+    "crc32": "2BC023FC",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "E24C1583": {
+    "name": "Splatterhouse",
+    "sortName": "Splatterhouse",
+    "publisher": "NEC",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "E24C1583",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "9C4B1B46": {
+    "name": "Ninja Spirit",
+    "sortName": "Ninja Spirit",
+    "publisher": "NEC",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "9C4B1B46",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "82AE3B16": {
+    "name": "Air Zonk",
+    "sortName": "Air Zonk",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "82AE3B16",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "1E2C4D3D": {
+    "name": "Devil's Crush",
+    "sortName": "Devil's Crush",
+    "publisher": "NEC",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "1E2C4D3D",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "A1CA83CE": {
+    "name": "Alien Crush",
+    "sortName": "Alien Crush",
+    "publisher": "NEC",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "A1CA83CE",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "B4A1B99E": {
+    "name": "Keith Courage in Alpha Zones",
+    "sortName": "Keith Courage in Alpha Zones",
+    "publisher": "NEC",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "B4A1B99E",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "5B49E0D8": {
+    "name": "Bomberman '93",
+    "sortName": "Bomberman '93",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1992",
+    "players": 5,
+    "crc32": "5B49E0D8",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "B0146ECE": {
+    "name": "Bomberman '94",
+    "sortName": "Bomberman '94",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1993",
+    "players": 5,
+    "crc32": "B0146ECE",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "E5E7B8B7": {
+    "name": "Dracula X: Rondo of Blood",
+    "sortName": "Dracula X: Rondo of Blood",
+    "publisher": "Konami",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "E5E7B8B7",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "44A50E93": {
+    "name": "Snatcher",
+    "sortName": "Snatcher",
+    "publisher": "Konami",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "44A50E93",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "D837DA93": {
+    "name": "Magical Chase",
+    "sortName": "Magical Chase",
+    "publisher": "Quest",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "D837DA93",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "C8C084E3": {
+    "name": "New Adventure Island",
+    "sortName": "New Adventure Island",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "C8C084E3",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "6DA0F323": {
+    "name": "Galaga '90",
+    "sortName": "Galaga '90",
+    "publisher": "NEC",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "6DA0F323",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "E28D2B24": {
+    "name": "Dragon's Curse",
+    "sortName": "Dragon's Curse",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "E28D2B24",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "4ED2ED87": {
+    "name": "Parasol Stars",
+    "sortName": "Parasol Stars",
+    "publisher": "Working Designs",
+    "releaseDate": "1991",
+    "players": 2,
+    "crc32": "4ED2ED87",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "E4A65E79": {
+    "name": "Salamander",
+    "sortName": "Salamander",
+    "publisher": "Konami",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "E4A65E79",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "8B62C2EC": {
+    "name": "Psycho Soldier",
+    "sortName": "Psycho Soldier",
+    "publisher": "SNK",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "8B62C2EC",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "B4F2F85C": {
+    "name": "Alex Kidd in Miracle World",
+    "sortName": "Alex Kidd in Miracle World",
+    "publisher": "Sega",
+    "releaseDate": "1986",
+    "players": 1,
+    "crc32": "B4F2F85C",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "E8511B08": {
+    "name": "Phantasy Star",
+    "sortName": "Phantasy Star",
+    "publisher": "Sega",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "E8511B08",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "2D180120": {
+    "name": "Sonic the Hedgehog",
+    "sortName": "Sonic the Hedgehog",
+    "publisher": "Sega",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "2D180120",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "C0E25D62": {
+    "name": "Sonic the Hedgehog 2",
+    "sortName": "Sonic the Hedgehog 2",
+    "publisher": "Sega",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "C0E25D62",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "A6A4D0A4": {
+    "name": "Sonic Chaos",
+    "sortName": "Sonic Chaos",
+    "publisher": "Sega",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "A6A4D0A4",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "B67A1603": {
+    "name": "Wonder Boy III: The Dragon's Trap",
+    "sortName": "Wonder Boy III",
+    "publisher": "Sega",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "B67A1603",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "8DA5C93F": {
+    "name": "Wonder Boy in Monster Land",
+    "sortName": "Wonder Boy in Monster Land",
+    "publisher": "Sega",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "8DA5C93F",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "DC56A5C9": {
+    "name": "Wonder Boy in Monster World",
+    "sortName": "Wonder Boy in Monster World",
+    "publisher": "Sega",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "DC56A5C9",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "C6546A0E": {
+    "name": "Shinobi",
+    "sortName": "Shinobi",
+    "publisher": "Sega",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "C6546A0E",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "3B0C7BD1": {
+    "name": "Ninja Gaiden",
+    "sortName": "Ninja Gaiden",
+    "publisher": "Sega",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "3B0C7BD1",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "AF4F14BC": {
+    "name": "R-Type",
+    "sortName": "R-Type",
+    "publisher": "Sega",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "AF4F14BC",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "82BDE25E": {
+    "name": "Fantasy Zone",
+    "sortName": "Fantasy Zone",
+    "publisher": "Sega",
+    "releaseDate": "1986",
+    "players": 1,
+    "crc32": "82BDE25E",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "6D31D24D": {
+    "name": "Fantasy Zone II: The Tears of Opa-Opa",
+    "sortName": "Fantasy Zone II",
+    "publisher": "Sega",
+    "releaseDate": "1987",
+    "players": 1,
+    "crc32": "6D31D24D",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "F0BA44A4": {
+    "name": "Golvellius: Valley of Doom",
+    "sortName": "Golvellius",
+    "publisher": "Sega",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "F0BA44A4",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "C9DD4E5F": {
+    "name": "Ys: The Vanished Omens",
+    "sortName": "Ys: The Vanished Omens",
+    "publisher": "Sega",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "C9DD4E5F",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "44FBF23B": {
+    "name": "Castle of Illusion Starring Mickey Mouse",
+    "sortName": "Castle of Illusion",
+    "publisher": "Sega",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "44FBF23B",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "D1117607": {
+    "name": "Land of Illusion Starring Mickey Mouse",
+    "sortName": "Land of Illusion",
+    "publisher": "Sega",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "D1117607",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "A64E7DA2": {
+    "name": "Double Dragon",
+    "sortName": "Double Dragon",
+    "publisher": "Sega",
+    "releaseDate": "1988",
+    "players": 2,
+    "crc32": "A64E7DA2",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "48D44A13": {
+    "name": "Columns",
+    "sortName": "Columns",
+    "publisher": "Sega",
+    "releaseDate": "1990",
+    "players": 2,
+    "crc32": "48D44A13",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "83F0EEDE": {
+    "name": "Penguin Land",
+    "sortName": "Penguin Land",
+    "publisher": "Sega",
+    "releaseDate": "1987",
+    "players": 1,
+    "crc32": "83F0EEDE",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "E316C06D": {
+    "name": "Psycho Fox",
+    "sortName": "Psycho Fox",
+    "publisher": "Sega",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "E316C06D",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "54B23D13": {
+    "name": "Zillion",
+    "sortName": "Zillion",
+    "publisher": "Sega",
+    "releaseDate": "1987",
+    "players": 1,
+    "crc32": "54B23D13",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "F36A93C2": {
+    "name": "Zillion II: The Tri Formation",
+    "sortName": "Zillion II",
+    "publisher": "Sega",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "F36A93C2",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "DD5CE508": {
+    "name": "Asterix",
+    "sortName": "Asterix",
+    "publisher": "Sega",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "DD5CE508",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "3D19FA45": {
+    "name": "SpellCaster",
+    "sortName": "SpellCaster",
+    "publisher": "Sega",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "3D19FA45",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "AA4A0A56": {
+    "name": "Black Belt",
+    "sortName": "Black Belt",
+    "publisher": "Sega",
+    "releaseDate": "1986",
+    "players": 1,
+    "crc32": "AA4A0A56",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "D3BE6009": {
+    "name": "OutRun",
+    "sortName": "OutRun",
+    "publisher": "Sega",
+    "releaseDate": "1987",
+    "players": 1,
+    "crc32": "D3BE6009",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "DBE25A2C": {
+    "name": "After Burner",
+    "sortName": "After Burner",
+    "publisher": "Sega",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "DBE25A2C",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "742B2F34": {
+    "name": "Space Harrier",
+    "sortName": "Space Harrier",
+    "publisher": "Sega",
+    "releaseDate": "1986",
+    "players": 1,
+    "crc32": "742B2F34",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "75C4F38A": {
+    "name": "Hang-On",
+    "sortName": "Hang-On",
+    "publisher": "Sega",
+    "releaseDate": "1986",
+    "players": 1,
+    "crc32": "75C4F38A",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "D7E87974": {
+    "name": "Power Strike",
+    "sortName": "Power Strike",
+    "publisher": "Sega",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "D7E87974",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "21A21352": {
+    "name": "Power Strike II",
+    "sortName": "Power Strike II",
+    "publisher": "Sega",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "21A21352",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "6A6B1DB0": {
+    "name": "Rastan",
+    "sortName": "Rastan",
+    "publisher": "Sega",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "6A6B1DB0",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "3E9E7A7F": {
+    "name": "Bomber Raid",
+    "sortName": "Bomber Raid",
+    "publisher": "Sega",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "3E9E7A7F",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "2B2A8CE4": {
+    "name": "Global Defense",
+    "sortName": "Global Defense",
+    "publisher": "Sega",
+    "releaseDate": "1987",
+    "players": 1,
+    "crc32": "2B2A8CE4",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "DA2A690F": {
+    "name": "Choplifter",
+    "sortName": "Choplifter",
+    "publisher": "Sega",
+    "releaseDate": "1986",
+    "players": 1,
+    "crc32": "DA2A690F",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "B7E3C29B": {
+    "name": "Scramble Spirits",
+    "sortName": "Scramble Spirits",
+    "publisher": "Sega",
+    "releaseDate": "1990",
+    "players": 2,
+    "crc32": "B7E3C29B",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "E13E8F98": {
+    "name": "Alex Kidd in Shinobi World",
+    "sortName": "Alex Kidd in Shinobi World",
+    "publisher": "Sega",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "E13E8F98",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "2A1B85CF": {
+    "name": "Kenseiden",
+    "sortName": "Kenseiden",
+    "publisher": "Sega",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "2A1B85CF",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "A7A54FBF": {
+    "name": "Ghost House",
+    "sortName": "Ghost House",
+    "publisher": "Sega",
+    "releaseDate": "1986",
+    "players": 1,
+    "crc32": "A7A54FBF",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "C59B3B3C": {
+    "name": "Marble Madness",
+    "sortName": "Marble Madness",
+    "publisher": "Milton Bradley",
+    "releaseDate": "1989",
+    "players": 2,
+    "crc32": "C59B3B3C",
+    "system": "NES",
+    "region": "USA"
+  },
+  "F651D5B3": {
+    "name": "Lode Runner",
+    "sortName": "Lode Runner",
+    "publisher": "Broderbund",
+    "releaseDate": "1987",
+    "players": 1,
+    "crc32": "F651D5B3",
+    "system": "NES",
+    "region": "USA"
+  },
+  "8D535489": {
+    "name": "Spelunker",
+    "sortName": "Spelunker",
+    "publisher": "Broderbund",
+    "releaseDate": "1987",
+    "players": 1,
+    "crc32": "8D535489",
+    "system": "NES",
+    "region": "USA"
+  },
+  "D4A76B07": {
+    "name": "Rygar",
+    "sortName": "Rygar",
+    "publisher": "Tecmo",
+    "releaseDate": "1987",
+    "players": 1,
+    "crc32": "D4A76B07",
+    "system": "NES",
+    "region": "USA"
+  },
+  "ABF9B3A3": {
+    "name": "Shadowgate",
+    "sortName": "Shadowgate",
+    "publisher": "Kemco",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "ABF9B3A3",
+    "system": "NES",
+    "region": "USA"
+  },
+  "B5D28EA2": {
+    "name": "Maniac Mansion",
+    "sortName": "Maniac Mansion",
+    "publisher": "Jaleco",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "B5D28EA2",
+    "system": "NES",
+    "region": "USA"
+  },
+  "C5E5C5BD": {
+    "name": "Teenage Mutant Ninja Turtles",
+    "sortName": "Teenage Mutant Ninja Turtles",
+    "publisher": "Konami",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "C5E5C5BD",
+    "system": "NES",
+    "region": "USA"
+  },
+  "DE7E643D": {
+    "name": "TMNT II: The Arcade Game",
+    "sortName": "TMNT II: The Arcade Game",
+    "publisher": "Konami",
+    "releaseDate": "1990",
+    "players": 2,
+    "crc32": "DE7E643D",
+    "system": "NES",
+    "region": "USA"
+  },
+  "4B73E6AB": {
+    "name": "TMNT III: The Manhattan Project",
+    "sortName": "TMNT III: The Manhattan Project",
+    "publisher": "Konami",
+    "releaseDate": "1991",
+    "players": 2,
+    "crc32": "4B73E6AB",
+    "system": "NES",
+    "region": "USA"
+  },
+  "E1A7109E": {
+    "name": "Section Z",
+    "sortName": "Section Z",
+    "publisher": "Capcom",
+    "releaseDate": "1987",
+    "players": 1,
+    "crc32": "E1A7109E",
+    "system": "NES",
+    "region": "USA"
+  },
+  "F53E7E4D": {
+    "name": "Willow",
+    "sortName": "Willow",
+    "publisher": "Capcom",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "F53E7E4D",
+    "system": "NES",
+    "region": "USA"
+  },
+  "B39B7E88": {
+    "name": "Rescue Rangers 2",
+    "sortName": "Rescue Rangers 2",
+    "publisher": "Capcom",
+    "releaseDate": "1993",
+    "players": 2,
+    "crc32": "B39B7E88",
+    "system": "NES",
+    "region": "USA"
+  },
+  "82A7D4B3": {
+    "name": "Secret of Evermore",
+    "sortName": "Secret of Evermore",
+    "publisher": "Square",
+    "releaseDate": "1995",
+    "players": 1,
+    "crc32": "82A7D4B3",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "4B018601": {
+    "name": "Earthworm Jim",
+    "sortName": "Earthworm Jim",
+    "publisher": "Shiny",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "4B018601",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "1EA7478A": {
+    "name": "Earthworm Jim 2",
+    "sortName": "Earthworm Jim 2",
+    "publisher": "Shiny",
+    "releaseDate": "1995",
+    "players": 2,
+    "crc32": "1EA7478A",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "8D8ACD22": {
+    "name": "Aladdin",
+    "sortName": "Aladdin",
+    "publisher": "Capcom",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "8D8ACD22",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "DB1A2EA7": {
+    "name": "The Lion King",
+    "sortName": "Lion King, The",
+    "publisher": "Virgin",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "DB1A2EA7",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "1C0F7A8B": {
+    "name": "Lufia & the Fortress of Doom",
+    "sortName": "Lufia & the Fortress of Doom",
+    "publisher": "Natsume",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "1C0F7A8B",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "C5AF6D89": {
+    "name": "Ogre Battle: The March of the Black Queen",
+    "sortName": "Ogre Battle",
+    "publisher": "Enix",
+    "releaseDate": "1995",
+    "players": 1,
+    "crc32": "C5AF6D89",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "71B55E53": {
+    "name": "Tetris Attack",
+    "sortName": "Tetris Attack",
+    "publisher": "Nintendo",
+    "releaseDate": "1996",
+    "players": 2,
+    "crc32": "71B55E53",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "3E26B3AF": {
+    "name": "Killer Instinct",
+    "sortName": "Killer Instinct",
+    "publisher": "Rare",
+    "releaseDate": "1995",
+    "players": 2,
+    "crc32": "3E26B3AF",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "4DE82AB5": {
+    "name": "NBA Jam: Tournament Edition",
+    "sortName": "NBA Jam: Tournament Edition",
+    "publisher": "Acclaim",
+    "releaseDate": "1995",
+    "players": 4,
+    "crc32": "4DE82AB5",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "CF2DC69E": {
+    "name": "Mortal Kombat 3",
+    "sortName": "Mortal Kombat 3",
+    "publisher": "Acclaim",
+    "releaseDate": "1995",
+    "players": 2,
+    "crc32": "CF2DC69E",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "D54E7C62": {
+    "name": "International Superstar Soccer Deluxe",
+    "sortName": "International Superstar Soccer Deluxe",
+    "publisher": "Konami",
+    "releaseDate": "1995",
+    "players": 2,
+    "crc32": "D54E7C62",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "30CEDBE4": {
+    "name": "Super Tennis",
+    "sortName": "Super Tennis",
+    "publisher": "Nintendo",
+    "releaseDate": "1991",
+    "players": 2,
+    "crc32": "30CEDBE4",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "61DE6D98": {
+    "name": "Stunt Race FX",
+    "sortName": "Stunt Race FX",
+    "publisher": "Nintendo",
+    "releaseDate": "1994",
+    "players": 2,
+    "crc32": "61DE6D98",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "FA1B1454": {
+    "name": "Super Mario All-Stars",
+    "sortName": "Super Mario All-Stars",
+    "publisher": "Nintendo",
+    "releaseDate": "1993",
+    "players": 2,
+    "crc32": "FA1B1454",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "57EC33B2": {
+    "name": "Actraiser 2",
+    "sortName": "Actraiser 2",
+    "publisher": "Enix",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "57EC33B2",
+    "system": "SNES",
+    "region": "USA"
+  },
+  "2891E2B7": {
+    "name": "Flashback: The Quest for Identity",
+    "sortName": "Flashback",
+    "publisher": "U.S. Gold",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "2891E2B7",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "FA188A6C": {
+    "name": "Battletoads",
+    "sortName": "Battletoads",
+    "publisher": "Sega",
+    "releaseDate": "1993",
+    "players": 2,
+    "crc32": "FA188A6C",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "91A17E82": {
+    "name": "Alien Soldier",
+    "sortName": "Alien Soldier",
+    "publisher": "Treasure",
+    "releaseDate": "1995",
+    "players": 1,
+    "crc32": "91A17E82",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "EC6F1531": {
+    "name": "Light Crusader",
+    "sortName": "Light Crusader",
+    "publisher": "Treasure",
+    "releaseDate": "1995",
+    "players": 1,
+    "crc32": "EC6F1531",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "E5E0C52E": {
+    "name": "Phantasy Star: The End of the Millennium",
+    "sortName": "Phantasy Star: End of the Millennium",
+    "publisher": "Sega",
+    "releaseDate": "1995",
+    "players": 1,
+    "crc32": "E5E0C52E",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "B62A9B84": {
+    "name": "Sword of Vermilion",
+    "sortName": "Sword of Vermilion",
+    "publisher": "Sega",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "B62A9B84",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "F8B82ED8": {
+    "name": "Wonder Boy in Monster World",
+    "sortName": "Wonder Boy in Monster World",
+    "publisher": "Sega",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "F8B82ED8",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "CA57CBD5": {
+    "name": "Warsong",
+    "sortName": "Warsong",
+    "publisher": "Treco",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "CA57CBD5",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "4CC3E3D8": {
+    "name": "Alisia Dragoon",
+    "sortName": "Alisia Dragoon",
+    "publisher": "Game Arts",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "4CC3E3D8",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "CA34C42B": {
+    "name": "Crusader of Centy",
+    "sortName": "Crusader of Centy",
+    "publisher": "Sega",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "CA34C42B",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "52B18B5B": {
+    "name": "Pulseman",
+    "sortName": "Pulseman",
+    "publisher": "Sega",
+    "releaseDate": "1994",
+    "players": 1,
+    "crc32": "52B18B5B",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "8B25CF7A": {
+    "name": "Mega Turrican",
+    "sortName": "Mega Turrican",
+    "publisher": "Data East",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "8B25CF7A",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "F7468E5A": {
+    "name": "Zombies Ate My Neighbors",
+    "sortName": "Zombies Ate My Neighbors",
+    "publisher": "Konami",
+    "releaseDate": "1993",
+    "players": 2,
+    "crc32": "F7468E5A",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "E4D182A3": {
+    "name": "Splatterhouse 2",
+    "sortName": "Splatterhouse 2",
+    "publisher": "Namco",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "E4D182A3",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "B5264FEE": {
+    "name": "Splatterhouse 3",
+    "sortName": "Splatterhouse 3",
+    "publisher": "Namco",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "B5264FEE",
+    "system": "Genesis",
+    "region": "USA"
+  },
+  "83EF2E4A": {
+    "name": "Pokemon Puzzle Challenge",
+    "sortName": "Pokemon Puzzle Challenge",
+    "publisher": "Nintendo",
+    "releaseDate": "2000",
+    "players": 2,
+    "crc32": "83EF2E4A",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "7B3B9B42": {
+    "name": "Alone in the Dark: The New Nightmare",
+    "sortName": "Alone in the Dark: The New Nightmare",
+    "publisher": "Infogrames",
+    "releaseDate": "2001",
+    "players": 1,
+    "crc32": "7B3B9B42",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "A86B6AB8": {
+    "name": "Resident Evil Gaiden",
+    "sortName": "Resident Evil Gaiden",
+    "publisher": "Capcom",
+    "releaseDate": "2001",
+    "players": 1,
+    "crc32": "A86B6AB8",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "3F23A4EC": {
+    "name": "Wendy: Every Witch Way",
+    "sortName": "Wendy: Every Witch Way",
+    "publisher": "WayForward",
+    "releaseDate": "2001",
+    "players": 1,
+    "crc32": "3F23A4EC",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "D54BEFF3": {
+    "name": "Robopon: Sun Version",
+    "sortName": "Robopon: Sun Version",
+    "publisher": "Atlus",
+    "releaseDate": "2000",
+    "players": 2,
+    "crc32": "D54BEFF3",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "7A2BD21A": {
+    "name": "Trip World",
+    "sortName": "Trip World",
+    "publisher": "Sunsoft",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "7A2BD21A",
+    "system": "GB",
+    "region": "USA"
+  },
+  "9EA02A31": {
+    "name": "Operation C",
+    "sortName": "Operation C",
+    "publisher": "Konami",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "9EA02A31",
+    "system": "GB",
+    "region": "USA"
+  },
+  "DAC586C8": {
+    "name": "Bionic Commando: Elite Forces",
+    "sortName": "Bionic Commando: Elite Forces",
+    "publisher": "Nintendo",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "DAC586C8",
+    "system": "GB",
+    "region": "USA"
+  },
+  "5C8A5B1A": {
+    "name": "Avenging Spirit",
+    "sortName": "Avenging Spirit",
+    "publisher": "Jaleco",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "5C8A5B1A",
+    "system": "GB",
+    "region": "USA"
+  },
+  "B39D82CF": {
+    "name": "Catrap",
+    "sortName": "Catrap",
+    "publisher": "Asmik",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "B39D82CF",
+    "system": "GB",
+    "region": "USA"
+  },
+  "93C95F4A": {
+    "name": "Mario's Picross",
+    "sortName": "Mario's Picross",
+    "publisher": "Nintendo",
+    "releaseDate": "1995",
+    "players": 1,
+    "crc32": "93C95F4A",
+    "system": "GB",
+    "region": "USA"
+  },
+  "A8F84418": {
+    "name": "Kirby's Pinball Land",
+    "sortName": "Kirby's Pinball Land",
+    "publisher": "Nintendo",
+    "releaseDate": "1993",
+    "players": 1,
+    "crc32": "A8F84418",
+    "system": "GB",
+    "region": "USA"
+  },
+  "C1B8E242": {
+    "name": "Kirby's Block Ball",
+    "sortName": "Kirby's Block Ball",
+    "publisher": "Nintendo",
+    "releaseDate": "1995",
+    "players": 1,
+    "crc32": "C1B8E242",
+    "system": "GB",
+    "region": "USA"
+  },
+  "A3C1E5B2": {
+    "name": "Kirby's Star Stacker",
+    "sortName": "Kirby's Star Stacker",
+    "publisher": "Nintendo",
+    "releaseDate": "1997",
+    "players": 2,
+    "crc32": "A3C1E5B2",
+    "system": "GB",
+    "region": "USA"
+  },
+  "48C84D39": {
+    "name": "Star Ocean: Blue Sphere",
+    "sortName": "Star Ocean: Blue Sphere",
+    "publisher": "Enix",
+    "releaseDate": "2001",
+    "players": 1,
+    "crc32": "48C84D39",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "E293BF48": {
+    "name": "Hamtaro: Ham-Hams Unite!",
+    "sortName": "Hamtaro: Ham-Hams Unite!",
+    "publisher": "Nintendo",
+    "releaseDate": "2002",
+    "players": 1,
+    "crc32": "E293BF48",
+    "system": "GBC",
+    "region": "USA"
+  },
+  "BB45C937": {
+    "name": "Klonoa: Empire of Dreams",
+    "sortName": "Klonoa: Empire of Dreams",
+    "publisher": "Namco",
+    "releaseDate": "2001",
+    "players": 1,
+    "crc32": "BB45C937",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "9E4228B1": {
+    "name": "Klonoa 2: Dream Champ Tournament",
+    "sortName": "Klonoa 2: Dream Champ Tournament",
+    "publisher": "Namco",
+    "releaseDate": "2005",
+    "players": 1,
+    "crc32": "9E4228B1",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "E22C64B8": {
+    "name": "Mega Man & Bass",
+    "sortName": "Mega Man & Bass",
+    "publisher": "Capcom",
+    "releaseDate": "2003",
+    "players": 1,
+    "crc32": "E22C64B8",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "96F0E8E2": {
+    "name": "Castlevania: Double Pack",
+    "sortName": "Castlevania: Double Pack",
+    "publisher": "Konami",
+    "releaseDate": "2006",
+    "players": 1,
+    "crc32": "96F0E8E2",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "71E94FCC": {
+    "name": "Sonic Battle",
+    "sortName": "Sonic Battle",
+    "publisher": "Sega",
+    "releaseDate": "2004",
+    "players": 4,
+    "crc32": "71E94FCC",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "A87CF38A": {
+    "name": "Mario Party Advance",
+    "sortName": "Mario Party Advance",
+    "publisher": "Nintendo",
+    "releaseDate": "2005",
+    "players": 4,
+    "crc32": "A87CF38A",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "1C17B6C2": {
+    "name": "Sigma Star Saga",
+    "sortName": "Sigma Star Saga",
+    "publisher": "Namco",
+    "releaseDate": "2005",
+    "players": 1,
+    "crc32": "1C17B6C2",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "2E4DB234": {
+    "name": "Zone of the Enders: The Fist of Mars",
+    "sortName": "Zone of the Enders: The Fist of Mars",
+    "publisher": "Konami",
+    "releaseDate": "2002",
+    "players": 1,
+    "crc32": "2E4DB234",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "5A7CE4DA": {
+    "name": "Super Robot Taisen: Original Generation",
+    "sortName": "Super Robot Taisen: Original Generation",
+    "publisher": "Atlus",
+    "releaseDate": "2006",
+    "players": 1,
+    "crc32": "5A7CE4DA",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "F45BA6D5": {
+    "name": "Super Robot Taisen: Original Generation 2",
+    "sortName": "Super Robot Taisen: Original Generation 2",
+    "publisher": "Atlus",
+    "releaseDate": "2006",
+    "players": 1,
+    "crc32": "F45BA6D5",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "CB72E7E3": {
+    "name": "Car Battler Joe",
+    "sortName": "Car Battler Joe",
+    "publisher": "Natsume",
+    "releaseDate": "2002",
+    "players": 2,
+    "crc32": "CB72E7E3",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "E1C8F328": {
+    "name": "Rebelstar: Tactical Command",
+    "sortName": "Rebelstar: Tactical Command",
+    "publisher": "Namco",
+    "releaseDate": "2005",
+    "players": 2,
+    "crc32": "E1C8F328",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "1E395AF3": {
+    "name": "Summon Night: Swordcraft Story 2",
+    "sortName": "Summon Night: Swordcraft Story 2",
+    "publisher": "Atlus",
+    "releaseDate": "2006",
+    "players": 1,
+    "crc32": "1E395AF3",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "2B5C53AC": {
+    "name": "Pac-Man Collection",
+    "sortName": "Pac-Man Collection",
+    "publisher": "Namco",
+    "releaseDate": "2001",
+    "players": 2,
+    "crc32": "2B5C53AC",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "7DCAB361": {
+    "name": "Street Fighter Alpha 3",
+    "sortName": "Street Fighter Alpha 3",
+    "publisher": "Capcom",
+    "releaseDate": "2002",
+    "players": 2,
+    "crc32": "7DCAB361",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "D2A3A256": {
+    "name": "Super Street Fighter II Turbo Revival",
+    "sortName": "Super Street Fighter II Turbo Revival",
+    "publisher": "Capcom",
+    "releaseDate": "2001",
+    "players": 2,
+    "crc32": "D2A3A256",
+    "system": "GBA",
+    "region": "USA"
+  },
+  "F2CB1E30": {
+    "name": "Shaolin Soccer",
+    "sortName": "Shaolin Soccer",
+    "publisher": "Konami",
+    "releaseDate": "1990",
+    "players": 2,
+    "crc32": "F2CB1E30",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "6B9F12D2": {
+    "name": "Jackie Chan's Action Kung Fu",
+    "sortName": "Jackie Chan's Action Kung Fu",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1992",
+    "players": 1,
+    "crc32": "6B9F12D2",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "9EC6C184": {
+    "name": "Chew Man Fu",
+    "sortName": "Chew Man Fu",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "9EC6C184",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "CE9A13B0": {
+    "name": "J.J. & Jeff",
+    "sortName": "J.J. & Jeff",
+    "publisher": "NEC",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "CE9A13B0",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "24F6AE26": {
+    "name": "Moto Roader",
+    "sortName": "Moto Roader",
+    "publisher": "NEC",
+    "releaseDate": "1989",
+    "players": 5,
+    "crc32": "24F6AE26",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "58F06B57": {
+    "name": "World Court Tennis",
+    "sortName": "World Court Tennis",
+    "publisher": "NEC",
+    "releaseDate": "1989",
+    "players": 2,
+    "crc32": "58F06B57",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "73B8218F": {
+    "name": "Pac-Land",
+    "sortName": "Pac-Land",
+    "publisher": "NEC",
+    "releaseDate": "1989",
+    "players": 1,
+    "crc32": "73B8218F",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "EE156721": {
+    "name": "Battle Royale",
+    "sortName": "Battle Royale",
+    "publisher": "NEC",
+    "releaseDate": "1990",
+    "players": 5,
+    "crc32": "EE156721",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "8CA4CE24": {
+    "name": "Dead Moon",
+    "sortName": "Dead Moon",
+    "publisher": "TSS",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "8CA4CE24",
+    "system": "TG16",
+    "region": "USA"
+  },
+  "A48A8541": {
+    "name": "Alex Kidd: The Lost Stars",
+    "sortName": "Alex Kidd: The Lost Stars",
+    "publisher": "Sega",
+    "releaseDate": "1988",
+    "players": 2,
+    "crc32": "A48A8541",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "7D2F48AB": {
+    "name": "Miracle Warriors: Seal of the Dark Lord",
+    "sortName": "Miracle Warriors",
+    "publisher": "Sega",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "7D2F48AB",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "A531EFC4": {
+    "name": "Ultima IV: Quest of the Avatar",
+    "sortName": "Ultima IV",
+    "publisher": "Sega",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "A531EFC4",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "87A6CE7B": {
+    "name": "Teddy Boy",
+    "sortName": "Teddy Boy",
+    "publisher": "Sega",
+    "releaseDate": "1986",
+    "players": 1,
+    "crc32": "87A6CE7B",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "8CE92FA8": {
+    "name": "Ys: The Vanished Omens",
+    "sortName": "Ys: The Vanished Omens",
+    "publisher": "Sega",
+    "releaseDate": "1988",
+    "players": 1,
+    "crc32": "8CE92FA8",
+    "system": "SMS",
+    "region": "USA"
+  },
+  "1B84FE39": {
+    "name": "Mickey's Dangerous Chase",
+    "sortName": "Mickey's Dangerous Chase",
+    "publisher": "Capcom",
+    "releaseDate": "1991",
+    "players": 1,
+    "crc32": "1B84FE39",
+    "system": "GB",
+    "region": "USA"
+  },
+  "B91E9D5C": {
+    "name": "Nemesis",
+    "sortName": "Nemesis",
+    "publisher": "Konami",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "B91E9D5C",
+    "system": "GB",
+    "region": "USA"
+  },
+  "C4F5F847": {
+    "name": "Qix",
+    "sortName": "Qix",
+    "publisher": "Nintendo",
+    "releaseDate": "1990",
+    "players": 1,
+    "crc32": "C4F5F847",
+    "system": "GB",
+    "region": "USA"
+  },
+  "A1E26E4A": {
+    "name": "Bomberman GB",
+    "sortName": "Bomberman GB",
+    "publisher": "Hudson Soft",
+    "releaseDate": "1994",
+    "players": 2,
+    "crc32": "A1E26E4A",
+    "system": "GB",
+    "region": "USA"
+  },
+  "AE7EB66E": {
+    "name": "Pac-In-Time",
+    "sortName": "Pac-In-Time",
+    "publisher": "Namco",
+    "releaseDate": "1995",
+    "players": 1,
+    "crc32": "AE7EB66E",
+    "system": "GB",
+    "region": "USA"
+  },
+  "71DAFC4B": {
+    "name": "Battle Arena Toshinden",
+    "sortName": "Battle Arena Toshinden",
+    "publisher": "Takara",
+    "releaseDate": "1996",
+    "players": 2,
+    "crc32": "71DAFC4B",
+    "system": "GB",
+    "region": "USA"
+  },
+  "3DEA56E7": {
+    "name": "Radar Mission",
+    "sortName": "Radar Mission",
+    "publisher": "Nintendo",
+    "releaseDate": "1991",
+    "players": 2,
+    "crc32": "3DEA56E7",
+    "system": "GB",
+    "region": "USA"
   }
 }

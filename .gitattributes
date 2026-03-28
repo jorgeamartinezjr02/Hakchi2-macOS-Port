@@ -1,0 +1,7 @@
+# Binary boot resources - treat as binary, no line ending conversion
+Resources/boot/boot.img binary
+Resources/boot/uboot.bin binary
+
+# Other binary assets
+Resources/*.icns binary
+Resources/**/*.png binary

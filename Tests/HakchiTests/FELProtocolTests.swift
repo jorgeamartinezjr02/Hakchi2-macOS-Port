@@ -6,18 +6,18 @@ final class FELProtocolTests: XCTestCase {
         let request = AWUSBRequest(requestType: FELConstants.usbWrite, length: 16)
         let data = request.data
 
-        // Should be 16 bytes
+        // Should be 16 bytes (4 sig + 2 type + 4 len + 4 unknown + 2 pad)
         XCTAssertEqual(data.count, 16)
 
         // Check signature "AWUC"
         XCTAssertEqual(Array(data[0..<4]), [0x41, 0x57, 0x55, 0x43])
 
-        // Check request type (little-endian)
-        let reqType = data[4..<6].withUnsafeBytes { $0.load(as: UInt16.self) }
+        // Check request type (little-endian) - safe byte reading
+        let reqType = UInt16(data[4]) | (UInt16(data[5]) << 8)
         XCTAssertEqual(reqType, FELConstants.usbWrite)
 
-        // Check length
-        let length = data[6..<10].withUnsafeBytes { $0.load(as: UInt32.self) }
+        // Check length - safe byte reading
+        let length = UInt32(data[6]) | (UInt32(data[7]) << 8) | (UInt32(data[8]) << 16) | (UInt32(data[9]) << 24)
         XCTAssertEqual(length, 16)
     }
 
@@ -31,13 +31,14 @@ final class FELProtocolTests: XCTestCase {
 
         XCTAssertEqual(data.count, 16)
 
-        let cmd = data[0..<4].withUnsafeBytes { $0.load(as: UInt32.self).littleEndian }
+        // Safe byte reading for little-endian values
+        let cmd = UInt32(data[0]) | (UInt32(data[1]) << 8) | (UInt32(data[2]) << 16) | (UInt32(data[3]) << 24)
         XCTAssertEqual(cmd, FELConstants.felVerifyDevice)
 
-        let addr = data[4..<8].withUnsafeBytes { $0.load(as: UInt32.self).littleEndian }
+        let addr = UInt32(data[4]) | (UInt32(data[5]) << 8) | (UInt32(data[6]) << 16) | (UInt32(data[7]) << 24)
         XCTAssertEqual(addr, 0x40000000)
 
-        let len = data[8..<12].withUnsafeBytes { $0.load(as: UInt32.self).littleEndian }
+        let len = UInt32(data[8]) | (UInt32(data[9]) << 8) | (UInt32(data[10]) << 16) | (UInt32(data[11]) << 24)
         XCTAssertEqual(len, 0x10000)
     }
 
@@ -67,10 +68,14 @@ final class FELProtocolTests: XCTestCase {
     func testFELVersionParsing() {
         var data = Data(count: 32)
         // Signature
-        let sig = "AWUSBFEX".data(using: .ascii)!
+        let sig: [UInt8] = Array("AWUSBFEX".utf8)
         data.replaceSubrange(0..<8, with: sig)
-        // SoC ID
-        data.replaceSubrange(8..<12, with: withUnsafeBytes(of: UInt32(0x1681).littleEndian) { Data($0) })
+        // SoC ID (little-endian)
+        let socID: UInt32 = 0x1681
+        data[8] = UInt8(socID & 0xFF)
+        data[9] = UInt8((socID >> 8) & 0xFF)
+        data[10] = UInt8((socID >> 16) & 0xFF)
+        data[11] = UInt8((socID >> 24) & 0xFF)
 
         let version = FELVersion(data: data)
         XCTAssertEqual(version.signature, "AWUSBFEX")

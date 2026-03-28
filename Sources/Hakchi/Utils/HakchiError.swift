@@ -26,7 +26,7 @@ enum HakchiError: LocalizedError {
         case .usbInitFailed:
             return "Failed to initialize USB subsystem"
         case .deviceNotFound:
-            return "No NES/SNES Classic found. Connect the console and enter FEL mode."
+            return "No compatible console found. Connect your NES/SNES Classic, Famicom/Super Famicom Mini, or Genesis/Mega Drive Mini and enter FEL mode."
         case .felCommunicationError(let msg):
             return "FEL communication error: \(msg)"
         case .kernelDumpFailed(let msg):

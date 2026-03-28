@@ -23,36 +23,65 @@ enum FELConstants {
     static let felExec: UInt32 = 0x102      // Execute code
     static let felUpload: UInt32 = 0x103    // Read from device
 
-    // Memory addresses
-    static let felExecAddr: UInt32 = 0x2000
+    // Memory addresses (verified against hakchi2-CE and working fel-boot.c)
+    static let fes1Addr: UInt32 = 0x2000       // FES1 DRAM init binary loads here
     static let dramBase: UInt32 = 0x40000000
-    static let splLoadAddr: UInt32 = 0x0000
-    static let ubootAddr: UInt32 = 0x4A000000
+    static let splLoadAddr: UInt32 = 0x0000     // Legacy SPL address (unused with FES1)
+    static let ubootAddr: UInt32 = 0x47000000   // U-Boot loads here in DRAM
+    static let bootImgAddr: UInt32 = 0x47400000 // boot.img loads here in DRAM
     static let scratchAddr: UInt32 = 0x40400000
     static let kernelAddr: UInt32 = 0x40008000
     static let transferMaxSize: UInt32 = 0x10000
 
-    // Kernel constants
-    static let kernelOffset: UInt32 = 0x00600000
-    static let kernelMaxSize: UInt32 = 0x00200000 // 2MB
+    // U-Boot bootcmd patching
+    static let bootcmdOffset: Int = 0x6A543     // Offset of "bootcmd=" in uboot.bin
+    static let bootcmdRAM: String = "boota 47400000" // Boot from RAM address
+
+    // DRAM initialization — Allwinner R16/A33 (sun8iw5p1) SoC
+    static let socR16: UInt32 = 0x1667
+
+    /// SRAM swap buffers: FEL handler state that SPL overwrites.
+    /// We save buf1 contents, copy buf2→buf1 before SPL, then restore after.
+    static let swapBuffers: [(buf1: UInt32, buf2: UInt32, size: UInt32)] = [
+        (buf1: 0x0001800, buf2: 0x44000, size: 0x0800),
+        (buf1: 0x0005C00, buf2: 0x44800, size: 0x8000),
+    ]
+
+    /// Address in SRAM-C where we write the return-to-FEL thunk after SPL execution.
+    static let thunkAddr: UInt32  = 0x0004_6E00
+    /// BROM FEL handler entry point — the thunk branches here.
+    static let felReturnAddr: UInt32 = 0xFFFF_0020
 }
 
-// MARK: - AWUSBRequest
+// MARK: - AWUSBRequest (32 bytes — matches sunxi-tools aw_usb_request)
 
 struct AWUSBRequest {
-    let signature: [UInt8] = FELConstants.requestSignature
     var requestType: UInt16
     var length: UInt32
-    let unknown1: UInt32 = 0x0C00_0000
-    let pad: [UInt8] = Array(repeating: 0, count: 4)
 
+    /// Serialize to the 32-byte wire format:
+    ///   signature[8] "AWUC\0\0\0\0" + length[4] + unknown1[4] + request[2] + length2[4] + pad[10]
     var data: Data {
-        var d = Data()
-        d.append(contentsOf: signature)
-        d.append(contentsOf: withUnsafeBytes(of: requestType.littleEndian) { Array($0) })
-        d.append(contentsOf: withUnsafeBytes(of: length.littleEndian) { Array($0) })
-        d.append(contentsOf: withUnsafeBytes(of: unknown1.littleEndian) { Array($0) })
-        d.append(contentsOf: pad)
+        var d = Data(count: 32)
+        // signature: "AWUC" + 4 null bytes (8 bytes total)
+        d[0] = 0x41; d[1] = 0x57; d[2] = 0x55; d[3] = 0x43 // "AWUC"
+        // d[4..7] = 0 (already zeroed)
+        // length (little-endian UInt32 at offset 8)
+        d[8]  = UInt8(length & 0xFF)
+        d[9]  = UInt8((length >> 8) & 0xFF)
+        d[10] = UInt8((length >> 16) & 0xFF)
+        d[11] = UInt8((length >> 24) & 0xFF)
+        // unknown1 = 0x0C000000 (little-endian at offset 12)
+        d[12] = 0x00; d[13] = 0x00; d[14] = 0x00; d[15] = 0x0C
+        // request type (little-endian UInt16 at offset 16)
+        d[16] = UInt8(requestType & 0xFF)
+        d[17] = UInt8((requestType >> 8) & 0xFF)
+        // length2 = same as length (little-endian UInt32 at offset 18)
+        d[18] = UInt8(length & 0xFF)
+        d[19] = UInt8((length >> 8) & 0xFF)
+        d[20] = UInt8((length >> 16) & 0xFF)
+        d[21] = UInt8((length >> 24) & 0xFF)
+        // pad[10] at offset 22..31 (already zeroed)
         return d
     }
 }
@@ -86,8 +115,8 @@ struct AWUSBResponse {
     init?(data: Data) {
         guard data.count >= 13 else { return nil }
         signature = Array(data[0..<4])
-        tag = data[4..<6].withUnsafeBytes { $0.load(as: UInt16.self) }
-        residue = data[6..<10].withUnsafeBytes { $0.load(as: UInt32.self) }
+        tag = UInt16(data[4]) | (UInt16(data[5]) << 8)
+        residue = UInt32(data[6]) | (UInt32(data[7]) << 8) | (UInt32(data[8]) << 16) | (UInt32(data[9]) << 24)
         csw_status = data[10]
     }
 
@@ -120,9 +149,9 @@ struct FELVersion {
         }
 
         signature = String(data: data[0..<8], encoding: .ascii) ?? ""
-        socID = data[8..<12].withUnsafeBytes { $0.load(as: UInt32.self).littleEndian }
-        firmwareVersion = data[12..<16].withUnsafeBytes { $0.load(as: UInt32.self).littleEndian }
-        protocolVersion = data[16..<18].withUnsafeBytes { $0.load(as: UInt16.self).littleEndian }
+        socID = UInt32(data[8]) | (UInt32(data[9]) << 8) | (UInt32(data[10]) << 16) | (UInt32(data[11]) << 24)
+        firmwareVersion = UInt32(data[12]) | (UInt32(data[13]) << 8) | (UInt32(data[14]) << 16) | (UInt32(data[15]) << 24)
+        protocolVersion = UInt16(data[16]) | (UInt16(data[17]) << 8)
         dataFlag = data[18]
         dataLength = data[19]
         board = String(data: data[20..<min(32, data.count)], encoding: .ascii)?

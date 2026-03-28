@@ -29,6 +29,10 @@ struct MainView: View {
             ModManagerView()
                 .environmentObject(appState)
         }
+        .sheet(isPresented: $appState.showFolderManager) {
+            FolderManagerView()
+                .environmentObject(appState)
+        }
         .sheet(isPresented: $appState.showProgress) {
             ProgressDialog(
                 title: appState.progressTitle,
@@ -48,7 +52,7 @@ struct MainView: View {
                       let urlString = String(data: data, encoding: .utf8),
                       let url = URL(string: urlString) else { return }
 
-                if ROMFile.isSupportedExtension(url.pathExtension) {
+                if ROMFile.isSupportedExtension(url.pathExtension) || ArchiveExtractor.isArchive(url) {
                     DispatchQueue.main.async {
                         appState.addGames(urls: [url])
                     }

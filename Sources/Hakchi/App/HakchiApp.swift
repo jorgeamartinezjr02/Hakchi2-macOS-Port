@@ -15,25 +15,36 @@ struct HakchiApp: App {
             CommandGroup(replacing: .newItem) {}
 
             CommandMenu("Kernel") {
-                Button("Dump Kernel...") {
-                    appState.showKernelDialog = true
-                    appState.kernelAction = .dump
-                }
-                .keyboardShortcut("d", modifiers: [.command, .shift])
-                .disabled(!appState.isConnected)
-
-                Button("Flash Custom Kernel...") {
+                Button("Install / Repair Hakchi...") {
                     appState.showKernelDialog = true
                     appState.kernelAction = .flash
                 }
                 .keyboardShortcut("f", modifiers: [.command, .shift])
-                .disabled(!appState.isConnected)
 
                 Divider()
 
-                Button("Restore Original Kernel...") {
+                Button("Backup Kernel...") {
+                    appState.showKernelDialog = true
+                    appState.kernelAction = .dump
+                }
+                .keyboardShortcut("d", modifiers: [.command, .shift])
+
+                Button("Uninstall (Restore Original)...") {
                     appState.showKernelDialog = true
                     appState.kernelAction = .restore
+                }
+
+                Divider()
+
+                Button("Factory Reset...") {
+                    appState.showKernelDialog = true
+                    appState.kernelAction = .factoryReset
+                }
+
+                Divider()
+
+                Button("Reboot Console") {
+                    Task { await appState.rebootConsole() }
                 }
                 .disabled(!appState.isConnected)
             }
@@ -55,10 +66,10 @@ struct HakchiApp: App {
 
                 Divider()
 
-                Button("Reboot Console") {
-                    Task { await appState.rebootConsole() }
+                Button("Folder Manager...") {
+                    appState.showFolderManager = true
                 }
-                .disabled(!appState.isConnected)
+                .keyboardShortcut("o", modifiers: [.command, .shift])
             }
         }
 

@@ -17,19 +17,26 @@ struct BootImage {
     var kernelData: Data
     var ramdiskData: Data
 
+    private static func readU32LE(_ data: Data, offset: Int) -> UInt32 {
+        UInt32(data[offset]) |
+        (UInt32(data[offset+1]) << 8) |
+        (UInt32(data[offset+2]) << 16) |
+        (UInt32(data[offset+3]) << 24)
+    }
+
     init?(data: Data) {
-        guard data.count >= 1648 else { return nil }
+        guard data.count >= 40 else { return nil }
         let header = String(data: data[0..<8], encoding: .ascii) ?? ""
         guard header == BootImage.magic else { return nil }
 
-        kernelSize = data[8..<12].withUnsafeBytes { $0.load(as: UInt32.self).littleEndian }
-        kernelAddr = data[12..<16].withUnsafeBytes { $0.load(as: UInt32.self).littleEndian }
-        ramdiskSize = data[16..<20].withUnsafeBytes { $0.load(as: UInt32.self).littleEndian }
-        ramdiskAddr = data[20..<24].withUnsafeBytes { $0.load(as: UInt32.self).littleEndian }
-        secondSize = data[24..<28].withUnsafeBytes { $0.load(as: UInt32.self).littleEndian }
-        secondAddr = data[28..<32].withUnsafeBytes { $0.load(as: UInt32.self).littleEndian }
-        tagsAddr = data[32..<36].withUnsafeBytes { $0.load(as: UInt32.self).littleEndian }
-        pageSize = data[36..<40].withUnsafeBytes { $0.load(as: UInt32.self).littleEndian }
+        kernelSize = Self.readU32LE(data, offset: 8)
+        kernelAddr = Self.readU32LE(data, offset: 12)
+        ramdiskSize = Self.readU32LE(data, offset: 16)
+        ramdiskAddr = Self.readU32LE(data, offset: 20)
+        secondSize = Self.readU32LE(data, offset: 24)
+        secondAddr = Self.readU32LE(data, offset: 28)
+        tagsAddr = Self.readU32LE(data, offset: 32)
+        pageSize = Self.readU32LE(data, offset: 36)
 
         guard pageSize > 0 else { return nil }
 
@@ -53,6 +60,10 @@ struct BootImage {
         ramdiskData = data[ramdiskStart..<(ramdiskStart + Int(ramdiskSize))]
     }
 
+    private static func writeU32LE(_ value: UInt32) -> [UInt8] {
+        [UInt8(value & 0xFF), UInt8((value >> 8) & 0xFF), UInt8((value >> 16) & 0xFF), UInt8((value >> 24) & 0xFF)]
+    }
+
     func toData() -> Data {
         let page = Int(pageSize)
         var result = Data()
@@ -60,14 +71,14 @@ struct BootImage {
         // Header page
         var header = Data(count: page)
         header[0..<8] = Data(BootImage.magic.utf8)
-        header.replaceSubrange(8..<12, with: withUnsafeBytes(of: kernelSize.littleEndian) { Data($0) })
-        header.replaceSubrange(12..<16, with: withUnsafeBytes(of: kernelAddr.littleEndian) { Data($0) })
-        header.replaceSubrange(16..<20, with: withUnsafeBytes(of: ramdiskSize.littleEndian) { Data($0) })
-        header.replaceSubrange(20..<24, with: withUnsafeBytes(of: ramdiskAddr.littleEndian) { Data($0) })
-        header.replaceSubrange(24..<28, with: withUnsafeBytes(of: secondSize.littleEndian) { Data($0) })
-        header.replaceSubrange(28..<32, with: withUnsafeBytes(of: secondAddr.littleEndian) { Data($0) })
-        header.replaceSubrange(32..<36, with: withUnsafeBytes(of: tagsAddr.littleEndian) { Data($0) })
-        header.replaceSubrange(36..<40, with: withUnsafeBytes(of: pageSize.littleEndian) { Data($0) })
+        header.replaceSubrange(8..<12, with: Self.writeU32LE(kernelSize))
+        header.replaceSubrange(12..<16, with: Self.writeU32LE(kernelAddr))
+        header.replaceSubrange(16..<20, with: Self.writeU32LE(ramdiskSize))
+        header.replaceSubrange(20..<24, with: Self.writeU32LE(ramdiskAddr))
+        header.replaceSubrange(24..<28, with: Self.writeU32LE(secondSize))
+        header.replaceSubrange(28..<32, with: Self.writeU32LE(secondAddr))
+        header.replaceSubrange(32..<36, with: Self.writeU32LE(tagsAddr))
+        header.replaceSubrange(36..<40, with: Self.writeU32LE(pageSize))
 
         let nameData = Data(name.utf8.prefix(16))
         header.replaceSubrange(40..<(40 + nameData.count), with: nameData)

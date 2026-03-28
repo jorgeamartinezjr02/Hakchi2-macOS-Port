@@ -7,7 +7,9 @@ final class FELDevice {
     private var endpointIn: UInt8 = 0x82
     private var endpointOut: UInt8 = 0x01
     private var interfaceNumber: Int32 = 0
-    private var isOpen = false
+    private(set) var isOpen = false
+
+    var isDeviceOpen: Bool { isOpen }
 
     deinit {
         close()
@@ -240,5 +242,76 @@ final class FELDevice {
 
             progress?(Double(offset) / total, "Writing \(offset / 1024)KB / \(Int(total / 1024))KB")
         }
+    }
+
+    // MARK: - DRAM Initialization (Allwinner R16/A33 via FES1)
+
+    /// Read a little-endian UInt32 from Data at the given byte offset.
+    private static func readU32LE(_ data: Data, offset: Int) -> UInt32 {
+        UInt32(data[offset])
+        | (UInt32(data[offset + 1]) << 8)
+        | (UInt32(data[offset + 2]) << 16)
+        | (UInt32(data[offset + 3]) << 24)
+    }
+
+    /// Initialize DRAM using the Allwinner FES1 binary.
+    ///
+    /// Hakchi2-CE uses a separate `fes1.bin` (eGON.BT0 format) for DRAM init,
+    /// NOT the first 16KB of uboot.bin (which is NOT a standalone SPL).
+    ///
+    /// Sequence (verified working with real hardware):
+    /// 1. Write FES1 to SRAM at address 0x2000.
+    /// 2. Execute FES1 — it initialises the DDR controller.
+    /// 3. Wait for DRAM to stabilise.
+    /// 4. Verify DRAM is accessible with a write/read test.
+    func initDRAM(fes1Data: Data) throws {
+        guard fes1Data.count >= 0x20 else {
+            throw HakchiError.felCommunicationError("FES1 binary too small (\(fes1Data.count) bytes)")
+        }
+
+        let magic = String(data: fes1Data[4..<12], encoding: .ascii)?
+            .trimmingCharacters(in: .controlCharacters) ?? ""
+
+        guard magic.hasPrefix("eGON") else {
+            throw HakchiError.felCommunicationError(
+                "Invalid FES1 header — expected eGON magic, got '\(magic)'. "
+                + "Make sure fes1.bin is a valid Allwinner FES1 binary."
+            )
+        }
+
+        HakchiLogger.fel.info("FES1: \(fes1Data.count) bytes, magic: \(magic)")
+
+        // ── 1. Write FES1 to SRAM at 0x2000 ─────────────────────────────
+        try writeMemory(address: FELConstants.fes1Addr, data: fes1Data)
+        HakchiLogger.fel.info("FES1 written to SRAM at 0x\(String(format: "%04X", FELConstants.fes1Addr))")
+
+        // ── 2. Execute FES1 (initialises DDR controller) ─────────────────
+        HakchiLogger.fel.info("Executing FES1 for DRAM initialisation...")
+        try execute(address: FELConstants.fes1Addr)
+
+        // ── 3. Wait for DRAM to stabilise ────────────────────────────────
+        Thread.sleep(forTimeInterval: 2.0)
+
+        // ── 4. Verify DRAM is alive ──────────────────────────────────────
+        let testAddr = FELConstants.dramBase + 0x100
+        let testPattern = Data([0xDE, 0xAD, 0xBE, 0xEF])
+        try writeMemory(address: testAddr, data: testPattern)
+        let readBack = try readMemory(address: testAddr, length: UInt32(testPattern.count))
+        guard readBack == testPattern else {
+            throw HakchiError.felCommunicationError(
+                "DRAM verification failed after FES1 execution. "
+                + "Expected \(testPattern.map { String(format: "%02X", $0) }.joined()) "
+                + "but read \(readBack.map { String(format: "%02X", $0) }.joined()). "
+                + "The DDR controller may not have initialised correctly."
+            )
+        }
+
+        HakchiLogger.fel.info("DRAM initialised and verified successfully")
+    }
+
+    /// Legacy initDRAM that accepts SPL data (redirects to FES1 flow).
+    /// Kept for backward compatibility — callers should migrate to `initDRAM(fes1Data:)`.
+    func initDRAM(splData: Data) throws {
+        try initDRAM(fes1Data: splData)
     }
 }

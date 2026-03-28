@@ -34,7 +34,8 @@ let package = Package(
             dependencies: ["CLibUSB", "CLibSSH2"],
             path: "Sources/Hakchi",
             resources: [
-                .copy("../../Resources/game_db.json")
+                .copy("../../Resources/game_db.json"),
+                .copy("../../Resources/boot")
             ],
             cSettings: [
                 .unsafeFlags([

@@ -4,11 +4,19 @@ struct GameListView: View {
     @EnvironmentObject var appState: AppState
     @State private var searchText = ""
     @State private var sortOrder: SortOrder = .name
+    @State private var filterSystem: String = "All"
 
     enum SortOrder: String, CaseIterable {
         case name = "Name"
         case system = "System"
         case size = "Size"
+        case region = "Region"
+        case core = "Core"
+    }
+
+    var availableSystems: [String] {
+        let systems = Set(appState.games.compactMap { $0.system ?? $0.consoleType.systemFamily })
+        return ["All"] + systems.sorted()
     }
 
     var filteredGames: [Game] {
@@ -17,17 +25,28 @@ struct GameListView: View {
         if !searchText.isEmpty {
             games = games.filter {
                 $0.name.localizedCaseInsensitiveContains(searchText) ||
-                $0.publisher.localizedCaseInsensitiveContains(searchText)
+                $0.publisher.localizedCaseInsensitiveContains(searchText) ||
+                $0.romCRC32.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+
+        if filterSystem != "All" {
+            games = games.filter {
+                ($0.system ?? $0.consoleType.systemFamily) == filterSystem
             }
         }
 
         switch sortOrder {
         case .name:
-            games.sort { $0.sortName < $1.sortName }
+            games.sort { $0.sortName.lowercased() < $1.sortName.lowercased() }
         case .system:
-            games.sort { $0.consoleType.rawValue < $1.consoleType.rawValue }
+            games.sort { ($0.system ?? $0.consoleType.systemFamily) < ($1.system ?? $1.consoleType.systemFamily) }
         case .size:
             games.sort { $0.romSize > $1.romSize }
+        case .region:
+            games.sort { $0.region < $1.region }
+        case .core:
+            games.sort { ($0.assignedCore ?? "") < ($1.assignedCore ?? "") }
         }
 
         return games
@@ -42,6 +61,27 @@ struct GameListView: View {
                 TextField("Search games...", text: $searchText)
                     .textFieldStyle(.plain)
 
+                // System filter
+                Menu {
+                    ForEach(availableSystems, id: \.self) { sys in
+                        Button {
+                            filterSystem = sys
+                        } label: {
+                            HStack {
+                                Text(sys)
+                                if filterSystem == sys {
+                                    Image(systemName: "checkmark")
+                                }
+                            }
+                        }
+                    }
+                } label: {
+                    Image(systemName: "line.3.horizontal.decrease.circle")
+                }
+                .menuStyle(.borderlessButton)
+                .fixedSize()
+
+                // Sort order
                 Menu {
                     ForEach(SortOrder.allCases, id: \.self) { order in
                         Button {
@@ -142,21 +182,19 @@ struct GameRowView: View {
     }
 
     private var consoleIcon: String {
-        switch game.consoleType {
-        case .nesClassic: return "gamecontroller"
-        case .snesClassic: return "gamecontroller.fill"
-        case .segaMini: return "arcade.stick"
-        case .unknown: return "questionmark.circle"
-        }
+        let ct = game.consoleType
+        if ct.isNES { return "gamecontroller" }
+        if ct.isSNES { return "gamecontroller.fill" }
+        if ct.isSega { return "arcade.stick" }
+        return "questionmark.circle"
     }
 
     private var consoleColor: Color {
-        switch game.consoleType {
-        case .nesClassic: return .red
-        case .snesClassic: return .purple
-        case .segaMini: return .blue
-        case .unknown: return .gray
-        }
+        let ct = game.consoleType
+        if ct.isNES { return .red }
+        if ct.isSNES { return .purple }
+        if ct.isSega { return .blue }
+        return .gray
     }
 
     private func formatSize(_ bytes: Int64) -> String {

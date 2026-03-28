@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct ConsoleSidebar: View {
     @EnvironmentObject var appState: AppState
@@ -19,17 +20,36 @@ struct ConsoleSidebar: View {
             .padding(.top, 12)
 
             // Console Type Picker
-            Picker("Console", selection: Binding(
-                get: { appState.consoleType },
-                set: { appState.consoleType = $0 }
-            )) {
-                ForEach(ConsoleType.allCases, id: \.self) { type in
-                    if type != .unknown {
-                        Text(type.rawValue).tag(type)
+            VStack(spacing: 4) {
+                // System family picker
+                Picker("Family", selection: Binding(
+                    get: { appState.consoleType.systemFamily },
+                    set: { family in
+                        switch family {
+                        case "NES": appState.consoleType = .nesUSA
+                        case "SNES": appState.consoleType = .snesUSA
+                        case "Sega": appState.consoleType = .genesisUSA
+                        default: break
+                        }
+                    }
+                )) {
+                    Text("NES").tag("NES")
+                    Text("SNES").tag("SNES")
+                    Text("Sega").tag("Sega")
+                }
+                .pickerStyle(.segmented)
+
+                // Regional variant picker
+                Picker("Region", selection: Binding(
+                    get: { appState.consoleType },
+                    set: { appState.consoleType = $0 }
+                )) {
+                    ForEach(regionalVariants, id: \.self) { type in
+                        Text(type.shortName).tag(type)
                     }
                 }
+                .pickerStyle(.segmented)
             }
-            .pickerStyle(.segmented)
             .padding(.horizontal)
 
             // Storage Bar
@@ -49,14 +69,11 @@ struct ConsoleSidebar: View {
                     panel.canChooseFiles = true
                     panel.canChooseDirectories = false
                     panel.allowedContentTypes = [
-                        .init(filenameExtension: "nes")!,
-                        .init(filenameExtension: "sfc")!,
-                        .init(filenameExtension: "smc")!,
-                        .init(filenameExtension: "md")!,
-                        .init(filenameExtension: "fds")!,
-                        .init(filenameExtension: "fig")!,
-                    ].compactMap { $0 }
-                    panel.message = "Select ROM files to add"
+                        "nes", "sfc", "smc", "md", "fds", "fig",
+                        "unf", "unif", "swc", "smd", "gen", "bin",
+                        "zip", "7z", "rar", "gz", "tgz", "clvg"
+                    ].compactMap { UTType(filenameExtension: $0) }
+                    panel.message = "Select ROM files or archives to add"
 
                     if panel.runModal() == .OK {
                         appState.addGames(urls: panel.urls)
@@ -80,5 +97,15 @@ struct ConsoleSidebar: View {
             .padding(.bottom, 8)
         }
         .background(.bar)
+    }
+
+    private var regionalVariants: [ConsoleType] {
+        let family = appState.consoleType.systemFamily
+        switch family {
+        case "NES": return [.nesUSA, .nesEU, .famicomMini]
+        case "SNES": return [.snesUSA, .snesEU, .superFamicomMini]
+        case "Sega": return [.genesisUSA, .megaDriveEU, .megaDriveJP]
+        default: return [.nesUSA]
+        }
     }
 }

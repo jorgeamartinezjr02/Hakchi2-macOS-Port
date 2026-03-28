@@ -18,6 +18,9 @@ app: build
 	@cp Info.plist "$(APP_BUNDLE)/Contents/"
 	@cp "$(BUILD_DIR)/release/Hakchi" "$(APP_BUNDLE)/Contents/MacOS/Hakchi"
 	@cp Resources/game_db.json "$(APP_BUNDLE)/Contents/Resources/"
+	@mkdir -p "$(APP_BUNDLE)/Contents/Resources/boot"
+	@cp Resources/boot/boot.img "$(APP_BUNDLE)/Contents/Resources/boot/" 2>/dev/null || true
+	@cp Resources/boot/uboot.bin "$(APP_BUNDLE)/Contents/Resources/boot/" 2>/dev/null || true
 	@if [ -f Resources/AppIcon.icns ]; then \
 		cp Resources/AppIcon.icns "$(APP_BUNDLE)/Contents/Resources/"; \
 	fi

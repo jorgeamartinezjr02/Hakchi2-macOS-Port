@@ -112,8 +112,8 @@ final class SSHClient {
                 session,
                 channelType,
                 UInt32(channelType.count),
-                UInt32(2 * 1024 * 1024),  // LIBSSH2_CHANNEL_WINDOW_DEFAULT
-                UInt32(32768),            // LIBSSH2_CHANNEL_PACKET_DEFAULT
+                2 * 1024 * 1024,  // LIBSSH2_CHANNEL_WINDOW_DEFAULT
+                32768,            // LIBSSH2_CHANNEL_PACKET_DEFAULT
                 nil, 0
             ) else {
                 continuation.resume(throwing: HakchiError.sshConnectionFailed("Failed to open channel"))

@@ -7,3 +7,15 @@ DerivedData/
 .netrc
 *.xcodeproj
 *.xcworkspace
+
+# Compiled binaries
+*.dSYM/
+Tools/fel-boot
+Tools/clover-exec
+Tools/fel-memboot
+Tools/fel-spl-only
+
+# Temporary files
+*.o
+*.swp
+*~

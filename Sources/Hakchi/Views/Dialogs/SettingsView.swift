@@ -7,6 +7,7 @@ struct SettingsView: View {
     @AppStorage("autoDetectConsole") private var autoDetectConsole = true
     @AppStorage("backupKernelBeforeFlash") private var backupKernelBeforeFlash = true
     @AppStorage("showAdvancedOptions") private var showAdvancedOptions = false
+    @AppStorage("appLanguage") private var appLanguage = "en"
     @AppStorage("sshHost") private var sshHost = "169.254.1.1"
     @AppStorage("sshPort") private var sshPort = 22
 
@@ -16,9 +17,11 @@ struct SettingsView: View {
             Form {
                 Section("Console") {
                     Picker("Default Console Type", selection: $defaultConsoleType) {
-                        Text("NES Classic").tag("NES Classic")
-                        Text("SNES Classic").tag("SNES Classic")
-                        Text("Sega Mini").tag("Sega Mini")
+                        ForEach(ConsoleType.allCases, id: \.self) { type in
+                            if type != .unknown {
+                                Text(type.rawValue).tag(type.rawValue)
+                            }
+                        }
                     }
 
                     Toggle("Auto-detect connected console", isOn: $autoDetectConsole)
@@ -30,6 +33,12 @@ struct SettingsView: View {
 
                 Section("Interface") {
                     Toggle("Show advanced options", isOn: $showAdvancedOptions)
+
+                    Picker("Language", selection: $appLanguage) {
+                        ForEach(AppLanguage.allCases, id: \.self) { lang in
+                            Text(lang.displayName).tag(lang.rawValue)
+                        }
+                    }
                 }
             }
             .formStyle(.grouped)

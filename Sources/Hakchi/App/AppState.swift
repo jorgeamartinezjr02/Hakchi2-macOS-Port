@@ -5,6 +5,7 @@ enum KernelAction {
     case dump
     case flash
     case restore
+    case factoryReset
 }
 
 @MainActor
@@ -26,6 +27,7 @@ final class AppState: ObservableObject {
     // Dialogs
     @Published var showKernelDialog = false
     @Published var showModManager = false
+    @Published var showFolderManager = false
     @Published var showProgress = false
     @Published var kernelAction: KernelAction = .dump
 
@@ -49,7 +51,10 @@ final class AppState: ObservableObject {
 
     private var cancellables = Set<AnyCancellable>()
 
+    let settings = AppSettings.shared
+
     init() {
+        consoleType = settings.defaultConsoleType
         setupUSBMonitoring()
         loadGames()
     }
@@ -65,7 +70,10 @@ final class AppState: ObservableObject {
         usbMonitor.$detectedConsoleType
             .receive(on: DispatchQueue.main)
             .sink { [weak self] type in
-                self?.consoleType = type
+                guard let self = self else { return }
+                if self.settings.autoDetectConsole && type != .unknown {
+                    self.consoleType = type
+                }
             }
             .store(in: &cancellables)
 
@@ -78,9 +86,11 @@ final class AppState: ObservableObject {
 
     func addGames(urls: [URL]) {
         for url in urls {
-            if let game = gameManager.addGame(from: url) {
-                games.append(game)
-            }
+            let newGames = gameManager.addGames(from: url)
+            games.append(contentsOf: newGames)
+        }
+        if !urls.isEmpty {
+            gameManager.saveGames(games)
         }
     }
 
@@ -89,6 +99,16 @@ final class AppState: ObservableObject {
         selectedGameIDs.removeAll()
         selectedGame = nil
         gameManager.saveGames(games)
+    }
+
+    func updateGame(_ updated: Game) {
+        if let index = games.firstIndex(where: { $0.id == updated.id }) {
+            games[index] = updated
+            if selectedGame?.id == updated.id {
+                selectedGame = updated
+            }
+            gameManager.saveGames(games)
+        }
     }
 
     func syncGames() async {
@@ -101,9 +121,12 @@ final class AppState: ObservableObject {
         let gamesToSync = selectedGames.isEmpty ? games : selectedGames
 
         do {
+            let shell = try await createShell()
+            defer { shell.disconnect() }
             try await gameManager.syncToConsole(
                 games: gamesToSync,
                 consoleType: consoleType,
+                shell: shell,
                 progress: { [weak self] value, message in
                     Task { @MainActor in
                         self?.progressValue = value
@@ -121,12 +144,22 @@ final class AppState: ObservableObject {
     func rebootConsole() async {
         guard isConnected else { return }
         do {
-            let shell = SSHClient()
-            try await shell.connect(host: "169.254.1.1")
-            try await shell.execute("reboot")
-            shell.disconnect()
+            let shell = try await createShell()
+            defer { shell.disconnect() }
+            _ = try await shell.executeCommand("reboot")
         } catch {
             progressMessage = "Reboot failed: \(error.localizedDescription)"
         }
+    }
+
+    /// Create a ShellInterface using the best available connection method
+    func createShell() async throws -> ShellInterface {
+        // Try Clovershell first (USB direct), fall back to SSH
+        if let clovershell = try? ClovershellShell() {
+            return clovershell
+        }
+        let host = UserDefaults.standard.string(forKey: "sshHost") ?? "169.254.1.1"
+        let port = UserDefaults.standard.integer(forKey: "sshPort")
+        return try await SSHShell(host: host, port: port > 0 ? port : 22)
     }
 }

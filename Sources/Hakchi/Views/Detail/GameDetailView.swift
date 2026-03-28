@@ -1,11 +1,16 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct GameDetailView: View {
     let game: Game
+    @EnvironmentObject var appState: AppState
     @State private var editedName: String = ""
     @State private var editedPublisher: String = ""
     @State private var editedPlayers: Int = 1
     @State private var editedReleaseDate: String = ""
+    @State private var editedCore: String = ""
+    @State private var hasChanges = false
+    @State private var showScraper = false
 
     var body: some View {
         ScrollView {
@@ -61,19 +66,64 @@ struct GameDetailView: View {
                             .font(.subheadline)
                             .foregroundColor(.secondary)
 
-                        HStack(spacing: 4) {
-                            Image(systemName: "cpu")
-                            Text(game.consoleType.rawValue)
+                        HStack(spacing: 8) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "cpu")
+                                Text(game.consoleType.shortName)
+                            }
+                            .font(.subheadline)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 4)
+                            .background(Capsule().fill(.secondary.opacity(0.15)))
+
+                            if let system = game.system {
+                                Text(system)
+                                    .font(.caption)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 3)
+                                    .background(Capsule().fill(.blue.opacity(0.15)))
+                            }
+
+                            Text(game.region)
+                                .font(.caption)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(Capsule().fill(.green.opacity(0.15)))
                         }
-                        .font(.subheadline)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 4)
-                        .background(Capsule().fill(.secondary.opacity(0.15)))
                     }
 
                     Spacer()
                 }
                 .padding()
+
+                // Action buttons
+                HStack {
+                    Button {
+                        showScraper = true
+                    } label: {
+                        Label("Scrape Metadata", systemImage: "magnifyingglass")
+                    }
+                    .buttonStyle(.bordered)
+
+                    Button {
+                        let panel = NSOpenPanel()
+                        panel.allowedContentTypes = [.png, .jpeg]
+                        panel.message = "Select cover art image"
+                        if panel.runModal() == .OK, let url = panel.url {
+                            if let path = try? BoxArtManager.shared.setCoverArt(from: url, for: game) {
+                                var updated = game
+                                updated.coverArtPath = path
+                                appState.updateGame(updated)
+                            }
+                        }
+                    } label: {
+                        Label("Set Cover Art", systemImage: "photo")
+                    }
+                    .buttonStyle(.bordered)
+
+                    Spacer()
+                }
+                .padding(.horizontal)
 
                 Divider()
 
@@ -115,6 +165,33 @@ struct GameDetailView: View {
                                 .frame(width: 80, alignment: .trailing)
                             Stepper("\(editedPlayers)", value: $editedPlayers, in: 1...4)
                         }
+
+                        HStack {
+                            Text("Core:")
+                                .frame(width: 80, alignment: .trailing)
+                            Picker("", selection: $editedCore) {
+                                Text("Native Emulator").tag("")
+                                ForEach(availableCores, id: \.id) { core in
+                                    Text(core.name).tag(core.id)
+                                }
+                            }
+                            .labelsHidden()
+                        }
+
+                        HStack {
+                            Spacer()
+                            Button("Revert") {
+                                loadFromGame()
+                            }
+                            .disabled(!hasChanges)
+
+                            Button("Save Changes") {
+                                saveChanges()
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .disabled(!hasChanges)
+                        }
+                        .padding(.top, 4)
                     }
                     .padding(8)
                 }
@@ -123,12 +200,52 @@ struct GameDetailView: View {
                 Spacer()
             }
         }
-        .onAppear {
-            editedName = game.name
-            editedPublisher = game.publisher
-            editedPlayers = game.players
-            editedReleaseDate = game.releaseDate
+        .onAppear { loadFromGame() }
+        .onChange(of: game) { _ in loadFromGame() }
+        .onChange(of: editedName) { _ in checkChanges() }
+        .onChange(of: editedPublisher) { _ in checkChanges() }
+        .onChange(of: editedPlayers) { _ in checkChanges() }
+        .onChange(of: editedReleaseDate) { _ in checkChanges() }
+        .onChange(of: editedCore) { _ in checkChanges() }
+        .sheet(isPresented: $showScraper) {
+            ScraperView(game: game)
+                .environmentObject(appState)
         }
+    }
+
+    private var availableCores: [RetroArchCore] {
+        let system = game.system ?? game.consoleType.systemFamily
+        let cores = CoreManager.shared.cores(for: system)
+        return cores.isEmpty ? CoreManager.shared.getAllCores() : cores
+    }
+
+    private func loadFromGame() {
+        editedName = game.name
+        editedPublisher = game.publisher
+        editedPlayers = game.players
+        editedReleaseDate = game.releaseDate
+        editedCore = game.assignedCore ?? ""
+        hasChanges = false
+    }
+
+    private func checkChanges() {
+        hasChanges = editedName != game.name ||
+            editedPublisher != game.publisher ||
+            editedPlayers != game.players ||
+            editedReleaseDate != game.releaseDate ||
+            editedCore != (game.assignedCore ?? "")
+    }
+
+    private func saveChanges() {
+        var updated = game
+        updated.name = editedName
+        updated.sortName = editedName
+        updated.publisher = editedPublisher
+        updated.players = editedPlayers
+        updated.releaseDate = editedReleaseDate
+        updated.assignedCore = editedCore.isEmpty ? nil : editedCore
+        appState.updateGame(updated)
+        hasChanges = false
     }
 
     private func formatSize(_ bytes: Int64) -> String {

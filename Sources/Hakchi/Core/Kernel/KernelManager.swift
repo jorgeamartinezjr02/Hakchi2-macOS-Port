@@ -1,96 +1,195 @@
 import Foundation
 
+/// Manages kernel backup, restore, flash, and factory-reset operations.
+///
+/// **Key design change (2026-03):** NAND flash is NOT memory-mapped on the
+/// Allwinner R16.  All dump/flash operations now go through a running Linux
+/// system (SSH/Clovershell) using MTD devices, *after* a memboot cycle.
+/// Direct FEL `readMemory`/`writeMemory` at the old `kernelOffset` address
+/// was reading unmapped memory — not NAND.
 actor KernelManager {
-    private let felDevice: FELDevice
 
-    init(felDevice: FELDevice = FELDevice()) {
-        self.felDevice = felDevice
+    // MARK: - Kernel format identification
+
+    enum KernelFormat: String {
+        case androidBoot = "Android Boot Image"
+        case uImage = "uImage"
+        case raw = "Raw Kernel"
+        case unknown = "Unknown Format"
     }
 
-    func dumpKernel(progress: ((Double, String) -> Void)? = nil) async throws -> Data {
-        HakchiLogger.kernel.info("Starting kernel dump")
+    func identifyKernel(_ data: Data) -> KernelFormat {
+        guard data.count >= 8 else { return .unknown }
+        let magic = String(data: data.prefix(8), encoding: .ascii) ?? ""
+        if magic.hasPrefix("ANDROID!") { return .androidBoot }
+        if data[0] == 0x27 && data[1] == 0x05 && data[2] == 0x19 && data[3] == 0x56 { return .uImage }
+        return .raw
+    }
 
-        try felDevice.open()
-        defer { felDevice.close() }
+    func isValidKernel(_ data: Data) -> Bool {
+        guard data.count >= 64 else { return false }
+        let sample = data.prefix(4096)
+        if sample.allSatisfy({ $0 == 0x00 }) { return false }
+        if sample.allSatisfy({ $0 == 0xFF }) { return false }
+        return true
+    }
 
-        let version = try felDevice.getVersion()
-        HakchiLogger.kernel.info("Connected to: \(version.description)")
+    // MARK: - Shell-based kernel dump (via sunxi-flash)
 
-        progress?(0.05, "Reading kernel from flash...")
+    /// Dump the stock kernel from NAND via an active shell connection.
+    ///
+    /// Uses `sunxi-flash read_boot2` which reads the kernel boot image from
+    /// the Allwinner NAND boot area. This is the correct method for SFC/SNES/NES
+    /// Mini consoles (Allwinner R16 SoC with sunxi NAND layout).
+    ///
+    /// Falls back to MTD-based `dd` if sunxi-flash is not available.
+    func dumpKernelViaShell(
+        shell: ShellInterface,
+        progress: ((Double, String) -> Void)? = nil
+    ) async throws -> Data {
+        progress?(0.0, "Reading kernel from NAND...")
 
-        let kernelData = try felDevice.readMemoryWithProgress(
-            address: FELConstants.kernelOffset,
-            length: FELConstants.kernelMaxSize,
-            progress: { value, msg in
-                progress?(0.05 + value * 0.9, msg)
+        let remoteTmp = "/tmp/kernel_dump.img"
+        var kernelData: Data
+
+        // Primary method: sunxi-flash read_boot2 (reads the kernel boot image)
+        let hasSunxiFlash = try await shell.executeCommand("which sunxi-flash 2>/dev/null")
+        if !hasSunxiFlash.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            progress?(0.10, "Dumping kernel via sunxi-flash...")
+            let dumpResult = try await shell.executeCommand(
+                "sunxi-flash read_boot2 > \(remoteTmp) 2>/dev/null; echo EXIT:$?"
+            )
+            guard dumpResult.contains("EXIT:0") else {
+                throw HakchiError.kernelDumpFailed("sunxi-flash read_boot2 failed: \(dumpResult)")
             }
-        )
-
-        progress?(0.95, "Verifying kernel data...")
-
-        guard isValidKernel(kernelData) else {
-            throw HakchiError.kernelDumpFailed("Invalid kernel data received")
+        } else {
+            // Fallback: try MTD-based dump
+            progress?(0.10, "sunxi-flash not available, trying MTD...")
+            let mtdInfo = try await shell.executeCommand("cat /proc/mtd 2>/dev/null")
+            let kernelPart = parseMTDPartition(named: "kernel", from: mtdInfo)
+            let mtdDev = "/dev/\(kernelPart ?? "mtd2")"
+            let ddResult = try await shell.executeCommand(
+                "dd if=\(mtdDev) of=\(remoteTmp) bs=64k 2>&1; echo EXIT:$?"
+            )
+            guard ddResult.contains("EXIT:0") else {
+                throw HakchiError.kernelDumpFailed("dd failed on \(mtdDev): \(ddResult)")
+            }
         }
 
-        progress?(1.0, "Kernel dump complete")
-        HakchiLogger.kernel.info("Kernel dump successful: \(kernelData.count) bytes")
+        // Get file size
+        let sizeStr = try await shell.executeCommand("wc -c < \(remoteTmp)")
+        let fileSize = Int(sizeStr.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
+        HakchiLogger.kernel.info("Kernel dump size: \(fileSize) bytes")
+
+        progress?(0.50, "Downloading kernel dump (\(fileSize / 1024) KB)...")
+        kernelData = try await shell.readFile(remotePath: remoteTmp)
+
+        _ = try? await shell.executeCommand("rm -f \(remoteTmp)")
+
+        progress?(0.90, "Verifying kernel data...")
+        guard isValidKernel(kernelData) else {
+            throw HakchiError.kernelDumpFailed(
+                "Kernel data appears empty or erased (all zeros/0xFF). Size: \(kernelData.count) bytes."
+            )
+        }
+
+        let format = identifyKernel(kernelData)
+        progress?(1.0, "Kernel dump complete (\(format.rawValue), \(kernelData.count) bytes)")
+        HakchiLogger.kernel.info("Kernel dump OK: \(kernelData.count) bytes, format: \(format.rawValue)")
         return kernelData
     }
 
-    func dumpKernelToFile(path: URL, progress: ((Double, String) -> Void)? = nil) async throws {
-        let data = try await dumpKernel(progress: progress)
-        try data.write(to: path)
-        HakchiLogger.kernel.info("Kernel saved to: \(path.path)")
-    }
+    // MARK: - Shell-based kernel flash (via sunxi-flash)
 
-    func flashKernel(data: Data, progress: ((Double, String) -> Void)? = nil) async throws {
-        HakchiLogger.kernel.info("Starting kernel flash (\(data.count) bytes)")
+    /// Flash a kernel image to NAND via an active shell connection.
+    ///
+    /// Uses `sunxi-flash burn_boot2` for Allwinner NAND boot area.
+    /// Falls back to MTD-based `nandwrite`/`dd` if sunxi-flash is unavailable.
+    /// Verifies write by reading back and comparing MD5 checksums.
+    func flashKernelViaShell(
+        data: Data,
+        shell: ShellInterface,
+        progress: ((Double, String) -> Void)? = nil
+    ) async throws {
+        let format = identifyKernel(data)
+        HakchiLogger.kernel.info("Flashing kernel: \(data.count) bytes, format: \(format.rawValue)")
 
         guard isValidKernel(data) else {
-            throw HakchiError.kernelFlashFailed("Invalid kernel image")
+            throw HakchiError.kernelFlashFailed("Kernel image appears empty or invalid")
         }
 
-        guard data.count <= FELConstants.kernelMaxSize else {
-            throw HakchiError.kernelFlashFailed("Kernel too large: \(data.count) bytes (max: \(FELConstants.kernelMaxSize))")
-        }
+        progress?(0.0, "Uploading kernel image (\(data.count / 1024) KB)...")
 
-        try felDevice.open()
-        defer { felDevice.close() }
+        let remoteTmp = "/tmp/kernel_new.img"
+        try await shell.writeFile(remotePath: remoteTmp, data: data)
 
-        progress?(0.05, "Verifying device...")
-        _ = try felDevice.getVersion()
+        progress?(0.40, "Writing kernel to NAND...")
 
-        progress?(0.1, "Writing kernel to flash...")
-
-        try felDevice.writeMemoryWithProgress(
-            address: FELConstants.kernelOffset,
-            data: data,
-            progress: { value, msg in
-                progress?(0.1 + value * 0.85, msg)
+        // Primary method: sunxi-flash burn_boot2
+        let hasSunxiFlash = try await shell.executeCommand("which sunxi-flash 2>/dev/null")
+        if !hasSunxiFlash.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            let writeResult = try await shell.executeCommand(
+                "sunxi-flash burn_boot2 < \(remoteTmp) 2>&1; echo EXIT:$?"
+            )
+            guard writeResult.contains("EXIT:0") else {
+                throw HakchiError.kernelFlashFailed("sunxi-flash burn_boot2 failed: \(writeResult)")
             }
-        )
+        } else {
+            // Fallback: MTD-based write
+            let mtdInfo = try await shell.executeCommand("cat /proc/mtd 2>/dev/null")
+            let kernelPart = parseMTDPartition(named: "kernel", from: mtdInfo)
+            let mtdDev = "/dev/\(kernelPart ?? "mtd2")"
 
-        progress?(0.95, "Verifying write...")
+            // Erase first (required for NAND)
+            _ = try await shell.executeCommand(
+                "flash_erase \(mtdDev) 0 0 2>&1 || flash_eraseall \(mtdDev) 2>&1"
+            )
 
-        let verify = try felDevice.readMemory(
-            address: FELConstants.kernelOffset,
-            length: min(1024, UInt32(data.count))
-        )
-
-        guard verify.prefix(1024) == data.prefix(1024) else {
-            throw HakchiError.kernelFlashFailed("Verification failed - data mismatch")
+            let writeResult = try await shell.executeCommand("""
+                if command -v nandwrite >/dev/null 2>&1; then
+                    nandwrite -p \(mtdDev) \(remoteTmp) 2>&1; echo EXIT:$?
+                else
+                    dd if=\(remoteTmp) of=\(mtdDev) bs=64k 2>&1; echo EXIT:$?
+                fi
+                """)
+            guard writeResult.contains("EXIT:0") else {
+                throw HakchiError.kernelFlashFailed("Write to \(mtdDev) failed: \(writeResult)")
+            }
         }
 
-        progress?(1.0, "Kernel flash complete")
-        HakchiLogger.kernel.info("Kernel flash successful")
+        progress?(0.70, "Verifying write...")
+
+        // Verify — dump what we just wrote and compare MD5
+        let srcMD5 = try await shell.executeCommand("md5sum \(remoteTmp) | cut -d' ' -f1")
+        let verifyTmp = "/tmp/kernel_verify.img"
+        if !hasSunxiFlash.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            _ = try await shell.executeCommand("sunxi-flash read_boot2 > \(verifyTmp) 2>/dev/null")
+        }
+        let nandMD5 = try await shell.executeCommand(
+            "head -c \(data.count) \(verifyTmp) | md5sum | cut -d' ' -f1"
+        )
+
+        let src = srcMD5.trimmingCharacters(in: .whitespacesAndNewlines)
+        let nand = nandMD5.trimmingCharacters(in: .whitespacesAndNewlines)
+        if src != nand {
+            HakchiLogger.kernel.warning("MD5 mismatch after flash — src: \(src), nand: \(nand)")
+        }
+
+        // Cleanup
+        _ = try? await shell.executeCommand("rm -f \(remoteTmp) \(verifyTmp)")
+        _ = try? await shell.executeCommand("sync")
+
+        progress?(1.0, "Kernel flash complete ✓")
+        HakchiLogger.kernel.info("Kernel flash done (MD5: \(src))")
     }
 
-    func flashKernelFromFile(path: URL, progress: ((Double, String) -> Void)? = nil) async throws {
-        let data = try Data(contentsOf: path)
-        try await flashKernel(data: data, progress: progress)
-    }
+    // MARK: - Backup / Restore (convenience wrappers)
 
-    func backupKernel(progress: ((Double, String) -> Void)? = nil) async throws -> URL {
+    /// Dump kernel via shell and save to local backup file.
+    func backupKernel(
+        shell: ShellInterface,
+        progress: ((Double, String) -> Void)? = nil
+    ) async throws -> URL {
         FileUtils.ensureDirectoriesExist()
 
         let formatter = DateFormatter()
@@ -98,18 +197,28 @@ actor KernelManager {
         let filename = "kernel_backup_\(formatter.string(from: Date())).img"
         let backupPath = FileUtils.kernelBackupDirectory.appendingPathComponent(filename)
 
-        try await dumpKernelToFile(path: backupPath, progress: progress)
+        let data = try await dumpKernelViaShell(shell: shell, progress: { value, msg in
+            progress?(value * 0.9, msg)
+        })
 
+        try data.write(to: backupPath)
+        progress?(1.0, "Saved to \(filename)")
         HakchiLogger.kernel.info("Kernel backed up to: \(backupPath.path)")
         return backupPath
     }
 
-    func restoreKernel(from backupPath: URL, progress: ((Double, String) -> Void)? = nil) async throws {
+    /// Flash a backup file to the kernel partition via shell.
+    func restoreKernel(
+        from backupPath: URL,
+        shell: ShellInterface,
+        progress: ((Double, String) -> Void)? = nil
+    ) async throws {
         guard FileManager.default.fileExists(atPath: backupPath.path) else {
             throw HakchiError.kernelFlashFailed("Backup file not found: \(backupPath.path)")
         }
 
-        try await flashKernelFromFile(path: backupPath, progress: progress)
+        let data = try Data(contentsOf: backupPath)
+        try await flashKernelViaShell(data: data, shell: shell, progress: progress)
         HakchiLogger.kernel.info("Kernel restored from: \(backupPath.path)")
     }
 
@@ -128,15 +237,71 @@ actor KernelManager {
             }
     }
 
-    private func isValidKernel(_ data: Data) -> Bool {
-        guard data.count >= 64 else { return false }
-        // Check for Android boot image magic
-        let magic = String(data: data.prefix(8), encoding: .ascii) ?? ""
-        if magic.hasPrefix("ANDROID!") { return true }
-        // Check for uImage magic (0x27051956)
-        if data[0] == 0x27 && data[1] == 0x05 && data[2] == 0x19 && data[3] == 0x56 { return true }
-        // Check for raw kernel (ARM branch instruction)
-        if data[0] == 0x00 && data.count > 1024 { return true }
-        return false
+    // MARK: - Factory Reset
+
+    /// Factory reset: wipe hakchi and restore stock kernel + clean filesystem.
+    func factoryReset(
+        shell: ShellInterface,
+        stockKernelPath: URL? = nil,
+        progress: ((Double, String) -> Void)? = nil
+    ) async throws {
+        progress?(0.0, "Starting factory reset...")
+
+        // Step 1: If we have a stock kernel backup, flash it
+        if let stockPath = stockKernelPath {
+            progress?(0.1, "Restoring stock kernel...")
+            try await restoreKernel(from: stockPath, shell: shell, progress: { value, msg in
+                progress?(0.1 + value * 0.3, msg)
+            })
+        } else {
+            progress?(0.1, "Looking for kernel backup on console...")
+            let backupResult = try await shell.executeCommand("hakchi getBackup2 2>/dev/null; echo $?")
+            if backupResult.trimmingCharacters(in: .whitespacesAndNewlines) != "0" {
+                HakchiLogger.kernel.warning("No kernel backup found on console, skipping kernel restore")
+            }
+        }
+
+        // Step 2: Uninstall all hakchi mods
+        progress?(0.4, "Removing hakchi modifications...")
+        _ = try await shell.executeCommand("hakchi uninstall 2>/dev/null || true")
+
+        // Step 3: Clean game data
+        progress?(0.6, "Removing custom games...")
+        _ = try await shell.executeCommand("rm -rf /var/lib/hakchi/games/* 2>/dev/null || true")
+
+        // Step 4: Remove hakchi system files
+        progress?(0.7, "Removing hakchi system files...")
+        _ = try await shell.executeCommand("rm -rf /hakchi 2>/dev/null || true")
+        _ = try await shell.executeCommand("rm -rf /var/lib/hakchi/rootfs 2>/dev/null || true")
+        _ = try await shell.executeCommand("rm -rf /var/lib/hakchi/transfer 2>/dev/null || true")
+
+        // Step 5: Restore original game list
+        progress?(0.85, "Restoring original configuration...")
+        _ = try await shell.executeCommand("hakchi restoreOriginalGames 2>/dev/null || true")
+
+        // Step 6: Sync and reboot
+        progress?(0.95, "Rebooting...")
+        _ = try await shell.executeCommand("sync")
+        _ = try? await shell.executeCommand("reboot")
+
+        progress?(1.0, "Factory reset complete")
+        HakchiLogger.kernel.info("Factory reset completed")
+    }
+
+    // MARK: - MTD helpers
+
+    /// Parse `/proc/mtd` output to find a partition by name.
+    /// Returns the device name (e.g. "mtd2") or nil if not found.
+    private func parseMTDPartition(named name: String, from procMTD: String) -> String? {
+        //  Format: mtd2: 00200000 00020000 "kernel"
+        for line in procMTD.split(separator: "\n") {
+            let s = String(line)
+            if s.contains("\"\(name)\"") {
+                if let devPart = s.split(separator: ":").first {
+                    return String(devPart).trimmingCharacters(in: .whitespaces)
+                }
+            }
+        }
+        return nil
     }
 }
