@@ -299,6 +299,9 @@ def write_m3u(records: list[dict], output_path: str) -> int:
                 f'#EXTINF:-1{logo_attr} group-title="{category}",'
                 f'{title}\n'
             )
+            # VLC necesita Referer para que el CDN sirva el stream
+            f.write(f"#EXTVLCOPT:http-referrer=https://javenspanish.com/\n")
+            f.write(f"#EXTVLCOPT:http-user-agent={USER_AGENT}\n")
             f.write(f"{video_url}\n\n")
 
     log.info(f"M3U escrito: {output_path} ({len(videos)} videos)")
