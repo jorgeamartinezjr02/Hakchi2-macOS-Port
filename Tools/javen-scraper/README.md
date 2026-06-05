@@ -43,21 +43,26 @@ python3 scraper_javen.py --no-resolve
 | `javen_videos.json` | Datos completos en JSON |
 | `progress.json` | Progreso parcial (cada 50 posts) |
 
-## Usar en VLC
+## Reproducir en VLC / Infuse / IINA (método recomendado)
 
-1. Abrir VLC
-2. **Archivo → Abrir archivo** → seleccionar `javen_videos.m3u`
-3. O arrastrar el archivo a VLC
+El CDN requiere un `Referer` header para servir los streams. Usar el proxy local
+que lo añade automáticamente — funciona con cualquier player.
 
-## Usar en Infuse (Apple TV / iOS / macOS)
+```bash
+python3 proxy.py
+```
 
-**Opción A — Via Files (iCloud/Local):**
-1. Copiar `javen_videos.m3u` a iCloud Drive o al iPhone via iTunes
-2. En Infuse: **Añadir fuente → Archivos → iCloud Drive**
+Luego en tu player:
+- **VLC**: `Archivo → Abrir URL → http://localhost:8765/playlist.m3u`
+- **Infuse**: `Añadir fuente → URL → http://localhost:8765/playlist.m3u`
+- **IINA**: Abrir URL → `http://localhost:8765/playlist.m3u`
 
-**Opción B — Via servidor local:**
-1. Servir el archivo con Python: `python3 -m http.server 8080`
-2. En Infuse: **Añadir fuente → URL → http://TU-IP:8080/javen_videos.m3u**
+El proxy corre mientras tienes la terminal abierta. `Ctrl+C` para detenerlo.
+
+### Puerto alternativo
+```bash
+python3 proxy.py --port 9000
+```
 
 ## Notas
 
